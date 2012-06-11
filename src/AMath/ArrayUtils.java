@@ -5,6 +5,9 @@ package AMath;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import Game.AGPmain;
 
@@ -14,6 +17,19 @@ public class ArrayUtils {
 	public static <T> T randomIndexOf(T[] array) {
 		return (array == null || array.length == 0) ? null : array[AGPmain.rand.nextInt(array.length)];
 	}
+	
+
+	/** by braylan */
+	public static <T> T[] orderByComparator(Class<T> clasz, T[] array, Comparator<T> comparator) {
+		SortedSet<T> set = new TreeSet<T>(comparator);
+		for(T t : array) {set.add(t);}
+		T[] result = createArray(clasz, set.size());
+		int i = 0;   for (T t : set) {
+			result[i++] = t;
+		}
+		return result;
+	}
+	
 	
 	/** Find and return the first item in the array such that (o == null ? item == null : o.equals(item))
 	 */
@@ -294,4 +310,5 @@ public class ArrayUtils {
 		for (int i = 0; i < a1.length; ++i) if (!Calc.equal(a1[i], a2[i])) return false; 
 		return true;
 	}
+	
 }

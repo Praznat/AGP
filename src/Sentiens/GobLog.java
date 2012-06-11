@@ -101,11 +101,11 @@ public class GobLog {
 		};
 	}
 	
-	public static Reportable compete4Mate(final Clan mate, final Clan rival, final int result) {
+	public static Reportable compete4Mate(final Clan mate, final Clan rival, final double result) {
 		return new Reportable() {
 			public String out() {
-				return (result == 1 ? "Won " + mate.getNomen() + "'s heart" + (rival!=mate?" away from " + rival.getNomen():"") :
-					(result == -1 ? "Failed to win " + mate.getNomen() + "'s heart" + (rival!=mate?" away from " + rival.getNomen():"") : ""));
+				return (result > 0 ? "Won " + mate.getNomen() + "'s heart" + (rival!=mate?" away from " + rival.getNomen():"") :
+					(result < 0 ? "Failed to win " + mate.getNomen() + "'s heart" + (rival!=mate?" away from " + rival.getNomen():"") : ""));
 			}
 		};
 	}

@@ -3,6 +3,7 @@ package Game;
 import Defs.P_;
 import Markets.MktO;
 import Sentiens.Clan;
+import Sentiens.Values;
 import Shirage.Shire;
 
 public class VarGetter implements Defs {
@@ -44,7 +45,7 @@ public class VarGetter implements Defs {
 		varName = n; type = t; var = v;
 	}
 	public static VarGetter[] popVGs() {
-		VarGetter[] all = new VarGetter[13 + numSancs + P_.values().length - 1];
+		VarGetter[] all = new VarGetter[13 + Values.All.length + P_.values().length - 1];
 		int k = 0;
 		all[k++] = new VarGetter("Name", CLANBASIC, CLANNAME);
 		all[k++] = new VarGetter("Job", CLANBASIC, CLANJOB);
@@ -59,7 +60,9 @@ public class VarGetter implements Defs {
 		all[k++] = new VarGetter("3rdValue", CLANRANKSANCS, 2);
 		all[k++] = new VarGetter("4thValue", CLANRANKSANCS, 3);
 		all[k++] = new VarGetter("5thValue", CLANRANKSANCS, 4);
-		for(int i = 0; i < numSancs; i++) {all[k++] = new VarGetter(AGPmain.TheRealm.getSanc(i).getName(), CLANSANCPCTS, i);}
+		for(int i = 0; i < Values.All.length; i++) {
+			all[k++] = new VarGetter(Values.All[i].toString(), CLANSANCPCTS, i);
+		}
 		for(int i = 1; i < P_.length(); i++) {all[k++] = new VarGetter(Naming.prestName(P_.values()[i]), CLANPRESTS, i);}
 		return all;
 	}
@@ -102,8 +105,7 @@ public class VarGetter implements Defs {
 			case SHIRENAME: dude.myShire().getXY();
 			}
 		case CLANDISCS: return dude.FB.getDisc(var);
-		case CLANRANKSANCS: return dude.FB.sancInPriority(var);
-		case CLANSANCPCTS: return dude.FB.getSancPct(var);
+		case CLANSANCPCTS: return dude.FB.getSancPct(Values.All[var]);
 		case CLANPRESTS: return dude.FB.getPrs(var);
 		case CLANBEHS: return dude.FB.getBeh(var);
 		default: return 0;
@@ -131,7 +133,7 @@ public class VarGetter implements Defs {
 			case SHIRENAME: return dude.myShire().getName();
 			}
 		case CLANDISCS: return dude.FB.getDiscName(var);
-		case CLANRANKSANCS: return AGPmain.TheRealm.getSanc(getVarInt(dude)).getName();
+		case CLANRANKSANCS: return dude.FB.sancInPriority(var).toString();
 		case CLANSANCPCTS: return getVarInt(dude) + "%";
 		case CLANPRESTS: case CLANBEHS: return (int) Math.round((double)getVarInt(dude) / 16) + "%";
 		}

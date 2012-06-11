@@ -1,16 +1,15 @@
 package Sentiens;
 
 
+import java.util.Comparator;
+
 import AMath.ArrayUtils;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
-import Game.AGPmain;
 import Game.Act;
 import Game.Defs;
 import Markets.MktAbstract;
-import Markets.MktO;
-import Shirage.Shire;
 
 public class Values implements Defs {
 	private static M_[] wealthMems = new M_[] {M_.BIDASKSPRD, M_.INVORTRD, M_.STMOMENTUM, M_.LTMOMENTUM, M_.MARGIN, M_.DISCRATE};
@@ -21,6 +20,7 @@ public class Values implements Defs {
 //	private static M_[] HGWeights = new M_[] {M_.S_PATRIOTISM,M_.S_LOYALTY,M_.S_PROMISCUITY,M_.S_GREED,M_.S_BLOODLUST,M_.S_MONUMENTS};
 //	private static M_[] KWWeights = new M_[] {M_.S_KNOWLEDGE,M_.S_SACRIFICE,M_.S_HEALING,M_.S_SORCERY,M_.S_ZEAL,M_.S_AGE,M_.S_SKILL};
 	
+	private static int ord = 0;
 
 	public static interface Assessable {
 		public double evaluate(Clan evaluator, Clan proposer, int content);
@@ -36,11 +36,14 @@ public class Values implements Defs {
 		public int getWeighting(Clan POV);
 		public double compare(Clan POV, Clan A, Clan B);
 		public String description(Clan POV);
-		public void pursue(Clan clan);
+		public Q_ pursuit(Clan clan);
 		public double contentBuyable(Clan assessor, int millet);
+		public int ordinal();
 	}
 
 	private static class ToDoValue implements Value {
+		private int ordinal;
+		public ToDoValue() {ordinal = ord++;}
 		@Override
 		public M_ getWeightMeme(Clan POV) {return null;}
 		@Override
@@ -50,14 +53,17 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return "Value yet undefined";}
 		@Override
-		public void pursue(Clan clan) {clan.QB.pursue();}
+		public Q_ pursuit(Clan clan) {return Q_.NOTHING;}
 		public double contentBuyable(Clan assessor, int millet) {return 0;}
+		@Override
+		public int ordinal() {return ordinal;}
 	}
 	private static abstract class AbstractValue implements Value {
 		protected final M_ weighting;
 		protected final String desc;
 		protected final Q_ quest;
-		public AbstractValue(M_ w, String d, Q_ q) {weighting = w;   desc = d;   quest = q;}
+		private int ordinal;
+		public AbstractValue(M_ w, String d, Q_ q) {weighting = w;   desc = d;   quest = q;   ordinal = ord++;}
 		@Override
 		public M_ getWeightMeme(Clan POV) {return weighting;}
 		@Override
@@ -65,9 +71,11 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return desc;}
 		@Override
-		public void pursue(Clan clan) {clan.QB.newQ(quest);}
+		public Q_ pursuit(Clan clan) {return (quest != null ? quest : Q_.NOTHING);}
+		@Override
+		public int ordinal() {return ordinal;}
 	}
-	private static abstract class CompoundValue implements Value {
+	private static abstract class CompoundValue implements Value {     //probably dont need if doing orderedSancs scheme
 		public CompoundValue(Value[] V) {subvalues = V;}
 		private Value[] subvalues;
 		protected abstract int getVWeight(Clan POV);
@@ -82,11 +90,13 @@ public class Values implements Defs {
 			return sum / (double) subvalues.length;
 		}
 		@Override
-		public void pursue(Clan clan) {for (Value v : subvalues) {v.pursue(clan);}}
+		public Q_ pursuit(Clan clan) {return null;} //{for (Value v : subvalues) {v.pursue(clan);}}
 		public int sumWeights(Clan POV) {
 			int sum = 0;   for (Value sub : subvalues) {sum += sub.getWeighting(POV);}   return sum;
 		}
 		public double contentBuyable(Clan assessor, int millet) {return ExpertAI.getMaxValueOfMoney(assessor, millet, subvalues);}
+		@Override
+		public int ordinal() {return -1;}
 	}
 	private static abstract class TeachableValue extends ValuatableValue implements Teachable {
 		public TeachableValue(M_ w, String d, Q_ q) {super(w, d, q);}
@@ -101,7 +111,9 @@ public class Values implements Defs {
 	private static abstract class ValuatableValue extends AbstractValue implements Assessable {
 		public ValuatableValue(M_ w, String d, Q_ q) {super(w, d, q);}
 		@Override
-		public double compare(Clan POV, Clan A, Clan B) {return compare(value(POV, A), value(POV, B));}
+		public double compare(Clan POV, Clan A, Clan B) {
+			return compare(value(POV, A), value(POV, B));
+		}
 		public double compare(double A, double B) {return logComp(A, B);}
 		public double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {return content + curval;}
 		@Override
@@ -197,7 +209,7 @@ public class Values implements Defs {
 	
 	public static final Value LOYALTY = new ValuatableValue(M_.S_LOYALTY, "", null) {
 		@Override
-		public String description(Clan POV) {return "Loyalty to " + POV.FB.getDiscName(Defs.LORD);}
+		public String description(Clan POV) {return "Loyalty" + (POV != null ? " to " + POV.FB.getDiscName(Defs.LORD) : "");}
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			return (clan.FB.getRex() == POV.FB.getRex() ? clan.FB.getDiscPts(Defs.LORD) : 0);
@@ -209,7 +221,7 @@ public class Values implements Defs {
 	};
 	public static final Value PATRIOTISM = new ValuatableValue(M_.S_PATRIOTISM, "", null) {
 		@Override
-		public String description(Clan POV) {return "Patriotism to " + POV.FB.getDiscName(Defs.HOMELAND);}
+		public String description(Clan POV) {return "Patriotism" + (POV != null ?  " to " + POV.FB.getDiscName(Defs.HOMELAND) : "");}
 		private int adjustByDistance(int x, int distance) {return x / (distance + 1);}
 		@Override
 		protected int value(Clan POV, Clan clan) {
@@ -229,7 +241,7 @@ public class Values implements Defs {
 	public static final Value KNOWLEDGE = new ToDoValue();
 	public static final Value CREED = new ValuatableValue(M_.S_ZEAL, "", null) {
 		@Override
-		public String description(Clan POV) {return "Zeal for " + POV.FB.getDiscName(Defs.CREED);}
+		public String description(Clan POV) {return "Zeal" + (POV != null ? " for " + POV.FB.getDiscName(Defs.CREED) : "");}
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			return (clan.FB.getDisc(Defs.CREED) == POV.FB.getDisc(Defs.CREED) ? clan.FB.getDiscPts(Defs.CREED) + POV.useBeh(M_.DOGMA) : 0);
@@ -275,12 +287,20 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return "Value System";}
 	};
-	public static final Value[] AllValues = new Value[] {
+	private static final Value[] AllValues = new Value[] {
 		WEALTH, POPULARITY, NUMVASSALS, ORDERMORALE, FEAR,
 		JEWELRY, OBESITY, NASALBEAUTY, EYEBEAUTY, JAWBEAUTY, HAIRBEAUTY, ART,
 		LOYALTY, PATRIOTISM, PROMISCUITY, GREED, BLOODLUST, MONUMENTS,
 		KNOWLEDGE, CREED, SACRIFICE, HEALING, SORCERY, AGE, SKILL
 	};
+	public static final Value[] getAll() {return ArrayUtils.orderByComparator(Value.class, AllValues, new Comparator<Value>() {
+		@Override
+		public int compare(Value v1, Value v2) {return (int) Math.signum(v1.ordinal() - v2.ordinal());}
+	});}
+	public static final Value[] All = ArrayUtils.orderByComparator(Value.class, AllValues, new Comparator<Value>() {
+		@Override
+		public int compare(Value v1, Value v2) {return (int) Math.signum(v1.ordinal() - v2.ordinal());}
+	});
 	
 	public static final int MAXVAL = 10;
 	public static final int MINVAL = -MAXVAL;

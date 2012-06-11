@@ -185,6 +185,11 @@ public class Calc {
 		for (int i = 0; i < N; i++) {out[i] = x;}
 		return out;
 	}
+	public static int roundSign(double x) {
+		if (x>0) {return (int)Math.round(x);}
+		else if (x<0) {return -(int)Math.round(-x);}
+		else {return 0;}
+	}
 	public static int sgn(int x) {
 		if (x>0) {return 1;}
 		else if (x<0) {return -1;}

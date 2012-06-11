@@ -1,5 +1,6 @@
 package Sentiens;
 
+import AMath.ArrayUtils;
 import Defs.M_;
 import Defs.P_;
 import Game.AGPmain;
@@ -12,10 +13,11 @@ import Shirage.Shire;
 public class Ideology implements Defs {
 
 	private static final int NUMPRESTS = P_.length();
-	private static final Value[] VALUEWOF = new Value[Values.AllValues.length * 15];
+	private static final int NUMVALS = Values.All.length;
+	private static final Value[] VALUEWOF = new Value[NUMVALS * 15];
 	
 	private byte[] condensed;
-	private int[] sancs;
+	private Value[] sancs;
 	private int[] sancranks;
 	private int[] discs;
 	private int[] discpts;
@@ -31,8 +33,8 @@ public class Ideology implements Defs {
 		for (int i = 0; i < in.length; i++) {
 			setVar(i, in[i]);
 		}
-		sancs = new int[numSancs]; //list of sancs ordered from highest to lowest
-		sancranks = new int[numSancs]; //rank of sancs in default sanc order
+		sancs = new Value[NUMVALS]; //list of sancs ordered from highest to lowest
+		sancranks = new int[NUMVALS]; //rank of sancs in default sanc order
 		defaultSancs();
 		discs = new int[4];
 		discpts = new int[4];
@@ -102,10 +104,13 @@ public class Ideology implements Defs {
 	public static int unB(int x) {return x - NUMPRESTS ;}
 	
 
-	public void defaultSancs() {
-		sancs = new int[] {SZ, SS, TY, WL, HS, DE, HL, NS, AG, SC, EY, SA, BM, WP, MP, RX, FH, SH, RT, JB, LH};
-		for(int i = 0; i < numSancs; i++) {
-			for(int j = 0; j < numSancs; j++) {if (sancs[j] == i) {sancranks[i] = j;}}
+	private void defaultSancs() {
+		//sancs = new int[] {SZ, SS, TY, WL, HS, DE, HL, NS, AG, SC, EY, SA, BM, WP, MP, RX, FH, SH, RT, JB, LH};
+		int N = NUMVALS;
+		sancs = new Value[N];
+		int s = 0;   for (Value v : Values.All) {sancs[s++] = v;}
+		s = 0;   for (Value v : Values.All) {
+			for(int j = 0; j < N; j++) {if (sancs[j] == v) {sancranks[s] = j;}}
 		}
 	}
 	public int[] defaultVars() {
@@ -122,10 +127,10 @@ public class Ideology implements Defs {
 		for (int i = NUMPRESTS - 1; i >= 0; i--) {V[i] = 0;} //AGPmain.rand.nextInt(15);}
 		return V;
 	}
-	public void randomizeSancs() {
-		for (int i = 0; i < numSancs; i++) {
-			int s = AGPmain.rand.nextInt(numSancs);
-			sancs[i] = s; sancranks[s] = i; //sancvals[i] = 0;
+	private void randomizeSancs() {
+		for (int i = 0; i < NUMVALS; i++) {
+			int s = AGPmain.rand.nextInt(NUMVALS);
+			sancs[i] = Values.All[s]; sancranks[s] = i; //sancvals[i] = 0;
 		}
 	}
 	public void upSMeme(M_ sm) {
@@ -148,37 +153,42 @@ public class Ideology implements Defs {
 	}
 	public Value randomValueByWeight() {
 		int N = 0;   int sofar = 0;
-		for (Value V : Values.AllValues) {
+		for (Value V : Values.All) {
 			for (; N < sofar + getBeh(V.getWeightMeme(eu)); N++) {
 				VALUEWOF[N] = V;
 			}   sofar = N;
 		}   return VALUEWOF[AGPmain.rand.nextInt(N)];
 	}
+	public void upSanc(Value s) {upSanc(s.ordinal());}
 	public void upSanc(int s) {
 		int plc = sancranks[s];
 		if (plc > 0) {
-			sancranks[s] = plc - 1;   sancranks[sancs[plc-1]] = plc;
-			int tmp = sancs[plc-1]; sancs[plc-1] = sancs[plc]; sancs[plc] = tmp;
+			sancranks[s] = plc - 1;   sancranks[sancs[plc-1].ordinal()] = plc;
+			Value tmp = sancs[plc-1]; sancs[plc-1] = sancs[plc]; sancs[plc] = tmp;
 		}
 	}
+	public void downSanc(Value s) {downSanc(s.ordinal());}
 	public void downSanc(int s) {
 		int plc = sancranks[s];
-		if (plc < numSancs-1) {
-			sancranks[s] = plc + 1;   sancranks[sancs[plc+1]] = plc;
-			int tmp = sancs[plc+1]; sancs[plc+1] = sancs[plc]; sancs[plc] = tmp;
+		if (plc < NUMVALS-1) {
+			sancranks[s] = plc + 1;   sancranks[sancs[plc+1].ordinal()] = plc;
+			Value tmp = sancs[plc+1]; sancs[plc+1] = sancs[plc]; sancs[plc] = tmp;
 		}
 	}
 	
-	private final int randSancInPriority() {return sancs[FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)]];}
-	private final Sanc RandSancInPriority() {return AGPmain.TheRealm.getSanc(randSancInPriority());}
-	public final int sancInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
-	public Sanc SancInPriority(int i) {return AGPmain.TheRealm.getSanc(sancInPriority(i));}
+	public Value randSancInPriority() {
+		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
+		return sancs[v];
+	}
+//	private final Sanc RandSancInPriority() {return AGPmain.TheRealm.getSanc(randSancInPriority());}
+	public Value sancInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
+//	public Sanc SancInPriority(int i) {return AGPmain.TheRealm.getSanc(sancInPriority(i));}
 
 	public int compareSanc(Clan other) { //true if eu > ele
 		int k;   int ihi;
 		for(int i = getEu().useBeh(M_.PATIENCE); i >= 0; i--) {
 			k = AGPmain.rand.nextInt(16);
-			ihi = AGPmain.TheRealm.getSanc(sancs[k]).compare(getEu(), other, getEu());
+			ihi = (int) Math.signum(sancs[k].compare(getEu(), getEu(), other));
 			switch (ihi) {
 				case 1: return 1;
 				case -1: return -1;
@@ -187,8 +197,8 @@ public class Ideology implements Defs {
 		}
 		return 0;
 	}
-	public void reflect(int sanc, Clan other) {
-		int euvsele = AGPmain.TheRealm.getSanc(sanc).compare(getEu(), other, getEu());
+	public void reflect(Value sanc, Clan other) {
+		int euvsele = (int) Math.signum(sanc.compare(getEu(), getEu(), other));
 		switch (euvsele) {
 		case -1: downSanc(sanc);   break;
 		case 0: break;
@@ -196,23 +206,23 @@ public class Ideology implements Defs {
 		}
 	}
 	public void reflect(Clan other) {
-		reflect(sancs[AGPmain.rand.nextInt(numSancs)], other);
+		reflect(ArrayUtils.randomIndexOf(Values.All), other);
 	}
-	public void reflectOLD(Clan other) {
-		int euvsele = 0; boolean lostonce = false; boolean tiedonce = false;
-		int skip = 1 + getEu().useBeh(M_.MADNESS);
-		int k = 0;
-		for(int i = getEu().useBeh(M_.PATIENCE); i >= 0; i--) {
-			euvsele = SancInPriority(k).compare(getEu(), other, getEu());
-			if (euvsele < 0) {lostonce = true;}
-			else if (euvsele == 0) {tiedonce = true;}
-			if (((euvsele >= 0) && (lostonce)) || ((euvsele > 0) && (tiedonce))) {
-				upSanc(sancs[k]);   return;
-			}
-			k += AGPmain.rand.nextInt(skip) + 1;
-			if (k >= numSancs) {return;}
-		}
-	}
+//	public void reflectOLD(Clan other) {
+//		int euvsele = 0; boolean lostonce = false; boolean tiedonce = false;
+//		int skip = 1 + getEu().useBeh(M_.MADNESS);
+//		int k = 0;
+//		for(int i = getEu().useBeh(M_.PATIENCE); i >= 0; i--) {
+//			euvsele = SancInPriority(k).compare(getEu(), other, getEu());
+//			if (euvsele < 0) {lostonce = true;}
+//			else if (euvsele == 0) {tiedonce = true;}
+//			if (((euvsele >= 0) && (lostonce)) || ((euvsele > 0) && (tiedonce))) {
+//				upSanc(sancs[k]);   return;
+//			}
+//			k += AGPmain.rand.nextInt(skip) + 1;
+//			if (k >= numSancs) {return;}
+//		}
+//	}
 	public static final int[][] FSM = {
 		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
@@ -231,14 +241,14 @@ public class Ideology implements Defs {
 		{0,0,0,1,1,2,2,3,3,4,4,5,6,7,8,9},
 		{0,0,1,1,2,2,3,3,4,4,5,5,6,7,8,9},
 	};
-	public int getSancPct(int sanc) {
+	public int getSancPct(Value sanc) {
 		int count = 0;   int L = FSM[0].length;
 		for (int i = 0; i < L; i++) {
 			if (sancInPriority(i) == sanc) {count++;}
 		}
 		return (int) Math.round(100 * (double)count / L);
 	}
-	public int getSancPcts(int[] Sncs, double[] Pcts) {
+	public int getSancPcts(Value[] Sncs, double[] Pcts) {
 		int c = 1;   int n = 1;   int L = FSM[0].length;
 		for (int i = 1; i < L; i++) {
 			if (sancInPriority(i) != sancInPriority(i-1)) {

@@ -4,7 +4,7 @@ public interface Defs {
 	public static final String RET = System.getProperty("line.separator");
 	public static final int E = Integer.MIN_VALUE;
 	
-	public static final int numSancs = 21;
+//	public static final int numSancs = 21;
 
 	public static final boolean FEMALE = true;
 	public static final boolean MALE = false;

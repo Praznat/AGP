@@ -2,6 +2,7 @@ package Sentiens;
 
 import AMath.ArrayUtils;
 import Defs.M_;
+import Game.AGPmain;
 import Game.Do;
 import Game.Do.ClanAction;
 import Game.Do.PayTribute;
@@ -40,8 +41,8 @@ public class ExpertAI {
 		}
 	}
 	/** Used to compare contracts in common term (millet) */
-	public static double getMaxValueOfMoney(Clan clan, int millet) {return getMaxValueOfMoney(clan, millet, Values.AllValues);}
-	public static double getMaxValueOfMoney(Clan clan, int millet, Value[] regardedValues) {return getMaxValueOfMoney(clan, millet, Values.AllValues, null);}
+	public static double getMaxValueOfMoney(Clan clan, int millet) {return getMaxValueOfMoney(clan, millet, Values.All);}
+	public static double getMaxValueOfMoney(Clan clan, int millet, Value[] regardedValues) {return getMaxValueOfMoney(clan, millet, Values.All, null);}
 	public static double getMaxValueOfMoney(Clan clan, int millet, Value[] regardedValues, Value ignoreValue) {
 		double max = 0;
 		for (Value V : regardedValues) {

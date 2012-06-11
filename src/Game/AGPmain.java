@@ -6,6 +6,8 @@ import AMath.Calc;
 import AMath.Testing;
 import GUI.FaceGoblin;
 import GUI.GUImain;
+import Sentiens.Values;
+import Sentiens.Values.Value;
 
 public class AGPmain extends Applet {
 	private static int initpop = 10000;
@@ -35,8 +37,6 @@ public class AGPmain extends Applet {
 	public void start() {
 
 		long start = System.nanoTime();  
-
-		
 		
 		mainGUI = new GUImain("AGP");
 		mainGUI.initializeMD();

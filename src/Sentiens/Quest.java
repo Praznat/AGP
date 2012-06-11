@@ -11,6 +11,7 @@ import Game.Job;
 import Game.Naming;
 import Game.XWeapon;
 import Markets.*;
+import Sentiens.Values.Value;
 
 public class Quest implements Defs {
 	public static final int MEMORY = 10;
@@ -46,7 +47,7 @@ public class Quest implements Defs {
 		nullifyEnd();
 	}
 	public Q_ toQ(int q) {
-		return Q_.values()[q];
+		return (q != -1 ? Q_.values()[q] : Q_.NOTHING);
 	}
 	public void newQ(Q_ q) {
 		newQ(q.ordinal());
@@ -129,8 +130,8 @@ public class Quest implements Defs {
 	private void loseTime(int i) {Qstack[i][TIMELEFT]--;}
 	private boolean outOfTime(int i) {return (Qstack[i][TIMELEFT] <= 0);}
 	private void setTime(int T) {Qstack[THIS][TIMELEFT] = T;}
-	private Sanc getSanc(int i) {return AGPmain.TheRealm.getSanc(Qstack[i][PREST]);}
-	private boolean checkIfBetter(int i) {return (getSanc(i).compare(Me, target(i), pov(i)) > 0);}
+	private Value getSanc(int i) {return Values.All[Qstack[i][PREST]];}
+	private boolean checkIfBetter(int i) {return (getSanc(i).compare(pov(i), Me, target(i)) > 0);}
 	private void incStage() {Qstack[THIS][STAGE]++;}
 	
 	private void ChooseAct() {
@@ -206,10 +207,9 @@ public class Quest implements Defs {
 	public void setInitStack() {
 		int q;
 		for (int i = Me.useBeh(M_.PATIENCE); i >= 0; i--) {
-			q = Me.FB.SancInPriority(AGPmain.rand.nextInt(16)).getQuest();
-			if (q != -1) {newQ(q); setTime(Me.useBeh(M_.PATIENCE)); return;}
+			q = Me.FB.randSancInPriority().pursuit(Me).ordinal();
+			if (q != Q_.NOTHING.ordinal()) {newQ(q); setTime(Me.useBeh(M_.PATIENCE)); return;}
 		}
-		newQ(Q_.NOTHING.ordinal());
 	}
 	
 	
@@ -275,26 +275,26 @@ public class Quest implements Defs {
 			if (outOfTime(THIS)) {failure(Me.myShire());}   break;
 		case COMPETE4MATE: //TYPE/TARGET/TIMELEFT/PREST/POV/
 			Clan love = pov(THIS);   Clan competition = love.getSuitor();
-			int diff;   Sanc S;   int q;
+			double diff;   Value S;   Q_ q;
 			for (int k = love.useBeh(M_.PATIENCE); k >= 0; k--) {
-				Qstack[THIS][PREST] = love.FB.sancInPriority(AGPmain.rand.nextInt(16));
+				Qstack[THIS][PREST] = love.FB.randSancInPriority().ordinal();
 				S = getSanc(THIS);
-				diff = S.compare(Me, competition, love);
+				diff = S.compare(love, Me, competition);
 				Me.addReport(GobLog.compete4Mate(love, competition, diff));
 				if (diff == 0) {
-					q = S.getQuest();   Report += "~ " + S.description(love) + " ";
-					if (q != -1 && q != BREED) {
+					q = S.pursuit(Me);   Report += "~ " + S.description(love) + " ";
+					if (q != Q_.NOTHING && q != Q_.BREED) {
 						Report += "Ready to compete against " + competition.getNomen() + " in " +
 								S.description(love) + RET;
 						report();   newQ(q);   break;
 					}
 				}
-				else if (diff == -1) {
+				else if (diff < 0) {
 					// add subvalue stressor
 					Report += "~ " + love.getNomen() + " prefers " + competition.getNomen() + " over you for " + Naming.possessive(competition) + " " +
 							S.description(love) + RET;   break;
 				} //go to failure
-				else if (diff == 1) {
+				else if (diff > 0) {
 					// relieve subvalue stressor
 					Report += "~ " + love.getNomen() + " prefers you over " + competition.getNomen() + " for your " +
 							S.description(love) + System.getProperty("line.separator");

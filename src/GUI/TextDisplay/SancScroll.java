@@ -7,10 +7,11 @@ import GUI.PopupAbstract;
 import Game.AGPmain;
 import Sentiens.Clan;
 import Sentiens.Ideology;
+import Sentiens.Values.Value;
 
 
 public class SancScroll extends Papyrus {	
-	int[] sncs = new int[Ideology.FSM[0].length];
+	Value[] sncs = new Value[Ideology.FSM[0].length];
 	double[] pcts = new double[Ideology.FSM[0].length];
 	int c;
 	public SancScroll(PopupAbstract P) {
@@ -22,8 +23,7 @@ public class SancScroll extends Papyrus {
 		super.paint(g);
 		c = clan.FB.getSancPcts(sncs, pcts);
 		for (int i = 0; i < c; i++) {
-			g.drawString(pcts[i]+"%   " + AGPmain.TheRealm.getSanc(
-					sncs[i]).description(clan), 2, 15+15*i);
+			g.drawString(pcts[i]+"%   " + sncs[i].description(clan), 2, 15+15*i);
 		}
 	}
 

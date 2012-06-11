@@ -2,7 +2,9 @@ package Game;
 
 import Sentiens.Clan;
 import Sentiens.Mem;
-import Sentiens.Sanc;
+import Sentiens.Values;
+import Sentiens.Values.Value;
+//import Sentiens.Sanc;
 import Shirage.Shire;
 import AMath.Calc;
 
@@ -14,7 +16,8 @@ public class Realm {
 	private Clan[] population;
 	private int day;
 	private Mem[] MemDefs;
-	private Sanc[] SancDefs;
+//	private Sanc[] SancDefs;
+	private Value[] ValueDefs;
 	private Job[] JobDefs;
 	private VarGetter[] PopVarGetters;
 	private VarGetter[] MktVarGetters;
@@ -40,7 +43,7 @@ public class Realm {
 	}
 	public void setupDefs() {
 		MemDefs = Mem.MemDefs();
-		SancDefs = Sanc.SancDefs();
+//		SancDefs = Sanc.SancDefs();
 		JobDefs = Job.JobDefs();
 		PopVarGetters = VarGetter.popVGs();
 		MktVarGetters = VarGetter.mktVGs();
@@ -130,7 +133,9 @@ public class Realm {
 	
 	//public ProductDefs getProductDefs() {return products;}
 	public Mem getMem(int m) {return MemDefs[m];}
-	public Sanc getSanc(int s) {return SancDefs[s];}
+//	public Value getValue(int v) {return Values.All[v];} //{return ValueDefs[v];}
+//	public Value[] getValues() {return Values.All;} //{return ValueDefs;}
+//	public Sanc getSanc(int s) {return SancDefs[s];}
 	public Job getJob(int j) {return JobDefs[j];}
 	public VarGetter[] getPopVarGetters() {return PopVarGetters;}
 	public VarGetter getPopVarGetter(int i) {return PopVarGetters[i];}
