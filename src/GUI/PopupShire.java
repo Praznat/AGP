@@ -1,0 +1,70 @@
+package GUI;
+
+import java.awt.event.MouseEvent;
+
+import javax.swing.JComboBox;
+
+import GUI.TextDisplay.Papyrus;
+import Game.AGPmain;
+import Game.VarGetter;
+import Shirage.Shire;
+
+public class PopupShire extends PopupAbstract {
+	private Shire curShire;
+	private TableSlidePanel infoboxes[] = new TableSlidePanel[5];
+	private int[][] selectedVGs = {{0, 1, 2, 3, 4}, {0, 1, 2, 3, 4}, {}, {0, 1, 2, 3, 4}, {}};
+	public static final int ENVIRONMENT = 0;
+	public static final int POPULATION = 1;
+	public static final int BUILDINGS = 2;
+	public static final int MARKETS = 3;
+	public static final int HISTORY = 4;
+	public static String INFO[] = new String[5];
+	
+	public PopupShire(GUImain P) {
+		super(P);
+
+		INFO[ENVIRONMENT] = "ENVIRONMENT";
+		INFO[POPULATION] = "POPULATION";
+		INFO[BUILDINGS] = "BUILDINGS";
+		INFO[MARKETS] = "MARKETS";
+		INFO[HISTORY] = "HISTORY";
+		
+		selectedVGs[POPULATION] = new int[] {0,2,4,6,11};
+		selectedVGs[MARKETS] = new int[] {0,1,2,5,6,7,3,4};
+		
+		cb = new JComboBox(INFO);
+		for(int i = 0; i < infoboxes.length; i++) {
+			infoboxes[i] = new TableSlidePanel(this, i);
+			info.add(infoboxes[i], INFO[i]);
+			slider.addCon(INFO[i]);
+		}
+	}
+	
+	public void setBounds(int x, int y, int w, int h) {
+		super.setBounds(x,y,w,h);
+		h = namebox.getHeight()+2*w/3;
+		slider.setBounds(0,h, w, 25);
+		h = slider.getY()+slider.getHeight();
+		sp.setBounds(0, h, w, getHeight()-h);
+		slider.refresh();
+	}
+		
+	public Shire getShire() {return curShire;}
+
+    public void loadShire() {if (curShire != null) {loadShire(curShire);}}
+    public void loadShire(Shire s) {
+    	curShire = s;
+    	namebox.setNomen(curShire.getName());
+    	for (int i = 0; i < infoboxes.length; i++) {infoboxes[i].redefineShire();}
+    	initialized = true;
+    }
+    
+    public void selectVG(int plc, int vg) {selectedVGs[curTab][plc] = vg;}
+    public int selectedVGLength(int t) {return selectedVGs[t].length;}
+    public int getVG(int t, int plc) {return selectedVGs[t][plc];}
+    
+    
+    public void mouseClicked(MouseEvent e) {
+    	loadShire(AGPmain.TheRealm.getRandClan().myShire());
+    }
+}
