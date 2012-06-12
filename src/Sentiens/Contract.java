@@ -6,7 +6,7 @@ import Shirage.Shire;
 
 public class Contract {
 	private Clan contractor;
-	private Quest duty;
+	private Questy duty;
 	private Term[] terms;
 	
 	public void callDuty() {

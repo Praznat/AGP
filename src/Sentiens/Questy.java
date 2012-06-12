@@ -13,7 +13,7 @@ import Game.XWeapon;
 import Markets.*;
 import Sentiens.Values.Value;
 
-public class Quest implements Defs {
+public class Questy implements Defs {
 	public static final int MEMORY = 10;
 	public static final int MAXSPACE = 10;
 	public static final int WORKMEMORY = 30;
@@ -28,7 +28,7 @@ public class Quest implements Defs {
 	protected String Report = "";
 	public boolean doReporting = false;
 	
-	public Quest(Clan i) {Me = i;  setChosenAct(Job.NullAct); resetWM(); resetAll();}
+	public Questy(Clan i) {Me = i;  setChosenAct(Job.NullAct); resetWM(); resetAll();}
 
 	protected void report() {if (doReporting) {System.out.print(getReport());   Report = "";}}
 	protected void success() {
@@ -197,11 +197,11 @@ public class Quest implements Defs {
 		}
 		Qstack[THIS][STAGE] = 0;
 	}
-	public void Finish() {
-		resetWM();
-		chosenAct = Job.NullAct;
-	}
-	
+//	public void Finish() {
+//		resetWM();
+//		chosenAct = Job.NullAct;
+//	}
+//	
 	
 	
 	public void setInitStack() {

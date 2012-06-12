@@ -21,11 +21,11 @@ public class Ideology implements Defs {
 	private int[] sancranks;
 	private int[] discs;
 	private int[] discpts;
-	private Clan eu;
-	public Clan getEu() {return eu;}
+	private Clan Me;
+	public Clan getEu() {return Me;}
 
 	public Ideology(Clan i) {   
-		eu = i;   initialize(defaultVars());   this.setPrs(P_.MARTIALP.ordinal(), AGPmain.rand.nextInt(15));
+		Me = i;   initialize(defaultVars());   this.setPrs(P_.MARTIALP.ordinal(), AGPmain.rand.nextInt(15));
 	}
 	
 	public void initialize(int[] in) {
@@ -40,7 +40,7 @@ public class Ideology implements Defs {
 		discpts = new int[4];
 		discs[CREED] = AGPmain.rand.nextInt();
 		discs[LORD] = getEu().getID();
-		discs[HOMELAND] = eu.getShireXY();
+		discs[HOMELAND] = Me.getShireXY();
 		discs[ASPIRATION] = HUNTERGATHERER;
 	}
 	public int numVars() {return condensed.length * 2;}
@@ -154,7 +154,7 @@ public class Ideology implements Defs {
 	public Value randomValueByWeight() {
 		int N = 0;   int sofar = 0;
 		for (Value V : Values.All) {
-			for (; N < sofar + getBeh(V.getWeightMeme(eu)); N++) {
+			for (; N < sofar + getBeh(V.getWeightMeme(Me)); N++) {
 				VALUEWOF[N] = V;
 			}   sofar = N;
 		}   return VALUEWOF[AGPmain.rand.nextInt(N)];

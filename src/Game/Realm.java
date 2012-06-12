@@ -51,7 +51,8 @@ public class Realm {
 	public void goOnce() {
 		int[] order = Calc.randomOrder(popSize());
 		for (int p : order) {
-			population[p].QB.pursue();
+			population[p].pursue();
+//			population[p].QB.pursue();
 		}
 	}
 	public void go() {

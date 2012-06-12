@@ -1,7 +1,7 @@
 package Game;
 
 import Sentiens.Clan;
-import Sentiens.Quest;
+import Sentiens.Questy;
 
 public class Logic {
 	protected static final int BUY = 0;
@@ -13,7 +13,7 @@ public class Logic {
 	
 	
 	protected Logic[] subLogics;
-	protected int[] X = new int[Quest.WORKMEMORY]; //one for each logic
+	protected int[] X = new int[Questy.WORKMEMORY]; //one for each logic
 	
 
 	

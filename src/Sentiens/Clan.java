@@ -2,6 +2,7 @@ package Sentiens;
 
 import Defs.M_;
 import Defs.P_;
+import Defs.Q_;
 import Game.AGPmain;
 import Game.Act;
 import Game.Defs;
@@ -9,6 +10,10 @@ import Game.Goods;
 import Game.Job;
 import Game.Naming;
 import Markets.*;
+import Questing.Quest;
+import Questing.Quest.DefaultQuest;
+import Questing.RomanceQuests.BreedQuest;
+import Questing.WorkQuests.BuildWealthQuest;
 import Sentiens.GobLog.Book;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
@@ -51,9 +56,10 @@ public class Clan implements Defs, Stressor.Causable {
 	protected int profitEMA;
 	protected int[][] expTerms; //expected terms (for job)
 	public Ideology FB;
-	public Quest QB;
+	public Questy QB;
 	public Amygdala AB;
 	public Contract CB;
+	public Memory MB;
 	protected int lastBeh, lastBehN;
 	protected Book goblog = new Book();
 	
@@ -81,9 +87,25 @@ public class Clan implements Defs, Stressor.Causable {
 		name[0] = r[0]; name[1] = r[1];
 		gender = AGPmain.rand.nextBoolean();
 		FB = new Ideology(this);
-		QB = new Quest(this);
+		QB = new Questy(this);
 		AB = new Amygdala(this);
 		CB = new Contract();
+		MB = new Memory(this);
+	}
+	
+
+	public void pursue() {
+		if (MB.QuestStack.empty()) {
+			Quest quest;
+			Q_ q = FB.randSancInPriority().pursuit(this);
+			switch(q) {
+			case BREED: quest = new BreedQuest(this);
+			case BUILDWEALTH: quest = new BuildWealthQuest(this);
+			default: quest = new DefaultQuest(this);
+			}
+			MB.QuestStack.add(quest);
+		}
+		MB.QuestStack.peek().pursue();
 	}
 	
 	public int getID() {return ID;}

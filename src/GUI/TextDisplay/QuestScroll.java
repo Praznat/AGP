@@ -9,7 +9,7 @@ import Game.AGPmain;
 import Game.Defs;
 import Game.Naming;
 import Sentiens.Clan;
-import Sentiens.Quest;
+import Sentiens.Questy;
 import Sentiens.GobLog.Reportable;
 
 public class QuestScroll extends Papyrus {
@@ -22,13 +22,13 @@ public class QuestScroll extends Papyrus {
 		super.paint(g);
 		int r = 0;
 		String S;
-		for(int i = 0; i < Quest.MEMORY; i++) {
+		for(int i = 0; i < Questy.MEMORY; i++) {
 			if(clan.QB.getQuest(i) == -1) {break;}
 			g.drawString(S = clan.QB.getQuestDescription(i), 2, 15+15*r++);
 			refreshWid(g, S);
 		}   r++;
 		if(clan.QB.getWM(0) != Defs.E) {g.drawString("Working goods:", 2, 15+15*r++);}
-		for(int i = 0; i < Quest.WORKMEMORY; i++) {
+		for(int i = 0; i < Questy.WORKMEMORY; i++) {
 			int good = clan.QB.getWM(i);   if(good == Defs.E) {break;}
 			int num = clan.QB.getWMX(i);
 			g.drawString(S = (num + " " + Naming.goodName(clan.QB.getWM(i), (num != 1), false)), 2, 15+15*r++);
