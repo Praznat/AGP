@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import AMath.ArrayUtils;
 import AMath.Calc;
+import Defs.F_;
 import Defs.M_;
 import Defs.P_;
 import Descriptions.Naming;
@@ -17,6 +18,7 @@ import Shirage.Shire;
 public class Ideology implements Defs {
 
 	private static final int NUMPRESTS = P_.length();
+	private static final int NUMBEHS = M_.length();
 	private static final int NUMVALS = Values.All.length;
 	
 	private static final Value[] VALUEWOF = new Value[NUMVALS * 15];
@@ -77,24 +79,17 @@ public class Ideology implements Defs {
 			return discs[plc] & 4095;}
 		else {return discs[plc];}
 	}
+	public void setDisc(int plc, int val) {discs[plc] = val;}
+
+	public int getFac(F_ f) {return getVar(F(f));}
 	public int getBeh(M_ m) {return getVar(B(m));}
 	public int getBeh(int plc) {return getVar(B(plc));}
-	public int getPrs(P_ p) {return getVar(P(p));}
-	public int getPrs(int plc) {return getVar(P(plc));}
-	public void setDisc(int plc, int val) {discs[plc] = val;}
 	public void setBeh(M_ m, int val) {setVar(B(m), val);}
 	public void setBeh(int plc, int val) {setVar(B(plc), val);}
+	public int getPrs(P_ p) {return getVar(P(p));}
+	public int getPrs(int plc) {return getVar(P(plc));}
 	public void setPrs(int plc, int val) {setVar(P(plc), val);}
-	//public void upPrs(int plc) { //extinct
-	//	int p = P(plc);
-	//	int cur = getVar(p);
-	//	if (cur != 15) {setVar(p, cur+1);}
-	//}
-	//public void downPrs(int plc) { //extinct
-	//	int p = P(plc);
-	//	int cur = getVar(p);
-	//	if (cur != 0) {setVar(p, cur-1);}
-	//}
+
 	public void upPrest(P_ plc) {
 		int p = P(plc);
 		int cur = getVar(p);
@@ -108,10 +103,13 @@ public class Ideology implements Defs {
 	
 	public static int P(int plc) {return plc;}
 	public static int P(P_ p) {return p.ordinal();}
-	public static int B(int plc) {return plc + NUMPRESTS ;}
-	public static int B(M_ m) {return m.ordinal() + NUMPRESTS ;}
+	public static int unB(int x) {return x - NUMPRESTS;}
+	public static int B(int plc) {return plc + NUMPRESTS;}
+	public static int B(M_ m) {return m.ordinal() + NUMPRESTS;}
 	public static int unP(int x) {return x;}
-	public static int unB(int x) {return x - NUMPRESTS ;}
+	public static int F(int plc) {return plc + NUMPRESTS + NUMBEHS;}
+	public static int F(F_ f) {return f.ordinal() + NUMPRESTS + NUMBEHS;}
+	public static int unF(int x) {return x - NUMPRESTS - NUMBEHS;}
 	
 
 	private void defaultSancs() {
@@ -124,8 +122,8 @@ public class Ideology implements Defs {
 		}
 	}
 	public int[] defaultVars() {
-		int[] V = new int[NUMPRESTS + M_.values().length];  //slow?
-		for (int i = V.length - 1; i >= NUMPRESTS; i--) {V[i] = AGPmain.rand.nextInt(15);}
+		int[] V = new int[NUMBEHS + NUMPRESTS + M_.values().length];  //slow?
+		for (int i = V.length - 1; i >= NUMPRESTS; i--) {V[i] = AGPmain.rand.nextInt(15);} //includes M_ and F_
 		for (int i = NUMPRESTS - 1; i >= 0; i--) {V[i] = 0;} //AGPmain.rand.nextInt(15);}
 		return V;
 	}

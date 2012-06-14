@@ -3,6 +3,7 @@ package Sentiens;
 
 
 import AMath.ArrayUtils;
+import Defs.F_;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
@@ -153,19 +154,19 @@ public class Values implements Defs {
 	public static final Value OBESITY = new ToDoValue();
 	public static final Value NASALBEAUTY = new ValuatableValue(M_.S_NOSELEN, "Beauty (Nose Length)", Q_.BREED) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return clan.FB.getBeh(M_.NOSELX) + clan.FB.getBeh(M_.NOSERX);}
+		protected int value(Clan POV, Clan clan) {return clan.FB.getFac(F_.NOSELX) + clan.FB.getFac(F_.NOSERX);}
 	};
 	public static final Value EYEBEAUTY = new ValuatableValue(M_.S_EYESIZE, "Beauty (Eye Size)", Q_.BREED) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return clan.FB.getBeh(M_.EYELW);}
+		protected int value(Clan POV, Clan clan) {return clan.FB.getFac(F_.EYELW);}
 	};
 	public static final Value JAWBEAUTY = new ValuatableValue(M_.S_JAWWIDTH, "Beauty (Head Shape)", Q_.BREED) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return 15 - 2 * Math.abs(7 - clan.FB.getBeh(M_.MOUTHJW));}
+		protected int value(Clan POV, Clan clan) {return 15 - 2 * Math.abs(7 - clan.FB.getFac(F_.MOUTHJW));}
 	};
 	public static final Value HAIRBEAUTY = new ValuatableValue(M_.S_HAIRLEN, "Beauty (Hair Length)", Q_.BREED) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return Math.abs(clan.FB.getBeh(M_.OCD) - clan.FB.getBeh(M_.HAIRL));}
+		protected int value(Clan POV, Clan clan) {return Math.abs(clan.FB.getBeh(M_.OCD) - clan.FB.getFac(F_.HAIRL));}
 	};
 	public static final Value ART = new ToDoValue();
 

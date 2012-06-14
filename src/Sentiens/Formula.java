@@ -1,5 +1,6 @@
 package Sentiens;
 
+import Defs.F_;
 import Defs.M_;
 import Defs.P_;
 import Game.AGPmain;
@@ -21,19 +22,19 @@ public abstract class Formula implements Defs {
 class NoseVal extends Formula {
 	public NoseVal() {}
 	public int value(Clan pov, Clan obj, int p) {
-		return obj.FB.getBeh(M_.NOSELX) + obj.FB.getBeh(M_.NOSERX);
+		return obj.FB.getFac(F_.NOSELX) + obj.FB.getFac(F_.NOSERX);
 	}
 }
 class LipVal extends Formula {
 	public LipVal() {}
 	public int value(Clan pov, Clan obj, int p) {
-		return obj.FB.getBeh(M_.MOUTHLH);
+		return obj.FB.getFac(F_.MOUTHLH);
 	}
 }
 class EyeVal extends Formula {
 	public EyeVal() {}
 	public int value(Clan pov, Clan obj, int p) {
-		return obj.FB.getBeh(M_.EYELW) + obj.FB.getBeh(M_.EYERW);
+		return obj.FB.getFac(F_.EYELW) + obj.FB.getFac(F_.EYERW);
 	}
 }
 class MVal extends Formula {
