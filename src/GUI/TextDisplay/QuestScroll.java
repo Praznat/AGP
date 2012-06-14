@@ -4,10 +4,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import Descriptions.Naming;
 import GUI.PopupAbstract;
 import Game.AGPmain;
 import Game.Defs;
-import Game.Naming;
 import Sentiens.Clan;
 import Sentiens.Questy;
 import Sentiens.GobLog.Reportable;

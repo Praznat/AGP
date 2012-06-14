@@ -7,7 +7,6 @@ import Game.Do;
 import Game.Do.ClanAction;
 import Game.Do.PayTribute;
 import Markets.MktO;
-import Sentiens.Contract.Term;
 import Sentiens.Values.Assessable;
 import Sentiens.Values.Value;
 
@@ -21,25 +20,25 @@ public class ExpertAI {
 		Do.DECLARE_ALLEGIANCE,
 		Do.PAY_TRIBUTE,
 		Do.PAY_RESPECT
+		// Convert creed
+		// Leave shire
+		// Get attacked
+		// Change job
 	};
+	
 
-	public static void roughlyPickInitOffer(Clan subject, Clan object, ClanAction desireOfSubject) {
-		double value = desireOfSubject.evaluate(subject);
-		Term term = new Term();
-		term.define(ArrayUtils.randomIndexOf(possProposals), subject.getID(), object.getID());
-		term.setup();
-
-		if (term.clanAction == Do.PAY_TRIBUTE) {
-			((PayTribute) term.clanAction).adjustContentToEqual(subject, addMinusSpread(subject, value));
-		}
-		term.clanAction.evaluate(subject);
-
-	}
-	public static void haggle(Clan subject, Clan object, Term curTerm) {
-		if (curTerm.clanAction == Do.PAY_TRIBUTE) {
-			
-		}
-	}
+//	public static void roughlyPickInitOffer(Clan subject, Clan object, ClanAction desireOfSubject) {
+//		double value = desireOfSubject.evaluate(subject);
+//		TermOLD term = new TermOLD();
+//		term.define(ArrayUtils.randomIndexOf(possProposals), subject.getID(), object.getID());
+//		term.setup();
+//
+//		if (term.clanAction == Do.PAY_TRIBUTE) {
+//			((PayTribute) term.clanAction).adjustContentToEqual(subject, addMinusSpread(subject, value));
+//		}
+//		term.clanAction.evaluate(subject);
+//
+//	}
 	/** Used to compare contracts in common term (millet) */
 	public static double getMaxValueOfMoney(Clan clan, int millet) {return getMaxValueOfMoney(clan, millet, Values.All);}
 	public static double getMaxValueOfMoney(Clan clan, int millet, Value[] regardedValues) {return getMaxValueOfMoney(clan, millet, Values.All, null);}

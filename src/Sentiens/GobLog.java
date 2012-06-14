@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.Timer;
 
 import Defs.P_;
+import Descriptions.Naming;
+import Descriptions.XWeapon;
 import Game.AGPmain;
-import Game.Naming;
-import Game.XWeapon;
 
 public class GobLog {
 	

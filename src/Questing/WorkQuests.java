@@ -2,10 +2,10 @@ package Questing;
 
 import AMath.Calc;
 import Defs.P_;
+import Descriptions.XWeapon;
 import Game.Act;
 import Game.Defs;
 import Game.Job;
-import Game.XWeapon;
 import Markets.MktAbstract;
 import Markets.MktO;
 import Markets.XWeaponMarket;

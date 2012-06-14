@@ -17,7 +17,7 @@ public class Do {
 	}
 	public static abstract class ClanAction extends SetupableThing {
 		protected Clan doer;
-		public abstract double evaluate(Clan POV);
+//		public abstract double evaluate(Clan POV);
 	}
 	public static abstract class ClanAlone extends ClanAction {
 		protected int content;
@@ -67,20 +67,20 @@ public class Do {
 	
 	public static final ClanOnClan PAY_RESPECT = new ClanOnClan() {
 		@Override
-		public boolean tryExecute() {
+		protected boolean tryExecute() {
 			doer.FB.downPrest(P_.RSPCP);
 			doee.FB.upPrest(P_.RSPCP);
 			return true;
 		}
 		@Override
 		public String description() {return doer.getNomen() + " pays " + content + " millet to " + doee.getNomen();}
-		@Override
-		public double evaluate(Clan POV) {
-			if (POV != doer && POV != doee) return 0;
-			int sign = (POV == doer ? -1 : 1);
-			double out = Values.logComp(POV.getMillet() + sign * content, POV.getMillet());
-			return Values.inIsolation(out, Values.POPULARITY, POV);
-		}
+//		@Override
+//		public double evaluate(Clan POV) {
+//			if (POV != doer && POV != doee) return 0;
+//			int sign = (POV == doer ? -1 : 1);
+//			double out = Values.logComp(POV.getMillet() + sign * content, POV.getMillet());
+//			return Values.inIsolation(out, Values.POPULARITY, POV);
+//		}
 	};
 	public static abstract class PayTribute extends ClanOnClan {
 		public void adjustContentToEqual(Clan POV, double value) {
@@ -94,44 +94,43 @@ public class Do {
 	}
 	public static final ClanOnClan PAY_TRIBUTE = new PayTribute() {
 		@Override
-		public boolean tryExecute() {
-			if (doer.getMillet() >= content) {
-				doer.decAssets(Defs.millet, content);
-				doee.incAssets(Defs.millet, content);
-				return true;
-			}
-			else {return false;}
+		protected boolean tryExecute() {
+			boolean enough = doer.getMillet() >= content;
+			int amt = (enough ? content : doer.getMillet());
+			doer.decAssets(Defs.millet, amt);
+			doee.incAssets(Defs.millet, amt);
+			return enough;
 		}
 		@Override
-		public String description() {return doer.getNomen() + " pays " + content + " millet to " + doee.getNomen();}
-		@Override
-		public double evaluate(Clan POV) {   //boss wont care
-			if (POV != doer && POV != doee) return 0;
-			int sign = (POV == doer ? -1 : 1);
-			double out = Values.logComp(POV.getMillet() + sign * content, POV.getMillet());
-			return Values.inIsolation(out, Values.WEALTH, POV);
-		}
+		public String description() {return doer.getNomen() + " pays " + Math.min(content, doer.getMillet()) + " millet to " + doee.getNomen();}
+//		@Override
+//		public double evaluate(Clan POV) {   //boss wont care
+//			if (POV != doer && POV != doee) return 0;
+//			int sign = (POV == doer ? -1 : 1);
+//			double out = Values.logComp(POV.getMillet() + sign * content, POV.getMillet());
+//			return Values.inIsolation(out, Values.WEALTH, POV);
+//		}
 	};
 	public static final ClanOnClan DECLARE_ALLEGIANCE = new ClanOnClan() {
 		@Override
-		public boolean tryExecute() {doer.join(doee);   return true;}
+		protected boolean tryExecute() {doer.join(doee);   return true;}
 		@Override
 		public String description() {return doer.getNomen() + " switches allegiance from " + doer.FB.getDiscName(Defs.LORD) + " to " + doee.getNomen();}
-		@Override
-		public double evaluate(Clan POV) {
-			double out;
-			if (POV == doer) {
-				Clan curRex = doer.FB.getRex();
-				if (curRex == doer || curRex == doee ||
-						doee.isSomeBossOf(curRex)) {out = 0;}
-				out = Values.inIsolation(Values.MINVAL, Values.LOYALTY, POV);
-			}
-			else if (POV == doee) {
-				out = Values.logComp(doee.getMinionNumber() + 1, doee.getMinionNumber());
-				out = Values.inIsolation(out, Values.NUMVASSALS, POV);
-			}
-			else {out = 0;}
-			return out;
-		}
+//		@Override
+//		public double evaluate(Clan POV) {
+//			double out;
+//			if (POV == doer) {
+//				Clan curRex = doer.FB.getRex();
+//				if (curRex == doer || curRex == doee ||
+//						doee.isSomeBossOf(curRex)) {out = 0;}
+//				out = Values.inIsolation(Values.MINVAL, Values.LOYALTY, POV);
+//			}
+//			else if (POV == doee) {
+//				out = Values.logComp(doee.getMinionNumber() + 1, doee.getMinionNumber());
+//				out = Values.inIsolation(out, Values.NUMVASSALS, POV);
+//			}
+//			else {out = 0;}
+//			return out;
+//		}
 	};
 }

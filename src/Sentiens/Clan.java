@@ -3,12 +3,12 @@ package Sentiens;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
+import Descriptions.Naming;
 import Game.AGPmain;
 import Game.Act;
 import Game.Defs;
 import Game.Goods;
 import Game.Job;
-import Game.Naming;
 import Markets.*;
 import Questing.Quest;
 import Questing.Quest.DefaultQuest;
@@ -97,11 +97,11 @@ public class Clan implements Defs, Stressor.Causable {
 	public void pursue() {
 		if (MB.QuestStack.empty()) {
 			Quest quest;
-			Q_ q = FB.randSancInPriority().pursuit(this);
+			Q_ q = FB.randomValueInPriority().pursuit(this);
 			switch(q) {
-			case BREED: quest = new BreedQuest(this);
-			case BUILDWEALTH: quest = new BuildWealthQuest(this);
-			default: quest = new DefaultQuest(this);
+			case BREED: quest = new BreedQuest(this); break;
+			case BUILDWEALTH: quest = new BuildWealthQuest(this); break;
+			default: quest = new DefaultQuest(this); break;
 			}
 			MB.QuestStack.add(quest);
 		}
@@ -200,7 +200,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getMillet() {return assets[millet];}
 	public boolean alterMillet(int c) {
 		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
-		else if (assets[millet] + c < 0) {assets[millet] = 0; System.out.println("millet below zero " + ID + "job" + getJob() + getLastSuccess() + " $" + assets[millet] + "" + c); System.out.println(1 / 0);}
+		else if (assets[millet] + c < 0) {assets[millet] = 0; System.out.println("millet below zero " + ID + "job" + getJob() + getLastSuccess() + " $" + assets[millet] + "" + c); return false;}//System.out.println(1 / 0);}
 		else {assets[millet] = assets[millet] + c; return true;}
 		return false;
 	}
@@ -295,6 +295,9 @@ public class Clan implements Defs, Stressor.Causable {
 
     }
 
+    public double getCourage() {  // range 0-1
+    	return (useBeh(M_.CONFIDENCE) + 30 - useBeh(M_.MIERTE) - useBeh(M_.PARANOIA)) / 45;
+    }
     public int confuse(int in) {
     	//returns number between 50%-150% of original number at min arithmetic + max madness
     	int x = Math.abs((16 - FB.getPrs(P_.ARITHMETICP) + useBeh(M_.MADNESS)) * in / 64);

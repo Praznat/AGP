@@ -1,8 +1,8 @@
 package AMath;
 
+import Descriptions.XWeapon;
 import Game.AGPmain;
 import Game.Defs;
-import Game.XWeapon;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Sentiens.GobLog.Reportable;

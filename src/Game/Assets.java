@@ -1,5 +1,6 @@
 package Game;
 
+import Descriptions.XWeapon;
 import Markets.MktO;
 import Sentiens.Clan;
 

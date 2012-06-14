@@ -1,12 +1,16 @@
 package Sentiens;
 
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
 import AMath.ArrayUtils;
+import AMath.Calc;
 import Defs.M_;
 import Defs.P_;
+import Descriptions.Naming;
 import Game.AGPmain;
 import Game.Defs;
 import Game.Job;
-import Game.Naming;
 import Sentiens.Values.Value;
 import Shirage.Shire;
 
@@ -14,7 +18,9 @@ public class Ideology implements Defs {
 
 	private static final int NUMPRESTS = P_.length();
 	private static final int NUMVALS = Values.All.length;
+	
 	private static final Value[] VALUEWOF = new Value[NUMVALS * 15];
+	private static final int[] VALUECUMI = new int[NUMVALS];
 	
 	private byte[] condensed;
 	private Value[] sancs;
@@ -42,6 +48,10 @@ public class Ideology implements Defs {
 		discs[LORD] = getEu().getID();
 		discs[HOMELAND] = Me.getShireXY();
 		discs[ASPIRATION] = HUNTERGATHERER;
+		
+		//testing - delete later:
+//		for (M_ m : M_.SMems()) {setBeh(m, 0);}
+//		setBeh(M_.S_SILVER, 10);   setBeh(M_.S_MONEY, 5);
 	}
 	public int numVars() {return condensed.length * 2;}
 	
@@ -151,9 +161,19 @@ public class Ideology implements Defs {
 			}
 		}
 	}
-	public Value randomValueByWeight() {
+	public Value randomValueByWeight2() {  //way slower than randomValueInPriority
+		int L = Values.All.length;   M_ m = Values.All[0].getWeightMeme(Me);   int N = 0;
+		VALUECUMI[0] = (m == null ? 0 : getBeh(m));
+		for(int i = 1; i < L; i++) {
+			m = Values.All[i].getWeightMeme(Me);
+			N = VALUECUMI[i] = (m == null ? 0 : getBeh(m)) + N;
+		}   //if(N<=0) {Calc.p("N=0"); return Values.NULL;}
+		return Values.All[Calc.findLessThan(AGPmain.rand.nextInt(N), VALUECUMI)];
+	}
+	public Value randomValueByWeight1() {  //way slower than randomValueInPriority
 		int N = 0;   int sofar = 0;
 		for (Value V : Values.All) {
+			if(V.getWeightMeme(Me) == null) {continue;}
 			for (; N < sofar + getBeh(V.getWeightMeme(Me)); N++) {
 				VALUEWOF[N] = V;
 			}   sofar = N;
@@ -176,7 +196,7 @@ public class Ideology implements Defs {
 		}
 	}
 	
-	public Value randSancInPriority() {
+	public Value randomValueInPriority() {
 		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
 		return sancs[v];
 	}

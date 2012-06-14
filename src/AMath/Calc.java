@@ -225,6 +225,7 @@ public class Calc {
 			return 0;
 		}
 	}
+
 	public static int wheelOfFortune(int[] props) {
 		byte[] rand = new byte[1];
 		AGPmain.rand.nextBytes(rand);

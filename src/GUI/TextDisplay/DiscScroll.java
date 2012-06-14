@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import Descriptions.Naming;
+import Descriptions.XWeapon;
 import GUI.PopupAbstract;
 import Game.*;
 import Sentiens.Clan;

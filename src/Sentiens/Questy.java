@@ -4,12 +4,12 @@ import AMath.Calc;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
+import Descriptions.Naming;
+import Descriptions.XWeapon;
 import Game.AGPmain;
 import Game.Act;
 import Game.Defs;
 import Game.Job;
-import Game.Naming;
-import Game.XWeapon;
 import Markets.*;
 import Sentiens.Values.Value;
 
@@ -207,7 +207,7 @@ public class Questy implements Defs {
 	public void setInitStack() {
 		int q;
 		for (int i = Me.useBeh(M_.PATIENCE); i >= 0; i--) {
-			q = Me.FB.randSancInPriority().pursuit(Me).ordinal();
+			q = Me.FB.randomValueInPriority().pursuit(Me).ordinal();
 			if (q != Q_.NOTHING.ordinal()) {newQ(q); setTime(Me.useBeh(M_.PATIENCE)); return;}
 		}
 	}
@@ -277,7 +277,7 @@ public class Questy implements Defs {
 			Clan love = pov(THIS);   Clan competition = love.getSuitor();
 			double diff;   Value S;   Q_ q;
 			for (int k = love.useBeh(M_.PATIENCE); k >= 0; k--) {
-				Qstack[THIS][PREST] = love.FB.randSancInPriority().ordinal();
+				Qstack[THIS][PREST] = love.FB.randomValueInPriority().ordinal();
 				S = getSanc(THIS);
 				diff = S.compare(love, Me, competition);
 				Me.addReport(GobLog.compete4Mate(love, competition, diff));

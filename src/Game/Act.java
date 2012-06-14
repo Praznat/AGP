@@ -96,7 +96,7 @@ public class Act implements Defs {
 		doer.addReport(GobLog.practice(skill));
 	}
 	public P_ skill() {return skill;}
-	public int getSkill(Clan clan) {return clan.FB.getPrs(skill);}
+	public int getSkill(Clan clan) {return (skill == null ? 0 : clan.FB.getPrs(skill));}
 	public String getDesc() {return desc;}
 
 	public static Act newCraft(String n, Logic in, Logic out, P_ s, int J, int denom) {

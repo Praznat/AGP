@@ -1,9 +1,11 @@
-package Game;
+package Descriptions;
 import java.awt.*;
 
 import Sentiens.Clan;
 import AMath.Calc;
 import Defs.P_;
+import Game.AGPmain;
+import Game.Defs;
 
 public class Naming implements Defs {
 	
@@ -33,7 +35,7 @@ public class Naming implements Defs {
 		FP[19] = "Mule";
 		FP[20] = "Storm";
 		FP[21] = "Thorn";
-		FP[22] = "Bleep";
+		FP[22] = "Bleed";
 		FP[23] = "Glare";
 		FP[24] = "Hinter";
 		FP[25] = "Silver";
@@ -52,6 +54,7 @@ public class Naming implements Defs {
 		FP[38] = "Random";
 		FP[39] = "Stumble";
 		FP[40] = "Jam";
+		FP[41] = "Iron";
 		
 		LP[0] = "bank";
 		LP[1] = "beach";
@@ -122,6 +125,7 @@ public class Naming implements Defs {
 		LP[66] = "wood";
 		LP[67] = "worth";
 		LP[68] = "dam";
+		LP[68] = "gard";
 		//System.out.print(s  + " " + ((s / (AGPmain.shireLPLen-1)) % (AGPmain.shireFPLen-1)) + " " + (s % (AGPmain.shireLPLen-1)));
 		s = AGPmain.SR[s];
 		//System.out.print(" " + s  + " " + ((s / (AGPmain.shireLPLen-1)) % (AGPmain.shireFPLen-1)) + " " + (s % (AGPmain.shireLPLen-1)));

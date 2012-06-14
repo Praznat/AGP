@@ -16,12 +16,12 @@ public class Realm {
 	private Clan[] population;
 	private int day;
 	private Mem[] MemDefs;
-//	private Sanc[] SancDefs;
+	//	private Sanc[] SancDefs;
 	private Value[] ValueDefs;
 	private Job[] JobDefs;
 	private VarGetter[] PopVarGetters;
 	private VarGetter[] MktVarGetters;
-	
+
 	//private int[][] jobs;
 	private Clan Avatar;
 
@@ -43,43 +43,45 @@ public class Realm {
 	}
 	public void setupDefs() {
 		MemDefs = Mem.MemDefs();
-//		SancDefs = Sanc.SancDefs();
+		//		SancDefs = Sanc.SancDefs();
 		JobDefs = Job.JobDefs();
 		PopVarGetters = VarGetter.popVGs();
 		MktVarGetters = VarGetter.mktVGs();
 	}
 	public void goOnce() {
 		int[] order = Calc.randomOrder(popSize());
-		for (int p : order) {
-			population[p].pursue();
-//			population[p].QB.pursue();
+		for (int i = 0; i < 100; i++) {
+			for (int p : order) {
+				population[p].pursue();
+				//			population[p].QB.pursue();
+			}
 		}
 	}
 	public void go() {
 		day = 0;
-		
+
 		if(true) {
 			for (int t = 0; t < 1000; t++) { //roll through turns
 				System.out.println("day " + t);
-				
+
 				for (int s = 0; s < shires.length; s++) {
 					shires[s].newDay();
 				}
 				int[] order = Calc.randomOrder(popSize());
-//				for (int p : order) {
-//					//population[p].chooseLaborLeisure();//includes doing act
-//				}
+				//				for (int p : order) {
+				//					//population[p].chooseLaborLeisure();//includes doing act
+				//				}
 				for (int p : order) {
 					population[p].eat();
 				}
-				
+
 				//AGPmain.refreshGUI();
 				day++;
 			}
 		}
 
 	}
-	
+
 	private void generatePopulation(int C) {
 		population = new Clan[C];
 		for (int i = 0; i < C; i++) {
@@ -91,8 +93,8 @@ public class Realm {
 			//population[i] = new Clan(z % shiresX, (int)(z/shiresX), i);
 		}
 	}
-	
-	
+
+
 	private void generateShires(int H, int V) {
 		shires = new Shire[H*V];
 		for (int x = 0; x < H; x++) {
@@ -102,7 +104,7 @@ public class Realm {
 			}
 		}
 	}
-	
+
 	public void doCensus() {
 		for (int s = shires.length - 1; s >= 0; s--) {
 			shires[s].resetPopSize();
@@ -131,19 +133,19 @@ public class Realm {
 	public Clan[] getPopulation() {return population;}
 	public int popSize() {return population.length;}
 	public int getDay() {return day;}
-	
+
 	//public ProductDefs getProductDefs() {return products;}
 	public Mem getMem(int m) {return MemDefs[m];}
-//	public Value getValue(int v) {return Values.All[v];} //{return ValueDefs[v];}
-//	public Value[] getValues() {return Values.All;} //{return ValueDefs;}
-//	public Sanc getSanc(int s) {return SancDefs[s];}
+	//	public Value getValue(int v) {return Values.All[v];} //{return ValueDefs[v];}
+	//	public Value[] getValues() {return Values.All;} //{return ValueDefs;}
+	//	public Sanc getSanc(int s) {return SancDefs[s];}
 	public Job getJob(int j) {return JobDefs[j];}
 	public VarGetter[] getPopVarGetters() {return PopVarGetters;}
 	public VarGetter getPopVarGetter(int i) {return PopVarGetters[i];}
 	public VarGetter[] getMktVarGetters() {return MktVarGetters;}
 	public VarGetter getMktVarGetter(int i) {return MktVarGetters[i];}
 
-	
-	
+
+
 
 }

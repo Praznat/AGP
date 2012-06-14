@@ -1,5 +1,7 @@
 package Markets;
 
+import Descriptions.Naming;
+import Descriptions.XWeapon;
 import Game.*;
 import Sentiens.Clan;
 import Shirage.Shire;

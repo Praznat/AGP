@@ -4,6 +4,7 @@
 package AMath;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedSet;
@@ -26,6 +27,19 @@ public class ArrayUtils {
 		T[] result = createArray(clasz, set.size());
 		int i = 0;   for (T t : set) {
 			result[i++] = t;
+		}
+		return result;
+	}
+	
+	/** by braylan */
+	public static <T> T[] shuffle(Class<T> clasz, T[] array) {
+		ArrayList<T> arrayList = new ArrayList<T>();
+		for (T t : array) {arrayList.add(t);}
+		T[] result = createArray(clasz, arrayList.size());
+		int i = 0;   int x;   while (arrayList.size() != 0) {
+			x = AGPmain.rand.nextInt(arrayList.size());
+			result[i++] = arrayList.get(x);
+			arrayList.remove(x);
 		}
 		return result;
 	}

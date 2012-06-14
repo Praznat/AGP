@@ -1,6 +1,8 @@
-package Game;
+package Descriptions;
 
 import AMath.Calc;
+import Game.AGPmain;
+import Game.Defs;
 
 public class XWeapon {
 

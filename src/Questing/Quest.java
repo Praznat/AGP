@@ -1,5 +1,7 @@
 package Questing;
 
+import Game.AGPmain;
+import Questing.RomanceQuests.BreedQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Sentiens.Stressor;
@@ -28,5 +30,21 @@ public abstract class Quest {
 	}
 	public static interface FindTarget {
 		public boolean meetsReq(Clan POV, Clan target);
+	}
+	public static abstract class FindTargetAbstract extends Quest implements FindTarget {
+		protected static final int TRIESPERTURN = 3;
+		public FindTargetAbstract(Clan P) {super(P);}
+		@Override
+		public void pursue() {
+			Clan[] pop = Me.myShire().getCensus();
+			for (int i = Math.min(TRIESPERTURN, pop.length); i > 0; i--) {
+				Clan candidate = pop[AGPmain.rand.nextInt(pop.length)];
+				if(meetsReq(Me, candidate)) {
+					((TargetQuest) upQuest()).setTarget(candidate);  //must be called by TargetQuest
+					success(Me.myShire()); break;
+				}
+			}
+			failure(Me.myShire());
+		}
 	}
 }

@@ -19,8 +19,8 @@ public class AGPmain extends Applet {
 	
 	
 	//these are for shire naming... so they dont get new names every time u reload
-	public static final int shireFPLen = 41;
-	public static final int shireLPLen = 69;
+	public static final int shireFPLen = 42;
+	public static final int shireLPLen = 70;
 	public static final int[] SR = Calc.randomOrder(shireFPLen*shireLPLen);
 	/**
 	 * @param args

@@ -5,8 +5,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import Defs.P_;
+import Descriptions.Naming;
 import GUI.PopupAbstract;
-import Game.Naming;
 import Sentiens.Clan;
 
 

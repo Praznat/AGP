@@ -1,6 +1,7 @@
 package GUI;
 import javax.swing.JFrame;
 import AMath.Calc;
+import Descriptions.Naming;
 import Game.*;
 import Sentiens.Clan;
 
