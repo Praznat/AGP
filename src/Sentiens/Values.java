@@ -2,6 +2,10 @@ package Sentiens;
 
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 import AMath.ArrayUtils;
 import Defs.F_;
 import Defs.M_;
@@ -133,7 +137,7 @@ public class Values implements Defs {
 	}
 	private static class ViceValue extends FBitValuatableValue {
 		protected final M_ meme;
-		public ViceValue(M_ w, String d, M_ m) {super(w, d, null); meme = m;}
+		public ViceValue(M_ w, String d, M_ m, Q_ q) {super(w, d, q); meme = m;}
 		@Override
 		public int getWeighting(Clan POV) {return -super.getWeighting(POV);}
 		@Override
@@ -183,7 +187,7 @@ public class Values implements Defs {
 		@Override
 		public double contentBuyable(Clan assessor, int millet) {return 1;}
 	};
-	public static final Value POPULARITY = new FBitValuatableValue(M_.S_POPULARITY, "Power (Popularity)", Q_.BUILDPOPULARITY) {
+	public static final Value DEFERENCE = new FBitValuatableValue(M_.S_POPULARITY, "Power (Deference)", Q_.BUILDPOPULARITY) {
 		@Override
 		protected int value(Clan POV, Clan clan) {return clan.FB.getPrs(P_.RSPCP);}
 		@Override
@@ -204,12 +208,12 @@ public class Values implements Defs {
 	public static final Value FEAR = new ValuatableValue(M_.S_THREAT, "Power (Fear Inspired)", null) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
-			double result = (15 - clan.FB.getBeh(M_.MIERTE)) + clan.FB.getBeh(M_.BLOODLUST) + clan.FB.getBeh(M_.MADNESS);
+			double result = clan.FB.getPrs(P_.TYRRP) + (15 - clan.FB.getBeh(M_.MIERTE)) + clan.FB.getBeh(M_.BLOODLUST) + clan.FB.getBeh(M_.MADNESS);
 			return (int) Math.round(result / (1 + POV.myShire().distanceFrom(clan.myShire()))); //might be better with discount rate
 		}
 	};
 	
-	public static final Value LOYALTY = new ValuatableValue(M_.S_LOYALTY, "", null) {
+	public static final Value LOYALTY = new ValuatableValue(M_.S_LOYALTY, "", Q_.LOYALTYQUEST) {
 		@Override
 		public String description(Clan POV) {return "Honor (Loyalty" + (POV != null && POV != POV.FB.getRex() ? " to " + POV.FB.getDiscName(Defs.LORD) : "") + ")";}
 		@Override
@@ -221,7 +225,7 @@ public class Values implements Defs {
 			return content + (proposer.FB.getRex() == evaluator.FB.getRex() ? curval : 0);
 		}
 	};
-	public static final Value PATRIOTISM = new ValuatableValue(M_.S_PATRIOTISM, "", null) {
+	public static final Value PATRIOTISM = new ValuatableValue(M_.S_PATRIOTISM, "", Q_.PERSECUTEFOREIGNER) {
 		@Override
 		public String description(Clan POV) {return "Honor (Patriotism" + (POV != null ?  " to " + POV.FB.getDiscName(Defs.HOMELAND) : "") + ")";}
 		private int adjustByDistance(int x, int distance) {return x / (distance + 1);}
@@ -234,19 +238,19 @@ public class Values implements Defs {
 			return curval + adjustByDistance(content, proposer.FB.getHomeland().distanceFrom(evaluator.FB.getHomeland()));
 		}
 	};
-	public static final Value PROMISCUITY = new ViceValue(M_.S_PROMISCUITY, "Honor (Chastity)", M_.PROMISCUITY);
+	public static final Value PROMISCUITY = new ViceValue(M_.S_PROMISCUITY, "Honor (Chastity)", M_.PROMISCUITY, Q_.PERSECUTEADULTERER);
 	public static final Value GREED = new ToDoValue();
-	public static final Value BLOODLUST = new ViceValue(M_.S_BLOODLUST, "Honor (Mercy)", M_.BLOODLUST);
+	public static final Value BLOODLUST = new ViceValue(M_.S_BLOODLUST, "Honor (Mercy)", M_.BLOODLUST, Q_.PERSECUTETYRANT);
 	public static final Value MONUMENTS = new ToDoValue();
 	
 
 	public static final Value KNOWLEDGE = new ToDoValue();
-	public static final Value CREED = new ValuatableValue(M_.S_ZEAL, "", null) {
+	public static final Value CREED = new ValuatableValue(M_.S_ZEAL, "", Q_.PERSECUTEHERETIC) {
 		@Override
-		public String description(Clan POV) {return "Honor (Zeal" + (POV != null ? " for " + POV.FB.getDiscName(Defs.CREED) : "") + ")";}
+		public String description(Clan POV) {return "Honor (Zeal" + (POV != null ? " for the " + POV.FB.getDiscName(Defs.CREED) : "") + ")";}
 		@Override
 		protected int value(Clan POV, Clan clan) {
-			return (clan.FB.getDisc(Defs.CREED) == POV.FB.getDisc(Defs.CREED) ? clan.FB.getDiscPts(Defs.CREED) + POV.useBeh(M_.DOGMA) : 0);
+			return (clan.FB.getDisc(Defs.CREED) == POV.FB.getDisc(Defs.CREED) ? clan.FB.getDiscPts(Defs.CREED) : 0);
 		}
 		@Override
 		public double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {
@@ -271,7 +275,7 @@ public class Values implements Defs {
 	
 	
 	
-	public static final Value WEALTH_POWER = new CompoundValue(new Value[] {WEALTH, POPULARITY}) {
+	public static final Value WEALTH_POWER = new CompoundValue(new Value[] {WEALTH, DEFERENCE}) {
 		@Override
 		public int getVWeight(Clan POV) {return POV.useBeh(M_.V_WEALTH_POWER);}
 		@Override
@@ -290,12 +294,20 @@ public class Values implements Defs {
 		public String description(Clan POV) {return "Value System";}
 	};
 	private static final Value[] AllValues = new Value[] {
-		WEALTH, POPULARITY, NUMVASSALS, ORDERMORALE, FEAR,
+		WEALTH, DEFERENCE, NUMVASSALS, ORDERMORALE, FEAR,
 		JEWELRY, OBESITY, NASALBEAUTY, EYEBEAUTY, JAWBEAUTY, HAIRBEAUTY, ART,
 		LOYALTY, PATRIOTISM, PROMISCUITY, GREED, BLOODLUST, MONUMENTS,
 		KNOWLEDGE, CREED, SACRIFICE, HEALING, SORCERY, AGE, SKILL
 	};
-	public static final Value[] All = ArrayUtils.shuffle(Value.class, AllValues);
+	private static Value[] filterTodos(Value[] varray) {
+		Set<Value> set = new HashSet<Value>();
+		for (Value v : varray) {if (!(v instanceof ToDoValue)) {set.add(v);}}
+		Value[] result = new Value[set.size()];
+		int i = 0; for(Value v : set) {result[i++] = v;}
+		return result;
+	}
+	
+	public static Value[] All = ArrayUtils.shuffle(Value.class, filterTodos(AllValues)); //final
 //	public static final Value[] All = ArrayUtils.orderByComparator(Value.class, AllValues, new Comparator<Value>() {
 //		@Override
 //		public int compare(Value v1, Value v2) {return (int) Math.signum(v1.ordinal() - v2.ordinal());}

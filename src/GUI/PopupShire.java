@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JComboBox;
@@ -29,7 +30,7 @@ public class PopupShire extends PopupAbstract {
 		INFO[MARKETS] = "MARKETS";
 		INFO[HISTORY] = "HISTORY";
 		
-		selectedVGs[POPULATION] = new int[] {0,2,4,6,11};
+		selectedVGs[POPULATION] = new int[] {0,5,4,6,2};
 		selectedVGs[MARKETS] = new int[] {0,1,2,5,6,7,3,4};
 		
 		cb = new JComboBox(INFO);
@@ -49,6 +50,13 @@ public class PopupShire extends PopupAbstract {
 		slider.refresh();
 	}
 		
+
+	public void setState() {  //just to load in the beginning right
+    	setState(INFO[POPULATION], POPULATION);
+    	setState(INFO[ENVIRONMENT], ENVIRONMENT);
+    	setState(INFO[POPULATION], POPULATION);
+	} 
+	
 	public Shire getShire() {return curShire;}
 
     public void loadShire() {if (curShire != null) {loadShire(curShire);}}

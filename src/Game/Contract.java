@@ -1,11 +1,11 @@
-package Sentiens;
+package Game;
 
 import Defs.M_;
 import Defs.Q_;
-import Game.AGPmain;
-import Game.Defs;
-import Game.Do;
 import Game.Do.*;
+import Sentiens.Clan;
+import Sentiens.Stressor;
+import Sentiens.Values;
 import Sentiens.Values.Assessable;
 import Sentiens.Values.Value;
 import Shirage.Shire;
@@ -28,9 +28,13 @@ import Shirage.Shire;
 
 
 public class Contract {   // AND/OR combination of Terms
-	private static Term offer, demand;
+	private Term offer, demand;
 	private Clan evaluator, proposer;
-	public static final Contract O = new Contract(); 
+	private static Contract theContract = new Contract();
+	
+	private Contract() {offer = new Term(); demand = new Term();}
+	public static Contract getInstance() {return theContract;}
+	
 
 	public void enter(Clan e, Clan p) {evaluator = e; proposer = p;}
 	public void setOffer(Assessable metric, int content, ClanAction ac) {offer.setTerm(evaluator, proposer, metric, content, ac);}
@@ -42,22 +46,22 @@ public class Contract {   // AND/OR combination of Terms
 		if (!demand.tryAction()) {proposer.AB.add(new Stressor(Stressor.PROMISE_BROKEN, evaluator));}
 	}
 	
-	public void setOfferThreat() {setOffer(THREAT, 0, null);}
+	public void setOfferThreat() {setOffer(THREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
 	public void setOfferPayment(int c) {setOffer(MONEY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
 	public void setOfferGratitude(int c) {setOffer((Assessable)Values.LOYALTY, c, null);}
 	public void setOfferBlessing(int c) {setOffer((Assessable)Values.CREED, c, null);}
 
-	public void setDemandTribute(int c) {setOffer(MONEY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
-	public void setDemandRespect() {setOffer((Assessable)Values.POPULARITY, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
-	public void setDemandAllegiance() {setOffer((Assessable)Values.LOYALTY, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
-	public void setDemandConversion() {setOffer((Assessable)Values.CREED, 0, null);}
-	public void setDemandExile() {setOffer(EXILE, 0, null);}
-	public void setDemandQuest(Q_ q) {setOffer(NEWQUEST, q.ordinal(), null);}
+	public void setDemandTribute(int c) {setDemand(MONEY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
+	public void setDemandRespect() {setDemand((Assessable)Values.DEFERENCE, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
+	public void setDemandAllegiance() {setDemand((Assessable)Values.LOYALTY, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
+	public void setDemandConversion() {setDemand((Assessable)Values.CREED, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
+	public void setDemandExile() {setDemand(EXILE, 0, Do.NATURALIZE_HERE); Do.NATURALIZE_HERE.setup(evaluator, 0);}
+	public void setDemandQuest(Q_ q) {setDemand(NEWQUEST, q.ordinal(), null);}
 	
 	private int renegotiationTimes() {return Math.min(evaluator.useBeh(M_.PATIENCE), proposer.useBeh(M_.PATIENCE)) / 3;}
 	
 	
-	public static final class Term {
+	private static final class Term {
 		private Clan evaluator, proposer;
 		private Assessable metric;
 		private int content;

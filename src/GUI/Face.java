@@ -91,9 +91,9 @@ public class Face extends JPanel {
 						 :Calc.between(partez[MIRO].getLeftEdge(),partez[MIRO].getRightEdge(),2,5);
 		headhair.paintHairs(g, c1);
 		partez[BESO].paintPart(g);
+		partez[JITA].paintPart(g);
 		partez[MIRO].paintPart(g);
 		partez[NASO].paintPart(g);
-		partez[JITA].paintPart(g);
 		partez[NASO].megafix();
 		if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
@@ -738,18 +738,18 @@ public class Face extends JPanel {
 		public Boca(int[] base) {
 			K = new GKata[7];
 			baseXY = new int[] {base[0], base[1]};
-			cavity = MOUTHC;
 			pointiness = (double) MOUTHP / 15;
 			openness = randInt(12);
-			width = MOUTHLW;
 			height = MOUTHLH;
-			jawwidth = width + MOUTHJW;
-			jawheight = height + (int)(pointiness*height) + MOUTHJH + cavity/2;
-			LbaseXY = new int[] {baseXY[0] - width/10 - MOUTHBX, baseXY[1] + height + MOUTHBY};
 			refix();
 		}
 
 		public void refix() {
+			width = (female ? MOUTHLW * 2/3 : MOUTHLW);
+			jawwidth = width + (female ? MOUTHJW * 2/3 : MOUTHJW);
+			LbaseXY = new int[] {baseXY[0] - width/10 - MOUTHBX, baseXY[1] + height + MOUTHBY};
+			cavity = (female ? 0 : MOUTHC);
+			jawheight = height + (int)(pointiness*height) + MOUTHJH + cavity/2;
 			openness = Math.max(0, Math.min(openness, 12));
 			pointiness = Math.max(0, Math.min(pointiness, 1));
 			cavity = Math.min(Math.max(cavity, -50), 150);
@@ -814,6 +814,7 @@ public class Face extends JPanel {
 			K[WRINKLE] = new GBezier(WN, sharpN);
 		}
 		public void paintPart(Graphics g) {
+			refix();
 			GCombo shape = new GCombo(new GKata[] {K[BRIDGE], K[JAW]});
 			//GCombo labios = new GCombo(new GKata[] {K[UPPER], K[LOWERL], K[LOWERR]});
 			GCombo labios = new GCombo(new GKata[] {K[LOWERL], K[LOWERR]});
@@ -1247,6 +1248,7 @@ public class Face extends JPanel {
 	}
 	public void redefine(Clan gob) {
     	this.loadAttributes(gob.FB);
+    	if (gob.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
 		
 		int green = SKING;
 		int red = green + SKINR * (241 - green)/2/99; //randInt((241 - green)/2);
@@ -1266,7 +1268,6 @@ public class Face extends JPanel {
 		partez[CARA] = new Cabeza(new int[] {140, 220});
 		partez[JITA] = new Oreja(new int[] {140, 220});
     	partez[NASO].megafix();
-    	if (gob.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
     	
     	x = partez[NASO].getBaseXY()[0] - 60;
     	w = 180;

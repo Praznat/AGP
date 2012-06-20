@@ -1,6 +1,7 @@
 package Questing;
 
 import Sentiens.Clan;
+import Sentiens.GobLog;
 import Sentiens.Values;
 import Defs.M_;
 import Game.AGPmain;
@@ -27,15 +28,25 @@ public class RomanceQuests {
 		private void resetFails() {failsLeft = 1 + Me.useBeh(M_.PATIENCE);}
 		public void courtSucceeded() {courtsLeft--;}
 		public void courtFailed() {failsLeft--;}
+		@Override
+		public String shortName() {return "Breed";}
+		@Override
+		public String description() {return "Breed with " + (target==null ? "someone" : target.getNomen());}
 	}
 
 	public static class FindMate extends FindTargetAbstract implements FindTarget {
 		public FindMate(Clan P) {super(P);}
 		@Override
 		public boolean meetsReq(Clan POV, Clan target) {
-			return POV.getGender() != target.getGender() &&
+			boolean success = POV.getGender() != target.getGender() &&
 			POV.FB.randomValueInPriority().compare(POV, target, POV) + Values.MAXVAL * POV.useBeh(M_.PROMISCUITY) / 15 > 0;
+			Me.addReport(GobLog.findSomeone((success ? target : null), "mate"));
+			return success;
 		}
+		@Override
+		public String shortName() {return "Find Mate";}
+		@Override
+		public String description() {return "Find suitable mate";}
 	}
 
 
@@ -49,6 +60,7 @@ public class RomanceQuests {
 			if (rival == Me) {success(); return;}
 			double diff = target.FB.randomValueInPriority().compare(target, Me, rival);
 			if (rival != target) {diff -= Values.MAXVAL * (15 - target.useBeh(M_.PROMISCUITY)) / 15;} //if shes not single, ur penalized the less promiscuous she is
+			Me.addReport(GobLog.compete4Mate(target, rival, diff));
 			if (diff > 0) {success();}
 			else {failure();}  // but try other tricks such as work or preach
 		}
@@ -59,6 +71,11 @@ public class RomanceQuests {
 		public void success() {((BreedQuest) upQuest()).courtSucceeded(); super.success();}
 		@Override
 		public void failure() {((BreedQuest) upQuest()).courtFailed(); super.failure();}
+		@Override
+		public String shortName() {Clan rival = target.getSuitor(); return (rival==Me || rival==target ? "Court" : "Compete");}
+		@Override
+		public String description() {Clan rival = target.getSuitor(); return (rival==Me || rival==target ? "Court " + target.getNomen() : 
+			"Steal " + target.getNomen() + "'s heart away from " + rival.getNomen());}
 	}
 	
 }

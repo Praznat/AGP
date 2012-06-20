@@ -55,6 +55,14 @@ public enum M_ {
 	OCD, //neatness, like short vs long hair...
 	PROMISCUITY,
 
+	//government memes
+	REGENT_POWER, // m/16 is % of total fixed honor points going to ruler
+	REGIONAL_POWER,
+	COURT_POWER, // above two divide leftovers after what goes to ruler
+	CHURCH_POWER,
+	MILITARY_POWER,
+	TREASURY_POWER, // above three divide court pot
+	//officials use their own memes to decide their own policy but their bosses can override
 	
 
 

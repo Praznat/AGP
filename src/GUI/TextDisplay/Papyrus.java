@@ -47,9 +47,9 @@ public class Papyrus extends JPanel {
 		return s;
 	}
 	public static Papyrus[] behS(PopupAbstract P) {
-		Papyrus[] s = new Papyrus[1 + M_.values().length];  //slow?
+		Papyrus[] s = new Papyrus[2];  //slow?
 		s[0] = new NameScroll(P, PopupFace.INFO4, 12);
-		for(int i = 1; i < s.length; i++) {s[i] = new MemScroll(P, i);}
+		s[1] = new MemScroll(P);
 		return s;
 	}
 	public static Papyrus[] sancS(PopupAbstract P) {

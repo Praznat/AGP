@@ -19,6 +19,7 @@ public class WorkQuests {
 		public BuildWealthQuest(Clan P) {super(P);}
 		@Override
 		public void pursue() {Me.MB.newQ(new LaborQuest(Me));}
+		public String description() {return "Build Wealth";}
 	}
 	
 	
@@ -33,7 +34,8 @@ public class WorkQuests {
 		public LaborQuest(Clan P) {
 			super(P); setChosenAct(Job.NullAct); resetWM();
 		}
-		
+		@Override
+		public String description() {return chosenAct.getDesc();}
 
 		@Override
 		public void pursue() {

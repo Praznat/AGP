@@ -46,6 +46,10 @@ public class AGPmain extends Applet {
 		//mainGUI.initializeTD(TheRealm.getShireData());
 		mainGUI.initializeGM();
 		mainGUI.initializeSM();
+		Do.ShowRandomGoblin.doit();
+		Do.ShowRandomShire.doit();
+		mainGUI.GM.setState();
+		mainGUI.SM.setState();
 		
 
 		//TheRealm.go();

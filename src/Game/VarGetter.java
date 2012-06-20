@@ -35,8 +35,9 @@ public class VarGetter implements Defs {
 	//clan vars
 	public static final int CLANNAME = 0;
 	private static final int CLANJOB = 1;
-	private static final int CLANACT = 2;
+	private static final int CLANQUEST = 2;
 	private static final int SHIRENAME = 3;
+	private static final int CLANORDER = 4;
 	
 	
 	private String varName;
@@ -46,12 +47,13 @@ public class VarGetter implements Defs {
 		varName = n; type = t; var = v;
 	}
 	public static VarGetter[] popVGs() {
-		VarGetter[] all = new VarGetter[13 + Values.All.length + P_.values().length - 1];
+		VarGetter[] all = new VarGetter[14 + Values.All.length + P_.values().length - 1];
 		int k = 0;
 		all[k++] = new VarGetter("Name", CLANBASIC, CLANNAME);
 		all[k++] = new VarGetter("Job", CLANBASIC, CLANJOB);
-		all[k++] = new VarGetter("Act", CLANBASIC, CLANACT);
+		all[k++] = new VarGetter("Quest", CLANBASIC, CLANQUEST);
 		all[k++] = new VarGetter("Location", CLANBASIC, SHIRENAME);
+		all[k++] = new VarGetter("Order", CLANBASIC, CLANORDER);
 		all[k++] = new VarGetter("Creed", CLANDISCS, CREED);
 		all[k++] = new VarGetter("Ruler", CLANDISCS, LORD);
 		all[k++] = new VarGetter("Homeland", CLANDISCS, HOMELAND);
@@ -130,7 +132,8 @@ public class VarGetter implements Defs {
 			switch(var) {
 			case CLANNAME: return dude.getNomen();
 			case CLANJOB: return dude.getJob().getDesc();
-			case CLANACT: return dude.QB.getChosenAct().getDesc();
+			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "None" : dude.MB.QuestStack.peek().shortName());
+			case CLANORDER: return (dude.myOrder() == null ? "None" : dude.myOrder().getFollowerName());
 			case SHIRENAME: return dude.myShire().getName();
 			}
 		case CLANDISCS: return dude.FB.getDiscName(var);

@@ -63,7 +63,13 @@ public class Do {
 		}
 	};
 	
-	
+
+	public static final ClanAlone NOTHING = new ClanAlone() {
+		@Override
+		public String description() {return "Nothing";}
+		@Override
+		protected boolean tryExecute() {return true;}
+	};
 	
 	public static final ClanOnClan PAY_RESPECT = new ClanOnClan() {
 		@Override
@@ -116,21 +122,17 @@ public class Do {
 		protected boolean tryExecute() {doer.join(doee);   return true;}
 		@Override
 		public String description() {return doer.getNomen() + " switches allegiance from " + doer.FB.getDiscName(Defs.LORD) + " to " + doee.getNomen();}
-//		@Override
-//		public double evaluate(Clan POV) {
-//			double out;
-//			if (POV == doer) {
-//				Clan curRex = doer.FB.getRex();
-//				if (curRex == doer || curRex == doee ||
-//						doee.isSomeBossOf(curRex)) {out = 0;}
-//				out = Values.inIsolation(Values.MINVAL, Values.LOYALTY, POV);
-//			}
-//			else if (POV == doee) {
-//				out = Values.logComp(doee.getMinionNumber() + 1, doee.getMinionNumber());
-//				out = Values.inIsolation(out, Values.NUMVASSALS, POV);
-//			}
-//			else {out = 0;}
-//			return out;
-//		}
+	};
+	public static final ClanOnClan CONVERT_TO_CREED = new ClanOnClan() {
+		@Override
+		protected boolean tryExecute() {doer.FB.setDisc(Defs.CREED, doee.FB.getDeusInt());   return true;}
+		@Override
+		public String description() {return doer.getNomen() + " becomes a follower of the " + doee.FB.getDiscName(Defs.CREED);}
+	};
+	public static final ClanAlone NATURALIZE_HERE = new ClanAlone() {
+		@Override
+		protected boolean tryExecute() {doer.FB.setDisc(Defs.HOMELAND, doer.myShire().getXY());   return true;}
+		@Override
+		public String description() {return doer.getNomen() + " becomes native of " + doer.myShire().getName();}
 	};
 }

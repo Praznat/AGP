@@ -56,7 +56,11 @@ public class PopupFace extends PopupAbstract {
 		sp.setBounds(0, h, w, getHeight()-h);
 		slider.refresh();
 	}
-	
+	public void setState() {  //just to load in the beginning right
+		setState(INFO2, 1);
+		loadClan();
+    	setState(INFO1, 0);
+	} 
 
 	public Clan getClan() {return curClan;}
 

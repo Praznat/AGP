@@ -16,23 +16,26 @@ public abstract class Quest {
 	protected void failure() {Me.MB.finishQ();}
 	protected void failure(Stressor.Causable blamee) {Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));   failure();}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
+	public String shortName() {return description();}
+	public String description() {return "Undefined Quest";}
 		
 	public static class DefaultQuest extends Quest {
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
-		public void pursue() {Me.addReport(GobLog.idle());}
+		public void pursue() {Me.addReport(GobLog.idle()); Me.MB.finishQ();}
 	}
 	public static abstract class TargetQuest extends Quest {
 		protected Clan target;
 		public TargetQuest(Clan P) {super(P);}
 		public TargetQuest(Clan P, Clan T) {super(P); target = T;}
 		public void setTarget(Clan t) {target = t;}
+		protected Clan getTarget() {return target;}
 	}
 	public static interface FindTarget {
 		public boolean meetsReq(Clan POV, Clan target);
 	}
 	public static abstract class FindTargetAbstract extends Quest implements FindTarget {
-		protected static final int TRIESPERTURN = 3;
+		protected static final int TRIESPERTURN = 3; //maybe size of pub?
 		public FindTargetAbstract(Clan P) {super(P);}
 		@Override
 		public void pursue() {
@@ -41,7 +44,7 @@ public abstract class Quest {
 				Clan candidate = pop[AGPmain.rand.nextInt(pop.length)];
 				if(meetsReq(Me, candidate)) {
 					((TargetQuest) upQuest()).setTarget(candidate);  //must be called by TargetQuest
-					success(Me.myShire()); break;
+					success(Me.myShire()); return;
 				}
 			}
 			failure(Me.myShire());

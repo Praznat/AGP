@@ -22,16 +22,16 @@ public class DiscScroll extends Papyrus {
 		super.paint(g);
 		int r = 0;
 		write(g, clan.getNomen(), r++); //convert all g.drawStrings to write
-		g.drawString("the " + clan.getJob().getDesc(), 2, 15+15*r++);
-		addToClickStrings(clan.myShire(), 14, 15+15*r, g);
-		g.drawString("of ", 2, 15+15*r++);
+		g.drawString(" the " + clan.getJob().getDesc(), 2, 15+15*r++);
+		addToClickStrings(clan.myShire(), 20, 15+15*r, g);
+		g.drawString(" of ", 2, 15+15*r++);
 		if (clan.FB.getDisc(Defs.HOMELAND) != clan.myShire().getXY()) {
 			g.drawString(" resident of " + clan.myShire().getName(), 2, 15+15*r++);
 		}
 		if(clan.FB.getDisc(Defs.LORD) != clan.getID()) {
-			g.drawString("follower of " + clan.FB.getDiscName(Defs.LORD), 2, 15+15*r++);
+			g.drawString(" follower of " + clan.FB.getDiscName(Defs.LORD), 2, 15+15*r++);
 		}
-		g.drawString("believer in the " + clan.FB.getDiscName(Defs.CREED), 2, 15+15*r++);
+		g.drawString(" believer in the " + clan.FB.getDiscName(Defs.CREED), 2, 15+15*r++);
 
 		g.drawString("Age: " + clan.getAge(), 2, 15+15*r++);
 		r++;r++;

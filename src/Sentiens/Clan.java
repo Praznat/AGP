@@ -3,15 +3,19 @@ package Sentiens;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
+import Descriptions.GobName;
 import Descriptions.Naming;
 import Game.AGPmain;
 import Game.Act;
 import Game.Defs;
 import Game.Goods;
 import Game.Job;
+import Game.Order;
 import Markets.*;
 import Questing.Quest;
 import Questing.Quest.DefaultQuest;
+import Questing.RuleQuests.LoyaltyQuest;
+import Questing.PersecutionQuests.*;
 import Questing.RomanceQuests.BreedQuest;
 import Questing.WorkQuests.BuildWealthQuest;
 import Sentiens.GobLog.Book;
@@ -19,10 +23,9 @@ import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 import AMath.Calc;
 
-public class Clan implements Defs, Stressor.Causable {
+public class Clan implements Defs, Stressor.Causable, Order.Serveable {
 	protected static final int DMC = 10; //daily millet consumption
 	//protected static final int MEMORY = 8;
-	
 	//bio
 	protected byte[] name = new byte[2];
 	protected boolean gender;
@@ -39,7 +42,8 @@ public class Clan implements Defs, Stressor.Causable {
 	protected int[] inventory; //OBSOLETE
 	private short specialweapon;
 	protected int expIncome;
-	protected Clan Boss;
+	//protected Clan Boss;
+	protected Order order;
 	protected int myB;
 	protected int minionB;
 	protected int subminionB;
@@ -58,7 +62,6 @@ public class Clan implements Defs, Stressor.Causable {
 	public Ideology FB;
 	public Questy QB;
 	public Amygdala AB;
-	public Contract CB;
 	public Memory MB;
 	protected int lastBeh, lastBehN;
 	protected Book goblog = new Book();
@@ -71,7 +74,7 @@ public class Clan implements Defs, Stressor.Causable {
 		xloc = x;
 		yloc = y;
 		ID = id;
-		Boss = this;
+//		Boss = this;
 		suitor = ID;
 		assets = new int[numAssets];
 		assets[millet] = 1000;
@@ -89,7 +92,6 @@ public class Clan implements Defs, Stressor.Causable {
 		FB = new Ideology(this);
 		QB = new Questy(this);
 		AB = new Amygdala(this);
-		CB = new Contract();
 		MB = new Memory(this);
 	}
 	
@@ -101,6 +103,10 @@ public class Clan implements Defs, Stressor.Causable {
 			switch(q) {
 			case BREED: quest = new BreedQuest(this); break;
 			case BUILDWEALTH: quest = new BuildWealthQuest(this); break;
+			case LOYALTYQUEST: quest = new LoyaltyQuest(this); break;
+			case PERSECUTEHERETIC: quest = new PersecuteHeretic(this); break;
+			case PERSECUTEINFIDEL: quest = new PersecuteInfidel(this); break;
+			case PERSECUTEFOREIGNER: quest = new PersecuteForeigner(this); break;
 			default: quest = new DefaultQuest(this); break;
 			}
 			MB.QuestStack.add(quest);
@@ -122,9 +128,9 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getNumGoods() {return Goods.numGoods;}
 	public Clan getSuitor() {return AGPmain.TheRealm.getClan(suitor);}
 	public void setSuitor(Clan C) {suitor = C.getID();}
-	public String getNomen() {
-		return Naming.randGoblinFirstName(name[0], name[1], gender) + " the " + getJob().getDesc();
-	}
+	public byte[] getNameBytes() {return name;}
+	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
+	public String getNomen() {return GobName.fullName(this);}
 	public String getSancName() {return FB.getDeusName();}
 	public Job getJob() {return AGPmain.TheRealm.getJob(job);}
 	public int getJobInt() {return job;}
@@ -134,27 +140,37 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public void breed(Clan mate) {numSpawns++;}
 	
-	public Clan getBoss() {return Boss;}
+	public Clan getBoss() {return FB.getRex();}
 	public Clan getTopBoss() { //i think broken
-		if (Boss == null) {int o = 1/0;   return this;}
-		if (this == Boss) {return this;}
-		else {return Boss.getTopBoss();}
+		if (getBoss() == null) {Calc.p(""+1/0); return this;}
+		if (this == getBoss()) {return this;}
+		else {return getBoss().getTopBoss();}
 	}
-	public boolean isSomeBossOf(Clan him) {return isSomeBossOf(him, this);}
-	public boolean isSomeBossOf(Clan him, Clan orig) {
+	public boolean isSomeBossOf(Clan him) {return isSomeBossOf(him, this);}  //false if self!
+	private boolean isSomeBossOf(Clan him, Clan orig) {
 		Clan hisBoss = him.getBoss();
 		if (hisBoss == orig) {return true;}
-		else if (hisBoss == null) {int o = 1/0;   return false;}
+		else if (hisBoss == null) {Calc.p(""+1/0); return false;}
 		else if (hisBoss == him) {return false;}
 		else {return isSomeBossOf(hisBoss, orig);}
 	}
 	public int getMinionNumber() {return minionN + subminionN;}
 	public int getMinionPoints() {return minionB + subminionB;}
 	public int getPointsBN() {return pointsBN;}
+	public Order myOrder() {return order;}
+	public void setOrder(Order o) {order = o;}
+	public void joinOrder(Order newOrder) {
+		if (newOrder == null) {Calc.p(""+1/0); return;}
+		if (order == null) {newOrder.addMember(this);}
+		else {order.moveTo(this, newOrder);}
+	}
 	public boolean join(Clan newBoss) {
-		if (this.isSomeBossOf(newBoss)) {return false;}
-		this.getBoss().chgMinionN(-1-subminionN);
-		newBoss.chgMinionN(1+subminionN);
+		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
+		Clan oldBoss = this.getBoss();
+		if (oldBoss != this) {oldBoss.chgMinionN(-1 -subminionN);}
+		this.FB.setDisc(LORD, newBoss.FB.getDisc(LORD));
+		if (newBoss != this) {newBoss.chgMinionN(1 + subminionN);}
+		joinOrder(newBoss.myOrder());
 		return true;
 	}
 	private void chgMinionN(int n) {
@@ -162,8 +178,8 @@ public class Clan implements Defs, Stressor.Causable {
 	}
 	private void chgSubMinionN(int n) {
 		subminionN += n;
-		Clan Boss = getBoss(); int id = Boss.getID();
-		if (id != -1 && id != getID()) {Boss.chgSubMinionN(n);}
+		Clan Boss = getBoss();
+		if (Boss != this) {Boss.chgSubMinionN(n);}
 	}
 	public void chgMyB(int b) {
 		myB += b; ///WHAT IS B???  soldiers vanquished? people converted?
@@ -179,22 +195,22 @@ public class Clan implements Defs, Stressor.Causable {
 		if (id != -1 && id != getID()) {Boss.chgSubMinionB(b);}
 	}
 	private int getExpIncome() {return expIncome;}
-	public int calcPoints(Clan hypoBoss) {
-		Clan hypoTopBoss = hypoBoss.getTopBoss();
-		double P = (double)hypoTopBoss.useBeh(M_.PYRAMIDALITY)/15;
-		double L = (double)hypoTopBoss.useBeh(M_.LEADERSHIP)/15;
-		double M = (double)hypoTopBoss.useBeh(M_.MERITOCRACITY)/15;
-		double adjB = L*(P*subminionB + (1.0-P)*minionB) + (1.0-L)*myB;
-		double adjN = L*(P*subminionN + (1.0-P)*minionN) + (1.0-L)*1;
-		return (int) (Math.pow(adjB, M) * Math.pow(adjN, 1.0-M));
-	}
-	public int estimateWinnings(Clan hypoBoss) {
-		Clan hypoTopBoss = hypoBoss.getTopBoss();
-		int Winnings = hypoTopBoss.getExpIncome();
-		int TotalPoints = hypoTopBoss.getPointsBN();
-		int pointsBN = calcPoints(hypoTopBoss);
-		return Winnings * pointsBN / TotalPoints;
-	}
+//	public int calcPoints(Clan hypoBoss) {
+//		Clan hypoTopBoss = hypoBoss.getTopBoss();
+//		double P = (double)hypoTopBoss.useBeh(M_.PYRAMIDALITY)/15;
+//		double L = (double)hypoTopBoss.useBeh(M_.LEADERSHIP)/15;
+//		double M = (double)hypoTopBoss.useBeh(M_.MERITOCRACITY)/15;
+//		double adjB = L*(P*subminionB + (1.0-P)*minionB) + (1.0-L)*myB;
+//		double adjN = L*(P*subminionN + (1.0-P)*minionN) + (1.0-L)*1;
+//		return (int) (Math.pow(adjB, M) * Math.pow(adjN, 1.0-M));
+//	}
+//	public int estimateWinnings(Clan hypoBoss) {
+//		Clan hypoTopBoss = hypoBoss.getTopBoss();
+//		int Winnings = hypoTopBoss.getExpIncome();
+//		int TotalPoints = hypoTopBoss.getPointsBN();
+//		int pointsBN = calcPoints(hypoTopBoss);
+//		return Winnings * pointsBN / TotalPoints;
+//	}
 
 	
 	public int getMillet() {return assets[millet];}

@@ -28,7 +28,9 @@ public class Questy implements Defs {
 	protected String Report = "";
 	public boolean doReporting = false;
 	
-	public Questy(Clan i) {Me = i;  setChosenAct(Job.NullAct); resetWM(); resetAll();}
+	public Questy(Clan i) {Me = i;  
+//	setChosenAct(Job.NullAct); resetWM(); 
+	resetAll();}
 
 	protected void report() {if (doReporting) {System.out.print(getReport());   Report = "";}}
 	protected void success() {
@@ -68,47 +70,47 @@ public class Questy implements Defs {
 	}
 	public int[] getQstack(int i) {return Qstack[i];}
 	
-	public void resetWM() {
-		for(int i = 0; i < WORKMEMO.length; i++) {WORKMEMO[i] = E; WORKMEMOX[i] = 0;}
-	}
-	public void setWM(int g, int plc) {WORKMEMO[plc] = g;   WORKMEMOX[plc] = 0;}
-	public void getG(int g) {
-		for(int i = 0; i < WORKMEMO.length; i++) {
-			if (getWM(i) == g) {WORKMEMOX[i]++;   return;}
-		}
-		((MktO)Me.myMkt(g)).sellFairAndRemoveBid(Me);   //in case not needed for work (not in WORKMEMO)
-	}
-	public void suspendG(int g) {
-		for(int i = 0; i < WORKMEMO.length; i++) {
-			if (getWM(i) == g) {WORKMEMO[i] = -Math.abs(WORKMEMO[i]);   i++;   return;}
-		}
-	}
-	public int getWM(int i) {return Math.abs(WORKMEMO[i]);}
-	public int getWMX(int i) {return WORKMEMOX[i];}
-	public Act getChosenAct() {return chosenAct;}
-	
-	public void liquidateWM() {resetWM();}  //and sell all to market
-	
-	protected Act compareTrades(Clan doer, Act[] actSet) {
-		Act curAct;   Act bestAct = Job.NullAct;   int bestPL = 0;
-		for(int i = 0; i < actSet.length; i++) {
-			curAct = actSet[i];
-			int PL = Me.confuse(curAct.expOut(Me)[0] - curAct.expIn(Me)[0]);
-			if (PL > bestPL) {bestPL = PL; bestAct = curAct;}
-		}
-		return bestAct;
-	}
-	
-	public void setChosenAct(Act a) {
-		//liquidate if it's a new act
-		if (chosenAct != null && chosenAct.equals(a)) {} //do nothing if act is same
-		else {
-			liquidateWM();
-			chosenAct = a;
-		} //new WORKMEMO
-	}
-	
-	
+//	public void resetWM() {
+//		for(int i = 0; i < WORKMEMO.length; i++) {WORKMEMO[i] = E; WORKMEMOX[i] = 0;}
+//	}
+//	public void setWM(int g, int plc) {WORKMEMO[plc] = g;   WORKMEMOX[plc] = 0;}
+//	public void getG(int g) {
+//		for(int i = 0; i < WORKMEMO.length; i++) {
+//			if (getWM(i) == g) {WORKMEMOX[i]++;   return;}
+//		}
+//		((MktO)Me.myMkt(g)).sellFairAndRemoveBid(Me);   //in case not needed for work (not in WORKMEMO)
+//	}
+//	public void suspendG(int g) {
+//		for(int i = 0; i < WORKMEMO.length; i++) {
+//			if (getWM(i) == g) {WORKMEMO[i] = -Math.abs(WORKMEMO[i]);   i++;   return;}
+//		}
+//	}
+//	public int getWM(int i) {return Math.abs(WORKMEMO[i]);}
+//	public int getWMX(int i) {return WORKMEMOX[i];}
+//	public Act getChosenAct() {return chosenAct;}
+//	
+//	public void liquidateWM() {resetWM();}  //and sell all to market
+//	
+//	protected Act compareTrades(Clan doer, Act[] actSet) {
+//		Act curAct;   Act bestAct = Job.NullAct;   int bestPL = 0;
+//		for(int i = 0; i < actSet.length; i++) {
+//			curAct = actSet[i];
+//			int PL = Me.confuse(curAct.expOut(Me)[0] - curAct.expIn(Me)[0]);
+//			if (PL > bestPL) {bestPL = PL; bestAct = curAct;}
+//		}
+//		return bestAct;
+//	}
+//	
+//	public void setChosenAct(Act a) {
+//		//liquidate if it's a new act
+//		if (chosenAct != null && chosenAct.equals(a)) {} //do nothing if act is same
+//		else {
+//			liquidateWM();
+//			chosenAct = a;
+//		} //new WORKMEMO
+//	}
+//	
+//	
 	
 	public Clan rando() {
 		Clan[] pop = Me.myShire().getCensus();
@@ -133,70 +135,70 @@ public class Questy implements Defs {
 	private Value getSanc(int i) {return Values.All[Qstack[i][PREST]];}
 	private boolean checkIfBetter(int i) {return (getSanc(i).compare(pov(i), Me, target(i)) > 0);}
 	private void incStage() {Qstack[THIS][STAGE]++;}
-	
-	private void ChooseAct() {
-		setChosenAct(compareTrades(Me, Me.getJobActs()));
-		Report += "Chose to engage in " + chosenAct.getDesc() + RET;
-		//fill WORKMEMO with every possible g in A:
-		chosenAct.storeAllInputsInWM(Me);
-		incStage();
-	}
-	private void DoInputs() {
-		//
-		
-		// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?
-		
-		//
-		int[] in = chosenAct.expIn(Me); //why is first number zero?
-		int[] tmp = Calc.copyArray(in);
-		int j;   int i = -1;   while (WORKMEMO[++i] != E) {
-			int N = WORKMEMOX[i];
-			j = 0;   while (tmp[++j] != E) { //goes through WM setting to E all nec inputs already owned
-				if(WORKMEMO[i] == -tmp[j]) {in[j] = -Math.abs(in[j]);} //dont buy if already in market
-				if(N>0 && tmp[j]==getWM(i)) {tmp[j] = 0;   N--;}  //0 should not be a good
-			}
-		}
-		boolean go = true;   j = 0;   while (tmp[++j] != E) {if(tmp[j]!=0) {go=false; break;}}
-		if (go) {   //in case all nec inputs owned
-			i = -1;   while (WORKMEMO[++i] != E) {
-				int wmg = getWM(i);
-				MktAbstract mkt = Me.myMkt(wmg);
-				j = 0;   while (in[++j] != E) {  //consume WM goods used in input:
-					if(WORKMEMOX[i] == 0) {break;}
-					//is this right?? setting in[j] to E even though the while loop stops at E?
-					//set in[j] to 0 to correct this problem... see if it works
-					if((in[j]) == wmg) {in[j] = 0;   WORKMEMOX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
-				}
-				for (int k = WORKMEMOX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
-			}
-			incStage();   //move on
-		}
-		else {i = 0; while (in[++i] != E) {if(in[i] >= 0) {
-			Me.myMkt(in[i]).liftOffer(Me);   suspendG(in[i]);
-		}}} //dont lift in case of - (see above)
-	}
-	private void DoWork() {
-		chosenAct.ponderOrLearn(Me);
-		incStage();
-	}
-	private void DoOutputs() {
-		int[] out = chosenAct.expOut(Me);
-		int i = 1; for (; out[i] != E; i++) {
-			int g = out[i];
-			if (g == sword || g == mace) {
-				short x = XWeapon.craftNewWeapon(g, Me.FB.getPrs(P_.SMITHING));
-				if (x != XWeapon.NULL) {
-					g = xweapon;
-					Me.addReport(GobLog.produce(x));
-					((XWeaponMarket) Me.myMkt(xweapon)).setUpTmpXP(x);
-				}
-			}
-			if (g != xweapon) {Me.addReport(GobLog.produce(g));}
-			Me.myMkt(g).gainAsset(Me);
-			Me.myMkt(g).sellFair(Me);
-		}
-		Qstack[THIS][STAGE] = 0;
-	}
+//	
+//	private void ChooseAct() {
+//		setChosenAct(compareTrades(Me, Me.getJobActs()));
+//		Report += "Chose to engage in " + chosenAct.getDesc() + RET;
+//		//fill WORKMEMO with every possible g in A:
+//		chosenAct.storeAllInputsInWM(Me);
+//		incStage();
+//	}
+//	private void DoInputs() {
+//		//
+//		
+//		// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?
+//		
+//		//
+//		int[] in = chosenAct.expIn(Me); //why is first number zero?
+//		int[] tmp = Calc.copyArray(in);
+//		int j;   int i = -1;   while (WORKMEMO[++i] != E) {
+//			int N = WORKMEMOX[i];
+//			j = 0;   while (tmp[++j] != E) { //goes through WM setting to E all nec inputs already owned
+//				if(WORKMEMO[i] == -tmp[j]) {in[j] = -Math.abs(in[j]);} //dont buy if already in market
+//				if(N>0 && tmp[j]==getWM(i)) {tmp[j] = 0;   N--;}  //0 should not be a good
+//			}
+//		}
+//		boolean go = true;   j = 0;   while (tmp[++j] != E) {if(tmp[j]!=0) {go=false; break;}}
+//		if (go) {   //in case all nec inputs owned
+//			i = -1;   while (WORKMEMO[++i] != E) {
+//				int wmg = getWM(i);
+//				MktAbstract mkt = Me.myMkt(wmg);
+//				j = 0;   while (in[++j] != E) {  //consume WM goods used in input:
+//					if(WORKMEMOX[i] == 0) {break;}
+//					//is this right?? setting in[j] to E even though the while loop stops at E?
+//					//set in[j] to 0 to correct this problem... see if it works
+//					if((in[j]) == wmg) {in[j] = 0;   WORKMEMOX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
+//				}
+//				for (int k = WORKMEMOX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
+//			}
+//			incStage();   //move on
+//		}
+//		else {i = 0; while (in[++i] != E) {if(in[i] >= 0) {
+//			Me.myMkt(in[i]).liftOffer(Me);   suspendG(in[i]);
+//		}}} //dont lift in case of - (see above)
+//	}
+//	private void DoWork() {
+//		chosenAct.ponderOrLearn(Me);
+//		incStage();
+//	}
+//	private void DoOutputs() {
+//		int[] out = chosenAct.expOut(Me);
+//		int i = 1; for (; out[i] != E; i++) {
+//			int g = out[i];
+//			if (g == sword || g == mace) {
+//				short x = XWeapon.craftNewWeapon(g, Me.FB.getPrs(P_.SMITHING));
+//				if (x != XWeapon.NULL) {
+//					g = xweapon;
+//					Me.addReport(GobLog.produce(x));
+//					((XWeaponMarket) Me.myMkt(xweapon)).setUpTmpXP(x);
+//				}
+//			}
+//			if (g != xweapon) {Me.addReport(GobLog.produce(g));}
+//			Me.myMkt(g).gainAsset(Me);
+//			Me.myMkt(g).sellFair(Me);
+//		}
+//		Qstack[THIS][STAGE] = 0;
+//	}
 //	public void Finish() {
 //		resetWM();
 //		chosenAct = Job.NullAct;
@@ -237,10 +239,10 @@ public class Questy implements Defs {
 		case NOTHING: setInitStack();   break;
 		case WORK:
 			switch (Qstack[THIS][STAGE]) {
-			case 0: ChooseAct();
-			case 1: DoInputs(); break;
-			case 2: DoWork(); break;
-			case 3: DoOutputs(); break;
+//			case 0: ChooseAct();
+//			case 1: DoInputs(); break;
+//			case 2: DoWork(); break;
+//			case 3: DoOutputs(); break;
 			default: break;
 			} report(); break;
 		case BREED: //TYPE/TARGET/TIMELEFT/COURTSLEFT
@@ -258,20 +260,20 @@ public class Questy implements Defs {
 			break;
 		case FINDMATE: //TYPE/null/TIMELEFT
 			Clan potmate = rando();
-			if ((potmate.getGender() != Me.getGender()) && Me.FB.compareSanc(potmate) < 1) {
-				designate(potmate, TARGET, UP);
-				Qstack[UP][COURTSLEFT] = 16 - potmate.useBeh(M_.PROMISCUITY);
-				Me.addReport(GobLog.findMate(potmate));
-				success(Me.myShire());   break;
-			} else {Me.addReport(GobLog.findMate(null));   loseTime(THIS);}
+//			if ((potmate.getGender() != Me.getGender()) && Me.FB.compareSanc(potmate) < 1) {
+//				designate(potmate, TARGET, UP);
+//				Qstack[UP][COURTSLEFT] = 16 - potmate.useBeh(M_.PROMISCUITY);
+//				Me.addReport(GobLog.findMate(potmate));
+//				success(Me.myShire());   break;
+//			} else {Me.addReport(GobLog.findMate(null));   loseTime(THIS);}
 			if (outOfTime(THIS)) {failure(Me.myShire());}   break;
 		case FINDWEAKLING: //TYPE/null/TIMELEFT
 			Clan weakling = rando();
-			if (Me.FB.compareSanc(weakling) < 0) {
-				designate(weakling, TARGET, UP);
-				Me.addReport(GobLog.findWeakling(weakling));
-				success(Me.myShire());   break;
-			} else {Me.addReport(GobLog.findWeakling(null));   loseTime(THIS);}
+//			if (Me.FB.compareSanc(weakling) < 0) {
+//				designate(weakling, TARGET, UP);
+//				Me.addReport(GobLog.findWeakling(weakling));
+//				success(Me.myShire());   break;
+//			} else {Me.addReport(GobLog.findWeakling(null));   loseTime(THIS);}
 			if (outOfTime(THIS)) {failure(Me.myShire());}   break;
 		case COMPETE4MATE: //TYPE/TARGET/TIMELEFT/PREST/POV/
 			Clan love = pov(THIS);   Clan competition = love.getSuitor();

@@ -20,7 +20,7 @@ public class GobLog {
 	}
 	
 	public static class Book {
-		private static final int LENGTH = 8;
+		private static final int LENGTH = 10;
 		private Reportable[] book = new Reportable[LENGTH];
 		public Book() {for(int i = 0; i < book.length; i++) {book[i] = blank();}}
 		public void addReport(Reportable R) {for (int i = 0; i < book.length-1; i++) {book[i] = book[i+1];} book[book.length-1] = R;}
@@ -57,7 +57,7 @@ public class GobLog {
 
 	public static Reportable transaction(final int g, final int px, final boolean buyNotSell, final Clan other) {
 		return new Reportable() {
-			public String out() {return date()+(buyNotSell? "Bought " : "Sold ") + Naming.goodName(g) + " at price of " + px + " "+(buyNotSell? "from" : "to")+" " + other.getNomen();}
+			public String out() {return (buyNotSell? "Bought " : "Sold ") + Naming.goodName(g) + " at price of " + px + " "+(buyNotSell? "from" : "to")+" " + other.getNomen();}
 		};
 	}
 
@@ -84,20 +84,28 @@ public class GobLog {
 			public String out() {return "Courted " + mate.getNomen() + " successfully";}
 		};
 	}
-	public static Reportable findMate(final Clan mate) {
+
+	public static Reportable findSomeone(final Clan target, final String what) {
 		return new Reportable() {
-			public String out() {return "Searched for mate " + (mate == null ? "but found nobody worthwhile.": "and fell in love with " + mate.getNomen());}
-		};
-	}
-	public static Reportable findWeakling(final Clan mate) {
-		return new Reportable() {
-			public String out() {return "Searched for someone to harass " + (mate == null ? "but found nobody worthwhile.": "and found " + mate.getNomen());}
+			public String out() {return "Searched for " + what + " " + (target == null ? "but found nobody worthwhile.": "and found " + target.getNomen());}
 		};
 	}
 
+
+	public static Reportable converted(final Clan target, final boolean success) {
+		return new Reportable() {
+			public String out() {return (success ? "Converted " : "Failed to convert ") + target.getNomen();}
+		};
+	}
+	public static Reportable wasConverted(final Clan converter, final boolean success) {
+		return new Reportable() {
+			public String out() {return (success ? "Bowed to conversion attempt by " : "Rejected conversion attempt by ") + converter.getNomen();}
+		};
+	}
+	
 	public static Reportable handToHand(final Clan opponent, final boolean winorlose) {
 		return new Reportable() {
-			public String out() {return "Defeated " + (winorlose?"by ":"") + opponent.getNomen() +" in combat.";}
+			public String out() {return "Defeated " + (winorlose?"":"by ") + opponent.getNomen() +" in combat.";}
 		};
 	}
 	
@@ -113,12 +121,12 @@ public class GobLog {
 
 	public static Reportable discovery(final int job) {
 		return new Reportable() {
-			public String out() {return "Discovered a passion for " + AGPmain.TheRealm.getJob(job).getDesc();}
+			public String out() {return "Dreamt of being a " + AGPmain.TheRealm.getJob(job).getDesc();}
 		};
 	}
 	public static Reportable practice(final P_ skill) {
 		return new Reportable() {
-			public String out() {return "Practiced " + Naming.prestName(skill);}
+			public String out() {return Naming.prestName(skill) + "level up!";}
 		};
 	}
 	

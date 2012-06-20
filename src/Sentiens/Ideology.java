@@ -120,6 +120,7 @@ public class Ideology implements Defs {
 		s = 0;   for (Value v : Values.All) {
 			for(int j = 0; j < N; j++) {if (sancs[j] == v) {sancranks[s] = j;}}
 		}
+		Values.All = ArrayUtils.shuffle(Value.class, Values.All); //reshuffle (this line just for testing)
 	}
 	public int[] defaultVars() {
 		int[] V = new int[NUMBEHS + NUMPRESTS + M_.values().length];  //slow?
@@ -135,12 +136,12 @@ public class Ideology implements Defs {
 		for (int i = NUMPRESTS - 1; i >= 0; i--) {V[i] = 0;} //AGPmain.rand.nextInt(15);}
 		return V;
 	}
-	private void randomizeSancs() {
-		for (int i = 0; i < NUMVALS; i++) {
-			int s = AGPmain.rand.nextInt(NUMVALS);
-			sancs[i] = Values.All[s]; sancranks[s] = i; //sancvals[i] = 0;
-		}
-	}
+//	private void randomizeSancs() {
+//		for (int i = 0; i < NUMVALS; i++) {
+//			int s = AGPmain.rand.nextInt(NUMVALS);
+//			sancs[i] = Values.All[s]; sancranks[s] = i; //sancvals[i] = 0;
+//		}
+//	}
 	public void upSMeme(M_ sm) {
 		int smval = getBeh(sm);
 		if (smval < 15) {setBeh(sm, smval + 1);}
@@ -198,9 +199,8 @@ public class Ideology implements Defs {
 		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
 		return sancs[v];
 	}
-//	private final Sanc RandSancInPriority() {return AGPmain.TheRealm.getSanc(randSancInPriority());}
+	public Value getSanc(int i) {return sancs[i];}
 	public Value sancInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
-//	public Sanc SancInPriority(int i) {return AGPmain.TheRealm.getSanc(sancInPriority(i));}
 
 	public int compareSanc(Clan other) { //true if eu > ele
 		int k;   int ihi;
@@ -285,7 +285,7 @@ public class Ideology implements Defs {
 	public String getDiscName(int d) {
 		switch(d) {
 		case CREED: return getDeusName();
-		case LORD: return getRex().getNomen();
+		case LORD: return (Me != getRex() ? getRex().getNomen() : "Self");
 		case HOMELAND: return getHomeland().getName();
 		case ASPIRATION: return getDesJob().getDesc();
 		default: return "";

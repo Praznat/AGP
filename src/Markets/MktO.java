@@ -1,6 +1,8 @@
 package Markets;
 
 
+import Questing.Quest;
+import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Shirage.Shire;
@@ -137,9 +139,12 @@ public class MktO extends MktAbstract {
 		return true;
 	}
 	protected void sendToInventory(Clan buyer) { //, int px) {
-		//placeOffer(buyer, addSpread(px, 2*RATES[buyer.useBeh(BIDASKSPRD)]));
 		gainAsset(buyer);
-		buyer.QB.getG(g);
+		Quest q = buyer.MB.QuestStack.peek();
+		if (q instanceof LaborQuest) {((LaborQuest) q).getG(g); return;}
+		q = buyer.MB.QuestStack.peekUp();  //might as well
+		if (q instanceof LaborQuest) {((LaborQuest) q).getG(g); return;}
+		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not laborquest
 	}
 	protected int fairPX(Clan doer, double flow) {
 		double TechPX = (STAvg + LTAvg + 2 * ((LastPX - STAvg) * doer.useBeh(M_.STMOMENTUM) + 
@@ -343,7 +348,7 @@ public class MktO extends MktAbstract {
 	 * use when string of market actions is finished to get complete detailed briefing
 	 */
 	public void finish() {
-		Log.info(report + RET);
+		//Log.info(report + RET);
 		report = "";
 	}
 

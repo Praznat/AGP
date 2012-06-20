@@ -17,7 +17,7 @@ public class APopupMenu extends JPopupMenu {
 		for (Do.Thing D : dothings) {
 			add(AMenuItem.createNew(D));
 		}
-		show(parent, parent.getMousePosition().x, parent.getMousePosition().y);
+		show(parent, parent.getMousePosition().x-5, parent.getMousePosition().y-5);
 	}
 	
 
