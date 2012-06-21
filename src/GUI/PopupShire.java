@@ -19,7 +19,6 @@ public class PopupShire extends PopupAbstract {
 	public static final int BUILDINGS = 2;
 	public static final int MARKETS = 3;
 	public static final int HISTORY = 4;
-	public static String INFO[] = new String[5];
 	
 	public PopupShire(GUImain P) {
 		super(P);
@@ -33,7 +32,6 @@ public class PopupShire extends PopupAbstract {
 		selectedVGs[POPULATION] = new int[] {0,5,4,6,2};
 		selectedVGs[MARKETS] = new int[] {0,1,2,5,6,7,3,4};
 		
-		cb = new JComboBox(INFO);
 		for(int i = 0; i < infoboxes.length; i++) {
 			infoboxes[i] = new TableSlidePanel(this, i);
 			info.add(infoboxes[i], INFO[i]);
@@ -71,8 +69,16 @@ public class PopupShire extends PopupAbstract {
     public int selectedVGLength(int t) {return selectedVGs[t].length;}
     public int getVG(int t, int plc) {return selectedVGs[t][plc];}
     
+    @Override
+	protected void hideUnhideStuff() {
+		super.hideUnhideStuff();
+		infoboxes[0].setVisible(vizible);
+	}
     
     public void mouseClicked(MouseEvent e) {
-    	loadShire(AGPmain.TheRealm.getRandClan().myShire());
+    	if (hideUnhide(e.getY())) {return;}
+    	if (vizible) {
+    		loadShire(AGPmain.TheRealm.getRandClan().myShire());
+    	}
     }
 }

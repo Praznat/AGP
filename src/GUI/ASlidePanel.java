@@ -14,10 +14,10 @@ import GUI.TextDisplay.Papyrus;
 public class ASlidePanel extends JPanel implements MouseListener, MouseMotionListener {
 	protected Point VPos;
 	protected int tmpX, tmpY, maxH, maxW;
-	protected APanel parent;
+	protected PopupAbstract parent;
 	protected Papyrus[] scroll;
 	
-	public ASlidePanel(APanel P) {
+	public ASlidePanel(PopupAbstract P) {
 		super();
 		parent = P;
 		VPos = new Point(0,0);

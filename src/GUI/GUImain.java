@@ -1,6 +1,8 @@
 package GUI;
 import AMath.Calc;
+import Avatar.AvatarConsole;
 import Game.AGPmain;
+import Sentiens.Clan;
 
 
 import javax.swing.*;
@@ -12,6 +14,7 @@ public class GUImain extends JFrame {
 	public MapDisplay MD;
 	public PopupFace GM;
 	public PopupShire SM;
+	public AvatarConsole AC;
 	private static final double MW = 0.4;
 	private static final double MH = 0.85;
 	public GUImain(String title) {
@@ -51,6 +54,13 @@ public class GUImain extends JFrame {
 		int MHGT = getContentPane().getHeight();
 		SM.setBounds((int)((1-MW)*MWID*6/7), (int)((1-MH)*MHGT/2), (int)(MW*MWID),  (int)(MH*MHGT));
 		SM.setVisible(true);
+	}
+	public void initializeAC(Clan avatar) {
+		AC = AvatarConsole.create();
+		AC.setAvatar(avatar);
+		this.getLayeredPane().add(AC, new Integer(3));
+		AC.setBounds(0,0,100,100);
+		AC.setVisible(true);
 	}
 	public void movePopup(PopupAbstract P, int x, int y) {
 		P.setLocation(Calc.bound(x, 0, (int)(getContentPane().getWidth()*(1-MW))),

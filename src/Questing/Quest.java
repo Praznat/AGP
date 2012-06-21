@@ -1,7 +1,13 @@
 package Questing;
 
+import Defs.Q_;
 import Game.AGPmain;
+import Questing.PersecutionQuests.PersecuteForeigner;
+import Questing.PersecutionQuests.PersecuteHeretic;
+import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.RomanceQuests.BreedQuest;
+import Questing.OrderQuests.LoyaltyQuest;
+import Questing.WorkQuests.BuildWealthQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Sentiens.Stressor;
@@ -49,5 +55,21 @@ public abstract class Quest {
 			}
 			failure(Me.myShire());
 		}
+	}
+	
+	
+	
+	public static Quest QtoQuest(Clan clan, Q_ q) {
+		Quest quest;
+		switch(q) {
+		case BREED: quest = new BreedQuest(clan); break;
+		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
+		case LOYALTYQUEST: quest = new LoyaltyQuest(clan); break;
+		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
+		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
+		case PERSECUTEFOREIGNER: quest = new PersecuteForeigner(clan); break;
+		default: quest = new DefaultQuest(clan); break;
+		}
+		return quest;
 	}
 }

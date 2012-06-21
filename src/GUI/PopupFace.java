@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*; 
 import javax.swing.*;
 
+import AMath.Calc;
 import GUI.TextDisplay.NameScroll;
 import GUI.TextDisplay.Papyrus;
 import Game.AGPmain;
@@ -12,40 +13,37 @@ import Sentiens.Clan;
 
 public class PopupFace extends PopupAbstract {
 	private Clan curClan;
-	private Face portrait;
-	private ScrollSlidePanel infobox1, infobox2, infobox3, infobox4, infobox5, infobox6;
-	public final static String INFO1 = "BASIC INFO";
-	public final static String INFO2 = "VALUES";
-	public final static String INFO3 = "SKILLS & PRESTIGE";
-	public final static String INFO4 = "BEHAVIORAL TENDENCIES";
-	public final static String INFO5 = "QUEST";
-	public final static String INFO6 = "ORDER";
+	private FaceAnimated portrait;
+	private ScrollSlidePanel[] infoboxes = new ScrollSlidePanel[6];
+	public static final int BASIC = 0;
+	public static final int VALUES = 1;
+	public static final int PRESTS = 2;
+	public static final int BEHS = 3;
+	public static final int QUESTS = 4;
+	public static final int ORDER = 5;
 	
 
 	
 	public PopupFace(GUImain P) {
 		super(P);
-		portrait = new Face();
+
+		INFO[BASIC] = "BASIC INFO";
+		INFO[VALUES] = "VALUES";
+		INFO[PRESTS] = "SKILLS & PRESTIGE";
+		INFO[BEHS] = "BEHAVIORAL TENDENCIES";
+		INFO[QUESTS] = "QUEST";
+		INFO[ORDER] = "ORDER";
+		
+		portrait = new FaceAnimated();
 		add(portrait);
-		cb = new JComboBox(new String[] {INFO1, INFO2, INFO3, INFO4, INFO5, INFO6}); 
-		infobox1 = new ScrollSlidePanel(this, Papyrus.basicS(this));
-		infobox2 = new ScrollSlidePanel(this, Papyrus.sancS(this));
-		infobox3 = new ScrollSlidePanel(this, Papyrus.prestS(this));
-		infobox4 = new ScrollSlidePanel(this, Papyrus.behS(this));
-		infobox5 = new ScrollSlidePanel(this, Papyrus.questS(this));
-		infobox6 = new ScrollSlidePanel(this, Papyrus.prestS(this));
-		info.add(infobox1, INFO1);
-		info.add(infobox2, INFO2);
-		info.add(infobox3, INFO3);
-		info.add(infobox4, INFO4);
-		info.add(infobox5, INFO5);
-		info.add(infobox6, INFO6);
-		slider.addCon(INFO1);
-		slider.addCon(INFO2);
-		slider.addCon(INFO3);
-		slider.addCon(INFO4);
-		slider.addCon(INFO5);
-		slider.addCon(INFO6);
+		//cb = new JComboBox(new String[] {INFO1, INFO2, INFO3, INFO4, INFO5, INFO6}); 
+		infoboxes[0] = new ScrollSlidePanel(this, Papyrus.basicS(this));
+		infoboxes[1]  = new ScrollSlidePanel(this, Papyrus.sancS(this));
+		infoboxes[2]  = new ScrollSlidePanel(this, Papyrus.prestS(this));
+		infoboxes[3]  = new ScrollSlidePanel(this, Papyrus.behS(this));
+		infoboxes[4]  = new ScrollSlidePanel(this, Papyrus.questS(this));
+		infoboxes[5]  = new ScrollSlidePanel(this, Papyrus.orderS(this));
+		for (int i = 0; i < 6; i++) {info.add(infoboxes[i], INFO[i]); slider.addCon(INFO[i]);}
 	}
 	public void setBounds(int x, int y, int w, int h) {
 		super.setBounds(x,y,w,h);
@@ -57,9 +55,9 @@ public class PopupFace extends PopupAbstract {
 		slider.refresh();
 	}
 	public void setState() {  //just to load in the beginning right
-		setState(INFO2, 1);
+		setState(INFO[1], 1);
 		loadClan();
-    	setState(INFO1, 0);
+    	setState(INFO[0], 0);
 	} 
 
 	public Clan getClan() {return curClan;}
@@ -69,19 +67,24 @@ public class PopupFace extends PopupAbstract {
     	curClan = c;
     	namebox.setNomen(curClan.getNomen());
     	portrait.redefine(curClan);
-    	infobox1.redefineClan();
-    	infobox2.redefineClan();
-    	infobox3.redefineClan();
-    	infobox4.redefineClan();
-    	infobox5.redefineClan();
-    	infobox6.redefineClan();
+    	//portrait.redefine(curClan, 0.45, 0.5);
+    	for (ScrollSlidePanel s : infoboxes) {s.redefineClan();}
     	initialized = true;
     }
 	
+    @Override
+	protected void hideUnhideStuff() {
+		super.hideUnhideStuff();
+		portrait.setVisible(vizible);
+		infoboxes[0].setVisible(vizible);
+	}
 
     public void mouseClicked(MouseEvent e) {
-    	AGPmain.TheRealm.goOnce();
-    	loadClan(AGPmain.TheRealm.getRandClan());
-    	AGPmain.mainGUI.SM.loadShire();
+    	if (hideUnhide(e.getY())) {return;}
+    	if (vizible) {
+    		AGPmain.TheRealm.goOnce();
+    		loadClan(AGPmain.TheRealm.getRandClan());
+    		AGPmain.mainGUI.SM.loadShire();
+    	}
     }
 }

@@ -49,13 +49,13 @@ public class BehName {
 		case VANITY: descs = new String[] {}; break;
 		case EXTROVERSION: descs = new String[] {"Recluse","Prefers to be alone","Enjoys the company of others","Very outgoing and social"}; break;
 		case PATIENCE: descs = new String[] {"No patience whatsoever","Fairly impatient","Patient","Very patient"}; break;
-		case PARANOIA: descs = new String[] {"Paranoid schizophrenic","Risk averse","Fearless","Loves to take risks"}; break;
+		case PARANOIA: descs = new String[] {"Paranoid schizophrenic","Risk averse","Likes to take risks","Fearless"}; break;
 		case STRICTNESS: descs = new String[] {"Moral relativist","Open-minded","Narrow-minded","Fundamentalist"}; break;
-		case DOGMA: descs = new String[] {"Believes in the gods of others","Philosophically curious","Prefers to follow a single creed","Staunch monotheist"}; break;
+		case DOGMA: descs = new String[] {"Respects the gods of others","Philosophically curious","Prefers to follow a single creed","Staunch monotheist"}; break;
 		case SUPERST: descs = new String[] {"Skeptical and materialistic","Dismissive of superstition","Supersitious","Bows to the will of the heavens"}; break;
 		case CONFIDENCE: descs = new String[] {"No self-confidence","Humble","Confident","Overconfident"}; break;
 		case AGGR: descs = new String[] {}; break;
-		case MIERTE: descs = new String[] {"Welcomes death with open arms","Not afraid to die","Fond of living","Prizes own life above all else"}; break;
+		case MIERTE: descs = new String[] {"Welcomes death with open arms","Not afraid to die","Fond of living","Dreads the afterlife"}; break;
 		case WORKETHIC: descs = new String[] {}; break;
 		case OCD: descs = new String[] {"Dirty","Unwashed","Likes things to be clean and neat","Obsessive-compulsive"}; break;
 		case PROMISCUITY: descs = new String[] {"Puritanical","Prefers celibacy","Lecherous","Uncontrollable urges"}; break;

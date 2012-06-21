@@ -23,7 +23,7 @@ public class Realm {
 	private VarGetter[] MktVarGetters;
 
 	//private int[][] jobs;
-	private Clan Avatar;
+//	private Clan Avatar;
 
 	public Realm(int pX, int pY, int cN) {
 		shiresX = pX;
@@ -38,7 +38,7 @@ public class Realm {
 		//for (int s = 0; s < shdata.length; s++) {
 		//	shdata[s] = new ShireData();
 		//}
-		newRealm.Avatar = newRealm.population[0];
+//		newRealm.Avatar = newRealm.population[0];
 		return newRealm;
 	}
 	public void setupDefs() {
@@ -122,8 +122,8 @@ public class Realm {
 		}
 	}
 
-	public Clan getAvatar() {return Avatar;}
-	public void setAvatar(Clan C) {Avatar = C;}
+//	public Clan getAvatar() {return Avatar;}
+//	public void setAvatar(Clan C) {Avatar = C;}
 	public int getNumShires() {return shiresX*shiresY;}
 	public Shire getShire(int x, int y) {return shires[x + y*shiresX];}
 	public Shire getShire(int xy) {return shires[xy];}

@@ -2,6 +2,10 @@ package Game;
 import java.applet.Applet;
 import java.awt.Color;
 import java.util.Random;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import AMath.Calc;
 import AMath.Testing;
 import GUI.FaceGoblin;
@@ -31,11 +35,15 @@ public class AGPmain extends Applet {
 	
 	
 	public void init() {
-		this.setBackground(Color.gray);
+		
+//		this.setBackground(Color.gray);
 	}
 	
 	public void start() {
+		
 
+		setLookAndFeel();
+		
 		long start = System.nanoTime();  
 		
 		mainGUI = new GUImain("AGP");
@@ -46,6 +54,7 @@ public class AGPmain extends Applet {
 		//mainGUI.initializeTD(TheRealm.getShireData());
 		mainGUI.initializeGM();
 		mainGUI.initializeSM();
+		mainGUI.initializeAC(TheRealm.getClan(0));
 		Do.ShowRandomGoblin.doit();
 		Do.ShowRandomShire.doit();
 		mainGUI.GM.setState();
@@ -69,6 +78,19 @@ public class AGPmain extends Applet {
 	public static int getShiresX() {return mainGUI.MD.getTCols() / 3;}
 	public static int getShiresY() {return mainGUI.MD.getTRows() / 3;}
 
+	private static void setLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }
 

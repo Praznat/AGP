@@ -10,7 +10,9 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import AGraphics.Imagery;
+import AMath.Calc;
 import GUI.TextDisplay.Papyrus;
+import Game.AGPmain;
 
 public class AconSelector extends JPanel implements MouseListener {
 	private Rectangle[] Acons = {};
@@ -59,15 +61,18 @@ public class AconSelector extends JPanel implements MouseListener {
     	}
     }
     private void drawIcon(Graphics g, int x, int y, int radius, String type) {
-    	if (type == PopupFace.INFO1) {Imagery.drawInfoSign(g, x, y, radius); return;}
-    	if (type == PopupFace.INFO2) {Imagery.drawEye(g, x, y, radius); return;}
-    	if (type == PopupFace.INFO3) {Imagery.drawStar(g, x, y, radius); return;}
-    	if (type == PopupFace.INFO4) {Imagery.drawMemSign(g, x, y, radius); return;}
-    	if (type == PopupFace.INFO5) {Imagery.drawFlag(g, x, y, radius); return;}
-
-    	if (type == PopupShire.INFO[0]) {Imagery.drawCTreeFromTopRight(g, x, y, radius*2); return;}
-    	if (type == PopupShire.INFO[1]) {Imagery.drawStickFigure(g, x, y, radius); return;}
-    	if (type == PopupShire.INFO[3]) {Imagery.drawMilletSign(g, x, y, radius); return;}
+    	if (parent instanceof PopupFace) {
+    		if (type == parent.INFO[0]) {Imagery.drawInfoSign(g, x, y, radius); return;}
+    		if (type == parent.INFO[1]) {Imagery.drawEye(g, x, y, radius); return;}
+    		if (type == parent.INFO[2]) {Imagery.drawStar(g, x, y, radius); return;}
+    		if (type == parent.INFO[3]) {Imagery.drawMemSign(g, x, y, radius); return;}
+    		if (type == parent.INFO[4]) {Imagery.drawFlag(g, x, y, radius); return;}
+    	}
+    	else {
+    		if (type == parent.INFO[0]) {Imagery.drawCTreeFromTopRight(g, x, y, radius*2); return;}
+    		if (type == parent.INFO[1]) {Imagery.drawStickFigure(g, x, y, radius); return;}
+    		if (type == parent.INFO[3]) {Imagery.drawMilletSign(g, x, y, radius); return;}
+    	}
     }
 	public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}

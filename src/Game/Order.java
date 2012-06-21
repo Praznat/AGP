@@ -6,10 +6,10 @@ import java.util.Set;
 import Descriptions.GobName;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Sentiens.Clan;
+import Shirage.Shire;
 
 public class Order {
 	
-	private static Set<Clan> moversLedger = new HashSet<Clan>();
 
 	public interface Serveable {}
 	private Serveable seatOfPower;   //clan, shire, or creed
@@ -37,19 +37,19 @@ public class Order {
 	public void addMember(Clan m) {members.add(m); m.setOrder(this);}
 	public void removeMember(Clan m) {if (m == ruler) {selfDestruct(); return;} else {members.remove(m);}}
 	public void selfDestruct() {members.clear();}
+	
 	public void moveTo(Clan clan, Order newOrder) {
-		int N = clan.getMinionNumber() + 1;
-		for (Clan m : members) {
-			if (N <= 0) {break;}
-			if (clan == m || clan.isSomeBossOf(m)) {N--; moversLedger.add(m); m.setOrder(newOrder);}
-		}
-		newOrder.addMembers(moversLedger);
-		this.members.removeAll(moversLedger);
-		moversLedger.clear();
+		Set<Clan> movers = Ledger.getFollowers(clan, true);
+		for (Clan mover : movers) {mover.setOrder(newOrder);}
+		newOrder.addMembers(movers);
+		this.members.removeAll(movers);
 	}
 	
 	public Clan getRuler() {return ruler;}
+	public int size() {return members.size();}
 	
+	public Set<Clan> getFollowers(Clan leader, boolean includeMe) {return Ledger.getFollowers(leader, includeMe);}
+	public Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe) {return Ledger.getFollowers(leader, place, includeMe);}
 	
 	public void getQuest(Clan requester) {
 		requester.MB.newQ(new PersecuteInfidel(requester));
@@ -91,4 +91,30 @@ public class Order {
 	}
 	
 	
+	private static class Ledger {
+		private static Set<Clan> pop = new HashSet<Clan>();
+
+		public static Set<Clan> getFollowers(Clan leader, boolean includeMe) {
+			pop.clear();
+			int N = leader.getMinionNumber() + (includeMe ? 1 : 0);
+			for (Clan m : leader.myOrder().getMembers()) {
+				if (N <= 0) {break;}
+				if ((leader == m && includeMe) || leader.isSomeBossOf(m)) {N--; pop.add(m);}
+			}
+			return pop;
+		}
+		public static Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe) {
+			pop.clear();
+			int N = leader.getMinionNumber() + (includeMe ? 1 : 0);
+			for (Clan m : leader.myOrder().getMembers()) {
+				if (N <= 0) {break;}
+				if (m.myShire() == place && ((leader == m && includeMe) || leader.isSomeBossOf(m))) {N--; pop.add(m);}
+			}
+			return pop;
+		}
+	}
+	
+	
 }
+
+

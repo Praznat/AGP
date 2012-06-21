@@ -23,7 +23,7 @@ public class QuestScroll extends Papyrus {
 			refreshWid(g, S);
 		}
 		r = REPORTSTART;
-		g.drawString("Recent actions:", 2, BHGT+BHGT*r++);
+		g.drawString("GobLog:", 2, BHGT+BHGT*r++);
 		Reportable[] report = clan.getLog();
 		for (Reportable R : report) {
 			S = R.out();

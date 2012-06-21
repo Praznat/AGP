@@ -137,7 +137,7 @@ public class VarGetter implements Defs {
 			case SHIRENAME: return dude.myShire().getName();
 			}
 		case CLANDISCS: return dude.FB.getDiscName(var);
-		case CLANRANKSANCS: return dude.FB.sancInPriority(var).toString();
+		case CLANRANKSANCS: return dude.FB.valueInPriority(var).toString();
 		case CLANSANCPCTS: return getVarInt(dude) + "%";
 		case CLANPRESTS: case CLANBEHS: return (int) Math.round((double)getVarInt(dude) / 16) + "%";
 		}

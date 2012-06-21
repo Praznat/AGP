@@ -199,8 +199,11 @@ public class Ideology implements Defs {
 		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
 		return sancs[v];
 	}
-	public Value getSanc(int i) {return sancs[i];}
-	public Value sancInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
+	public Value getValue(int i) {return sancs[i];}
+	public Value valueInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
+	public Value strongerOf(Value A, Value B) {
+		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;
+	}
 
 	public int compareSanc(Clan other) { //true if eu > ele
 		int k;   int ihi;
@@ -262,20 +265,20 @@ public class Ideology implements Defs {
 	public int getSancPct(Value sanc) {
 		int count = 0;   int L = FSM[0].length;
 		for (int i = 0; i < L; i++) {
-			if (sancInPriority(i) == sanc) {count++;}
+			if (valueInPriority(i) == sanc) {count++;}
 		}
 		return (int) Math.round(100 * (double)count / L);
 	}
 	public int getSancPcts(Value[] Sncs, double[] Pcts) {
 		int c = 1;   int n = 1;   int L = FSM[0].length;
 		for (int i = 1; i < L; i++) {
-			if (sancInPriority(i) != sancInPriority(i-1)) {
-				Sncs[c - 1] = sancInPriority(i-1);
+			if (valueInPriority(i) != valueInPriority(i-1)) {
+				Sncs[c - 1] = valueInPriority(i-1);
 				Pcts[c - 1] = 100*(double) n / L;
 				c++;   n = 1;
 			} else {n++;}
 		}
-		Sncs[c-1] = sancInPriority(L-1);
+		Sncs[c-1] = valueInPriority(L-1);
 		Pcts[c-1] = 100*(double) n / L;
 		return c;
 	}

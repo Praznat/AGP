@@ -166,7 +166,7 @@ public class GobName {
 	public static String fullName(Clan goblin) {return fullName(goblin, goblin.getFirstName(), 0);}
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
-		Value V = goblin.FB.getSanc(i);
+		Value V = goblin.FB.getValue(i);
 		if (V == Values.LOYALTY || V == Values.WEALTH || V == Values.NUMVASSALS || V == Values.ORDERMORALE || V == Values.DEFERENCE || V == Values.FEAR || V == Values.MONUMENTS) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {

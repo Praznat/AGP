@@ -36,37 +36,44 @@ public class Papyrus extends JPanel {
 
 	public static Papyrus[] basicS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[2];
-		s[0] = new NameScroll(P, PopupFace.INFO1, 12);
+		s[0] = new NameScroll(P, P.INFO[0], 12);
 		s[1] = new DiscScroll(P);
+		return s;
+	}
+	public static Papyrus[] sancS(PopupAbstract P) {
+		Papyrus[] s = new Papyrus[2];
+		s[0] = new NameScroll(P, P.INFO[1], 12);
+		s[1] = new SancScroll(P);
 		return s;
 	}
 	public static Papyrus[] prestS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[1 + P_.length()-1];
-		s[0] = new NameScroll(P, PopupFace.INFO3, 12);
+		s[0] = new NameScroll(P, P.INFO[2], 12);
 		for(int i = 1; i < s.length; i++) {s[i] = new PrestScroll(P, i);}
 		return s;
 	}
 	public static Papyrus[] behS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[2];  //slow?
-		s[0] = new NameScroll(P, PopupFace.INFO4, 12);
+		s[0] = new NameScroll(P, P.INFO[3], 12);
 		s[1] = new MemScroll(P);
-		return s;
-	}
-	public static Papyrus[] sancS(PopupAbstract P) {
-		Papyrus[] s = new Papyrus[2];
-		s[0] = new NameScroll(P, PopupFace.INFO2, 12);
-		s[1] = new SancScroll(P);
 		return s;
 	}
 	public static Papyrus[] questS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[2];
-		s[0] = new NameScroll(P, PopupFace.INFO5, 12);
+		s[0] = new NameScroll(P,  P.INFO[4], 12);
 		s[1] = new QuestScroll(P);
+		return s;
+	}
+	public static Papyrus[] orderS(PopupAbstract P) {
+		Papyrus[] s = new Papyrus[2];
+		s[0] = new NameScroll(P,  P.INFO[5], 12);
+		s[1] = new OrderRowScroll(P);
+		((OrderRowScroll)s[1]).calcRealizedSize();
 		return s;
 	}
 	public static Papyrus[] shirepopS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[3];
-		s[0] = new NameScroll(P, PopupShire.INFO[1], 12);
+		s[0] = new NameScroll(P,  P.INFO[1], 12);
 		s[1] = new NameScroll(P, "category selection...", 12);
 		s[2] = new ClanRowScroll(P);
 		((ClanRowScroll)s[2]).calcRealizedSize();
@@ -74,7 +81,7 @@ public class Papyrus extends JPanel {
 	}
 	public static Papyrus[] shiremktS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[3];
-		s[0] = new NameScroll(P, PopupShire.INFO[3], 12);
+		s[0] = new NameScroll(P, P.INFO[3], 12);
 		s[1] = new NameScroll(P, "category selection...", 12);
 		s[2] = new MarketRowScroll(P);
 		((MarketRowScroll)s[2]).calcRealizedSize();

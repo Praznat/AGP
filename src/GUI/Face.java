@@ -43,6 +43,9 @@ public class Face extends JPanel {
 	protected int r;
 	protected Hairstyle headhair;
 	protected Hairstyle chinhair;
+	protected Clan gobCache;
+	protected double resize;
+	protected double blursize;
 	protected boolean female;
 	protected Parte[] partez;
 	protected Nariz naso;
@@ -57,8 +60,8 @@ public class Face extends JPanel {
 	protected Color hcol;
 	protected Color hcol2;
 	protected Color eyecol;
-	protected int ringlen = 14;
-	protected int ringwid = 6;
+	protected int ringlen;
+	protected int ringwid;
 	protected int x,y,w,h;
 	
 	
@@ -68,6 +71,10 @@ public class Face extends JPanel {
 	protected int EARH, EARW, EART, EARD;
 	protected int SKINR, SKING, SKINB;
 	protected int HAIRL, HAIRC, HAIRW, HAIRR, HAIRG, HAIRB, HAIRX, HAIRS;
+	protected int EARMINWID, NOSEMINWID, MAXMOUTHOPEN;
+	protected double EARMINT;
+	
+
 	
 	
 	public Face() {
@@ -80,7 +87,8 @@ public class Face extends JPanel {
 	public void paintComponent(Graphics gx) {
 		super.paintComponent(gx);
 		if (!loaded) {return;}
-		gx.drawImage(offscreen,0,0,getWidth(),getHeight(),this);
+		if (blursize < 1) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
+		gx.drawImage(offscreen,0,0,(int)(getWidth()*blursize),(int)(getHeight()*blursize),this);
 	}
 	public void paintFace() {
 		offscreen = new BufferedImage(900,900, BufferedImage.TYPE_INT_ARGB);
@@ -95,14 +103,51 @@ public class Face extends JPanel {
 		partez[MIRO].paintPart(g);
 		partez[NASO].paintPart(g);
 		partez[NASO].megafix();
-		if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
+		//if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
+	}
+	
+	public void resize(double factor) {
+		loadAttributes(gobCache.FB);
+		resize = factor;
+		NOSERX *= factor;
+		NOSERY *= factor;
+		NOSELX *= factor;
+		NOSELY *= factor;
+		NOSELW *= factor;
+		NOSEMW *= factor;
+		NOSERW *= factor;
+		MOUTHBX *= factor;
+		MOUTHBY *= factor;
+		MOUTHC *= factor;
+		MOUTHLH *= factor;
+		MOUTHLW *= factor;
+		MOUTHJH *= factor;
+		MOUTHJW *= factor;
+		EYERW *= factor;
+		EYELW *= factor;
+		EYEHGT *= factor;
+		EYESPRD *= factor;
+		EARH *= factor;
+		EARW *= factor;
+		EART *= factor;
+		EARD *= factor;
+		HAIRL *= factor;
+		HAIRW *= factor;
+		EARMINT *= factor;
+		EARMINWID *= factor;
+		NOSEMINWID *= factor;
+		MAXMOUTHOPEN *= factor;
+		ringlen *= factor;
+		ringwid *= factor;
+		redefine();
 	}
 	
 	public int fix(int in, int lo, int hi) {
 		return (int) Math.round(((double)in * (hi - lo) / 15) + lo);
 	}
 	public void loadAttributes(Ideology I) {
+		resize = 1;
 		NOSERX = fix(I.getFac(F_.NOSERX), 3, 20);
 		NOSERY = fix(I.getFac(F_.NOSERY), -5, 10);
 		NOSELX = fix(I.getFac(F_.NOSELX), 3, 20);
@@ -139,6 +184,12 @@ public class Face extends JPanel {
 		HAIRB = fix(I.getFac(F_.HAIRB), 0, 255);
 		HAIRX = fix(I.getFac(F_.HAIRX), 20, 99);
 		HAIRS = fix(I.getFac(F_.HAIRS), 0, 9);
+		EARMINT = 0.2;
+		EARMINWID = 20;
+		NOSEMINWID = 8;
+		MAXMOUTHOPEN = 12;
+		ringlen = 14;
+		ringwid = 6;
 	}
 	
 
@@ -642,7 +693,6 @@ public class Face extends JPanel {
 		public static final int NLOWER = 2;
 		public static final int TRIL = 3;
 		
-		protected static final int minwid = 8;
 		
 		protected int[][] tops;
 		protected int[][] bottoms;
@@ -675,7 +725,7 @@ public class Face extends JPanel {
 		
 		public void refix() {
 			for (int i = 0; i < 3; i++) {
-				K[NLOWER].setPointY(Math.max(K[NLOWER].getPoint(2-i)[1], minwid + K[NUPPER].getPoint(i)[1]), 2-i);
+				K[NLOWER].setPointY(Math.max(K[NLOWER].getPoint(2-i)[1], NOSEMINWID + K[NUPPER].getPoint(i)[1]), 2-i);
 			}
 			//K[NLOWER].setPointY(Math.max(2*minwid + K[NUPPER].startPoint()[1], K[NLOWER].endPoint()[1]), K[NLOWER].numPoints()-1);
 			
@@ -739,7 +789,7 @@ public class Face extends JPanel {
 			K = new GKata[7];
 			baseXY = new int[] {base[0], base[1]};
 			pointiness = (double) MOUTHP / 15;
-			openness = randInt(12);
+			openness = randInt(MAXMOUTHOPEN);
 			height = MOUTHLH;
 			refix();
 		}
@@ -753,11 +803,11 @@ public class Face extends JPanel {
 			openness = Math.max(0, Math.min(openness, 12));
 			pointiness = Math.max(0, Math.min(pointiness, 1));
 			cavity = Math.min(Math.max(cavity, -50), 150);
-			height = Math.min(Math.max(height, 2), 10);
+			height = Math.min(Math.max(height, (int)(resize*2)), (int) (resize*10));
 			width = Math.min(Math.max(width, 3*height/2), 60);
 			jawheight = Math.max(10, Math.max(jawheight, height + (int)(pointiness*height) + cavity/4));
 			LbaseXY[0] = Math.max(Math.min(baseXY[0] - width/10, LbaseXY[0]), baseXY[0] - width);
-			LbaseXY[1] = Math.min(baseXY[1] + height + 20, Math.max(baseXY[1] + height + 4, LbaseXY[1]));
+			LbaseXY[1] = Math.min(baseXY[1] + height + 20, Math.max(baseXY[1] + height + (int)(resize*4), LbaseXY[1]));
 			int[][] BN = new int[3][2];
 			BN[0][0] = baseXY[0];   BN[0][1] = baseXY[1];
 			BN[1][0] = baseXY[0] + (LbaseXY[0]- baseXY[0])*3/5;;   BN[1][1] = baseXY[1] + (LbaseXY[1]- baseXY[1])*3/5;
@@ -825,7 +875,7 @@ public class Face extends JPanel {
 			g.drawPolyline(shape.getX(), shape.getY(), shape.length());
 
 
-			if (!female) {
+			if (!female && resize >= 0.5) {
 				GCombo beard = new GCombo(new GKata[] {K[JAW], BL});
 				GCombo wrinkle = new GCombo(new GKata[] {K[WRINKLE]});
 				g.setColor(dcol);
@@ -1056,7 +1106,7 @@ public class Face extends JPanel {
 
 			Eheight = EARH;
 			Ewidth = EARW;
-			thickness = 0.2 + 0.8 * EART / 15;
+			thickness = EARMINT + 0.8 * EART / 15;
 			droop = EARD;
 			
 			refix();
@@ -1064,7 +1114,7 @@ public class Face extends JPanel {
 		
 
 		public void refix() {
-			Ewidth = Math.max(Ewidth, 20);
+			Ewidth = Math.max(Ewidth, EARMINWID);
 			thickness = Math.min(Math.max(thickness, 0), 1);
 			int[] bEnd = partez[MIRO].getRightEdge();
 			int[] jEnd = partez[BESO].getJawArrow().getXY();
@@ -1247,8 +1297,20 @@ public class Face extends JPanel {
 		repaint();
 	}
 	public void redefine(Clan gob) {
-    	this.loadAttributes(gob.FB);
-    	if (gob.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
+		gobCache = gob;
+		this.loadAttributes(gobCache.FB);
+		blursize = 1;
+		redefine();
+	}
+	public void redefine(Clan gob, double rx, double bx) {
+		gobCache = gob;
+		resize(rx); //already loads attributes
+		blursize = bx;
+		redefine();
+	}
+	public void redefine() {
+//		if (gobCache == null) {return;}
+    	if (gobCache.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
 		
 		int green = SKING;
 		int red = green + SKINR * (241 - green)/2/99; //randInt((241 - green)/2);
@@ -1257,7 +1319,7 @@ public class Face extends JPanel {
 		dcol = scol.darker();
 		hcol = new Color(HAIRR, HAIRG, HAIRB); 
 		hcol2 = hcol.darker();
-		final int ec = Math.max((int) Math.round(255 - gob.AB.getStressLevel()*255), 0);
+		final int ec = Math.max((int) Math.round(255 - gobCache.AB.getStressLevel()*255), 0);
 		eyecol = new Color(255, ec, ec);
     	headhair = new Hairstyle();
     	chinhair = new Hairstyle();

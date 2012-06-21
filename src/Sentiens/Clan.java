@@ -14,7 +14,7 @@ import Game.Order;
 import Markets.*;
 import Questing.Quest;
 import Questing.Quest.DefaultQuest;
-import Questing.RuleQuests.LoyaltyQuest;
+import Questing.OrderQuests.LoyaltyQuest;
 import Questing.PersecutionQuests.*;
 import Questing.RomanceQuests.BreedQuest;
 import Questing.WorkQuests.BuildWealthQuest;
@@ -98,17 +98,8 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable {
 
 	public void pursue() {
 		if (MB.QuestStack.empty()) {
-			Quest quest;
 			Q_ q = FB.randomValueInPriority().pursuit(this);
-			switch(q) {
-			case BREED: quest = new BreedQuest(this); break;
-			case BUILDWEALTH: quest = new BuildWealthQuest(this); break;
-			case LOYALTYQUEST: quest = new LoyaltyQuest(this); break;
-			case PERSECUTEHERETIC: quest = new PersecuteHeretic(this); break;
-			case PERSECUTEINFIDEL: quest = new PersecuteInfidel(this); break;
-			case PERSECUTEFOREIGNER: quest = new PersecuteForeigner(this); break;
-			default: quest = new DefaultQuest(this); break;
-			}
+			Quest quest = Quest.QtoQuest(this, q);
 			MB.QuestStack.add(quest);
 		}
 		MB.QuestStack.peek().pursue();
