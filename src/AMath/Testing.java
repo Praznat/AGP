@@ -51,6 +51,7 @@ public class Testing {
 	}
 
 	public static void ideologyInteractions() {
+		if (true) return;
 		Clan greyjoy = AGPmain.TheRealm.getClan(0);
 		Clan stark = AGPmain.TheRealm.getClan(1);
 		Clan theon = AGPmain.TheRealm.getClan(2);

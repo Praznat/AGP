@@ -204,6 +204,9 @@ public class Ideology implements Defs {
 	public Value strongerOf(Value A, Value B) {
 		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;
 	}
+	public int compareValues(Value A, Value B) {
+		for (Value v : sancs) {if (v == A) return -1; else if (v == B) return 1;} return 0;
+	}
 
 	public int compareSanc(Clan other) { //true if eu > ele
 		int k;   int ihi;

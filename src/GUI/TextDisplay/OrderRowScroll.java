@@ -13,16 +13,19 @@ import Sentiens.Clan;
 
 public class OrderRowScroll extends TableRowScroll {
 	
-	private static final Comparator<Clan> NUMMINION_ORDER = new Comparator<Clan>() {
+	private static final Comparator<Clan> ORDER_ORDER = new Comparator<Clan>() {
 		@Override
 		public int compare(Clan o1, Clan o2) {
-			int s = (int)Math.signum(o2.getMinionNumber() - o1.getMinionNumber());
+			if (o2.myOrder().getRuler() == o2) {return 1;}
+			if (o1.myOrder().getRuler() == o1) {return -1;}
+			int s = (int)Math.signum(o2.getBoss().getMinionNumber() - o1.getBoss().getMinionNumber());
+			if (s == 0) {s = (int)Math.signum(o2.getMinionNumber() - o1.getMinionNumber());}
 			if (s == 0) {return (int)Math.signum(o1.getID() - o2.getID());}
 			else {return s;}
 		}
 	};
 	private Clan[] pop;
-	private SortedSet<Clan> order = new TreeSet<Clan>(NUMMINION_ORDER);
+	private SortedSet<Clan> order = new TreeSet<Clan>(ORDER_ORDER);
 	private final String[] LABELS = new String[] {"Clan", "Minions", "Leader", "Shire"};
 	
 	public OrderRowScroll(PopupAbstract P) {

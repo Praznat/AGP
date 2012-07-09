@@ -21,13 +21,13 @@ public class BehName {
 		String[] descs = new String[] {};
 		switch (m) {
 		case BIDASKSPRD: descs = new String[] {"Very tight spread when trading","Tight spread when trading","Wide spread when trading","Very wide spread when trading"}; break;
-		case STMOMENTUM: descs = new String[] {}; break;
-		case LTMOMENTUM: descs = new String[] {}; break;
+		case STMOMENTUM: descs = new String[] {"Very passive trader", "Passive trader", "Aggressive trader", "Very aggressive trader"}; break;
+		case LTMOMENTUM: descs = new String[] {"Very passive investor", "Passive investor", "Aggressive investor", "Very aggressive investor"}; break;
 		case DISCRATE: descs = new String[] {}; break;
 		case MARGIN: descs = new String[] {}; break;
 		case INVORTRD: descs = new String[] {}; break;
-		case TECHNICAL: descs = new String[] {"Does not like to use price history to predict market","","","Likes to use price history to predict market"}; break;
-		case FLOW: descs = new String[] {"Does not like to use supply and demand to predict market","","","Likes to use supply and demand to predict market"}; break;
+		case TECHNICAL: descs = new String[] {}; // {"Does not like to use price history to predict market","","","Likes to use price history to predict market"}; break;
+		case FLOW: descs = new String[] {}; // {"Does not like to use supply and demand to predict market","","","Likes to use supply and demand to predict market"}; break;
 		case ARM: descs = new String[] {"Finds armor useless and cumbersome","Does not like armor","Likes armor","Finds armor indispensible in a fight"}; break;
 		case MIS: descs = new String[] {"Hates ranged weapons","Does not care for ranged weapons","Finds ranged weapons useful","Finds ranged weapons indispensible"}; break;
 		case PRC: descs = new String[] {"Loves blunt and armor-piercing weapons","Likes blunt and armor-piercing weapons","Likes sharp, bladed weapons","Loves sharp, bladed weapons"}; break;

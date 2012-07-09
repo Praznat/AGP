@@ -1,5 +1,7 @@
 package Game;
 
+import GUI.FaceGoblin;
+
 public class LauncgFG {
 
 	/**
@@ -7,8 +9,7 @@ public class LauncgFG {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		AGPmain main = new AGPmain();
-		main.start();
+		FaceGoblin main = new FaceGoblin();
 	}
 
 }

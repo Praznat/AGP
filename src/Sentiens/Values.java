@@ -11,8 +11,8 @@ import Defs.F_;
 import Defs.M_;
 import Defs.P_;
 import Defs.Q_;
-import Game.Act;
-import Game.Defs;
+import Game.*;
+import Game.Do.ClanAlone;
 import Markets.MktAbstract;
 
 public class Values implements Defs {
@@ -36,12 +36,13 @@ public class Values implements Defs {
 	public static interface Preachable {
 		public void preach(Clan preacher, Clan student, Clan benefactor);
 	}
-	public static interface Value extends Stressor.Causable {
+	public static interface Value extends Stressor.Causable, Avatar.SubjectivelyComparable {
 		public M_ getWeightMeme(Clan POV);
 		public int getWeighting(Clan POV);
 		public double compare(Clan POV, Clan A, Clan B);
 		public String description(Clan POV);
 		public Q_ pursuit(Clan clan);
+		public ClanAlone doPursuit(Clan clan);
 		public double contentBuyable(Clan assessor, int millet);
 		public int ordinal();
 	}
@@ -62,13 +63,16 @@ public class Values implements Defs {
 		public double contentBuyable(Clan assessor, int millet) {return 0;}
 		@Override
 		public int ordinal() {return ordinal;}
+		@Override
+		public ClanAlone doPursuit(Clan clan) {return Do.NOTHING;}
 	}
 	private static abstract class AbstractValue implements Value {
 		protected final M_ weighting;
 		protected final String desc;
 		protected final Q_ quest;
 		private int ordinal;
-		public AbstractValue(M_ w, String d, Q_ q) {weighting = w;   desc = d;   quest = q;   ordinal = ord++;}
+		private ClanAlone doPursuit;
+		public AbstractValue(M_ w, String d, Q_ q) {weighting = w;   desc = d;   quest = q;   ordinal = ord++; doPursuit = Do.addQuest(quest);}
 		@Override
 		public M_ getWeightMeme(Clan POV) {return weighting;}
 		@Override
@@ -79,6 +83,8 @@ public class Values implements Defs {
 		public Q_ pursuit(Clan clan) {return (quest != null ? quest : Q_.NOTHING);}
 		@Override
 		public int ordinal() {return ordinal;}
+		@Override
+		public ClanAlone doPursuit(Clan clan) {return doPursuit;}
 	}
 	private static abstract class CompoundValue implements Value {     //probably dont need if doing orderedSancs scheme
 		public CompoundValue(Value[] V) {subvalues = V;}
@@ -102,6 +108,8 @@ public class Values implements Defs {
 		public double contentBuyable(Clan assessor, int millet) {return ExpertAI.getMaxValueOfMoney(assessor, millet, subvalues);}
 		@Override
 		public int ordinal() {return -1;}
+		@Override
+		public ClanAlone doPursuit(Clan clan) {return Do.NOTHING;}
 	}
 	private static abstract class TeachableValue extends ValuatableValue implements Teachable {
 		public TeachableValue(M_ w, String d, Q_ q) {super(w, d, q);}

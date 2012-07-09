@@ -5,12 +5,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.Random;
+import java.util.*;
 
 import javax.swing.JPanel;
 
 import AMath.Calc;
 import GUI.ImageReader;
+import Sentiens.Clan;
 
 public class BattleConsole extends JPanel {
 	protected static final int ORIGWID = 800;
@@ -31,16 +32,29 @@ public class BattleConsole extends JPanel {
 	protected Rectangle view = new Rectangle(0, 0, VIEWWID, VIEWHGT);
 	protected Random rseed;
 	protected int turn;
+	protected Set<Dude> dudes;
 	
-	public BattleConsole(long dateInGame) {
-		rseed = new Random(dateInGame);   //so battles can be repeatable
+	private BattleConsole() {
 		setOpaque(false);
+		setVisible(false);
 		int wid = 10;
 		int hgt = 30;
 		ARMORLESSTORSORIGHTDOWN = new BufferedImage(wid, hgt, BufferedImage.TYPE_INT_ARGB);
 		ARMORLESSTORSOLEFTDOWN = new BufferedImage(wid, hgt, BufferedImage.TYPE_INT_ARGB);
 		ARMORLESSTORSORIGHTUP = new BufferedImage(wid, hgt, BufferedImage.TYPE_INT_ARGB);
 		ARMORLESSTORSOLEFTUP = new BufferedImage(wid, hgt, BufferedImage.TYPE_INT_ARGB);
+	}
+	
+
+	public static Set<Dude> toDudes(Set<Clan> clans) {return null;}
+	
+	public void setupBattleConsole(long dateInGame, Set<Clan> defenseArmy, Set<Clan> offenseArmy) {
+		rseed = new Random(dateInGame);   //so battles can be repeatable
+		dudes.clear();
+		dudes.addAll(toDudes(defenseArmy));
+
+		setOpaque(true);
+		setVisible(true);
 	}
 	
 	
@@ -84,6 +98,8 @@ public class BattleConsole extends JPanel {
 		private boolean inView() {return areaOccupied().intersects(view);}
 		private int turn() {return turn;}
 		private Rectangle areaOccupied() {return areaOccupied;}
+		
+		
 	}
 }
 

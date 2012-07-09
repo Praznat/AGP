@@ -15,6 +15,9 @@ public class OrderQuests {
 			else {Me.myOrder().getQuest(Me);}
 		}
 		
+		@Override
+		public String description() {return "Loyalty Quest";}
+		
 	}
 	
 	

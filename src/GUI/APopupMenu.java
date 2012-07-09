@@ -2,6 +2,7 @@ package GUI;
 
 import java.awt.Component;
 import java.awt.event.*;
+import java.util.Set;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -19,7 +20,12 @@ public class APopupMenu extends JPopupMenu {
 		}
 		show(parent, parent.getMousePosition().x-5, parent.getMousePosition().y-5);
 	}
-	
+	public APopupMenu(Component parent, Iterable<? extends Do.Thing> dothings) {
+		for (Do.Thing D : dothings) {
+			add(AMenuItem.createNew(D));
+		}
+		show(parent, parent.getMousePosition().x-5, parent.getMousePosition().y-5);
+	}
 
 
 }

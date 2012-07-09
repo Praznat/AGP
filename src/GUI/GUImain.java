@@ -10,6 +10,7 @@ import javax.swing.*;
 public class GUImain extends JFrame {
 	private static final int WWID = 600;
 	private static final int WHGT = 800;
+	private static final int BUFF = 20;
 	private JPanel MainPanel;
 	public MapDisplay MD;
 	public PopupFace GM;
@@ -56,14 +57,14 @@ public class GUImain extends JFrame {
 		SM.setVisible(true);
 	}
 	public void initializeAC(Clan avatar) {
-		AC = AvatarConsole.create();
+		AC = AvatarConsole.create(this);
 		AC.setAvatar(avatar);
 		this.getLayeredPane().add(AC, new Integer(3));
-		AC.setBounds(0,0,100,100);
+		AC.setBounds(50,50,AC.getDesWid(),AC.getDesHgt());
 		AC.setVisible(true);
 	}
-	public void movePopup(PopupAbstract P, int x, int y) {
-		P.setLocation(Calc.bound(x, 0, (int)(getContentPane().getWidth()*(1-MW))),
-				Calc.bound(y, 0, (int)(getContentPane().getHeight()*(1-MH))));
+	public void movePopup(APanel P, int x, int y) {
+		P.setLocation(Calc.bound(x, 0, (int)(getContentPane().getWidth() - BUFF)), //*(1-MW))),
+					  Calc.bound(y, 0, (int)(getContentPane().getHeight() - BUFF))); //*(1-MH))));
 	}
 }

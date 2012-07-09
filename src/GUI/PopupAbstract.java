@@ -14,26 +14,25 @@ import AMath.Calc;
 import GUI.TextDisplay.NameScroll;
 import GUI.TextDisplay.Papyrus;
 
-public class PopupAbstract extends APanel implements MouseListener, MouseMotionListener {
+public class PopupAbstract extends APanel {
 
 	private static final int TOPBOXHGT = 22;
 
-	protected GUImain parent;
-	protected int tmpX, tmpY;
+	
 	protected NameScroll namebox;
-	protected JPanel info;
-	protected AconSelector slider;
 	protected int curTab;
+	protected AconSelector slider;  //the five icons
+	protected JPanel info;  //holds the switchable cards
+	protected JScrollPane sp;  //the scrolling thing in info
+//	protected ASlidePanel content;
 	protected boolean initialized;
 	protected boolean vizible;
 	public String INFO[] = new String[6];
 
 
 	public PopupAbstract(GUImain P) {
+		super(P);
 		vizible = true;
-		parent = P;
-		namebox = new NameScroll(this, 12);
-		add(namebox);
 		setOpaque(false);
 		info = new JPanel(new CardLayout());
 		slider = new AconSelector(this);
@@ -42,10 +41,15 @@ public class PopupAbstract extends APanel implements MouseListener, MouseMotionL
 		add(sp);
 		setBorder(BorderFactory.createLineBorder(Papyrus.BGCOL));
 		setLayout(null);
+	}
+
+	@Override
+	protected void addMouseListeners() {
+		namebox = new NameScroll(this, 12);
+		add(namebox);
 		namebox.addMouseMotionListener(this);
 		namebox.addMouseListener(this);
 	}
-
 
 
 	public void setBounds(int x, int y, int w, int h) {
@@ -88,18 +92,16 @@ public class PopupAbstract extends APanel implements MouseListener, MouseMotionL
 		slider.setVisible(vizible);
 		setBorder(vizible ? BorderFactory.createLineBorder(Papyrus.BGCOL) : null);
 	}
-	
-	
-	public void mouseMoved(MouseEvent e) {}
-	public void mouseDragged(MouseEvent e) {
+
+	@Override
+	protected void dragged(MouseEvent e) {
 		if(vizible || e.getY() < TOPBOXHGT) {parent.movePopup(this, e.getXOnScreen() - tmpX, e.getYOnScreen() - tmpY);}
 	}
-	public void mouseExited(MouseEvent e) {}
-	public void mousePressed(MouseEvent e) {
+
+	@Override
+	protected void pressed(MouseEvent e) {
 		if(vizible || e.getY() < TOPBOXHGT) {tmpX = e.getXOnScreen() - getX();   tmpY = e.getYOnScreen() - getY();}
 	}
-	public void mouseReleased(MouseEvent e) {}
-	public void mouseEntered(MouseEvent e) {}
-	public void mouseClicked(MouseEvent e) {}
+	
 
 }

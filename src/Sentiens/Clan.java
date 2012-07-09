@@ -23,7 +23,7 @@ import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 import AMath.Calc;
 
-public class Clan implements Defs, Stressor.Causable, Order.Serveable {
+public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.SubjectivelyComparable {
 	protected static final int DMC = 10; //daily millet consumption
 	//protected static final int MEMORY = 8;
 	//bio
@@ -165,7 +165,7 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable {
 		return true;
 	}
 	private void chgMinionN(int n) {
-		minionN += Math.signum(n);   chgSubMinionN(n);
+		int s = (int)Math.signum(n);   minionN += s;   chgSubMinionN(n - s);
 	}
 	private void chgSubMinionN(int n) {
 		subminionN += n;
