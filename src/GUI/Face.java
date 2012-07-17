@@ -19,6 +19,9 @@ import Sentiens.Ideology;
 public class Face extends JPanel {
 	
 	protected BufferedImage offscreen;
+
+	protected int[] msplc = new int[] {0,0};
+	protected int[] oldmsplc = new int[] {0,0};
 	
 	protected static final int NASO = 0;
 	protected static final int BESO = 1;
@@ -105,6 +108,7 @@ public class Face extends JPanel {
 		partez[NASO].megafix();
 		//if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
+		repaint();
 	}
 	
 	public void resize(double factor) {
@@ -671,7 +675,18 @@ public class Face extends JPanel {
 		}
 		public void paintHair(Graphics g) {}
 
+		public double[] nearestPoint(int[] xy) {
+			return new double[] {-1, 1000000};
+		}
 
+		public int[][] latchPoints() {return new int[][] {{0,0}};}
+		public void clicked() {
+			temp = new int[2];
+			int[][] LP = latchPoints();
+			selected = (int) nearestPoint(msplc)[0];
+			temp[0] = LP[selected][0]; temp[1] = LP[selected][1];
+		}
+		public void dragged() {}
 		
 		public int[] getLeftEdge() {return new int[] {0, 0};}
 		public int[] getRightEdge() {return new int[] {0, 0};}
@@ -754,6 +769,34 @@ public class Face extends JPanel {
 			g.fillOval(LR[0]+nasoness[0]/6, LR[1]-nasoness[1]/10, nasoness[0]*2/3, nasoness[1]/2);
 		}
 
+		public void clicked2() {
+			temp = new int[2];
+			
+			selected = (int) nearestPoint(msplc)[0];
+			switch (selected) {
+			case 0: temp[0] = tops[0][0]; temp[1] = tops[0][1]; break;
+			case 1: temp[0] = tops[1][0]; temp[1] = tops[1][1]; break;
+			case 2: temp[0] = tops[2][0]; temp[1] = tops[2][1]; break;
+			case 3: temp[0] = bottoms[0][0]; temp[1] = bottoms[0][1]; break;
+			case 4: temp[0] = bottoms[1][0]; temp[1] = bottoms[1][1]; break;
+			case 5: temp[0] = bottoms[2][0]; temp[1] = bottoms[2][1]; break;
+			default: break;
+			}
+		}
+		public void dragged() {
+			int dX = msplc[0] - oldmsplc[0];   int dY = msplc[1] - oldmsplc[1];
+			switch (selected) {
+				case 0: tops[0][0] = temp[0] + dX; tops[0][1] = temp[1] + dY; break;
+				case 1: tops[1][0] = temp[0] + dX; tops[1][1] = temp[1] + dY; break;
+				case 2: tops[2][0] = temp[0] + dX; tops[2][1] = temp[1] + dY; break;
+				case 3: bottoms[0][0] = temp[0] + dX; bottoms[0][1] = temp[1] + dY; break;
+				case 4: bottoms[1][0] = temp[0] + dX; bottoms[1][1] = temp[1] + dY; break;
+				case 5: bottoms[2][0] = temp[0] + dX; bottoms[2][1] = temp[1] + dY; break;
+				default: break;
+			}
+			megafix();
+		}
+		
 		public void megafix() {
 			K[NUPPER] = new GBezier(tops, sharpN);
 			K[NLOWER] = new GBezier(bottoms, sharpN);
@@ -1338,7 +1381,6 @@ public class Face extends JPanel {
     	y -= (310 - partez[BESO].getGK(Boca.JAW).center()[1]) / 2;
     	loaded = true;
     	paintFace();
-    	repaint();
 	}
 	
 	public void setFemale(boolean fem) {female = fem;}
