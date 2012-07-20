@@ -3,9 +3,9 @@ package Questing;
 import AMath.Calc;
 import Defs.P_;
 import Descriptions.XWeapon;
-import Game.Act;
-import Game.Defs;
-import Game.Job;
+import GUI.APopupMenu;
+import Game.*;
+import Game.Do.ClanAlone;
 import Markets.MktAbstract;
 import Markets.MktO;
 import Markets.XWeaponMarket;
@@ -37,6 +37,17 @@ public class WorkQuests {
 		@Override
 		public String description() {return chosenAct.getDesc();}
 
+		@Override
+		public void avatarPursue() {
+			switch (stage) {
+			case 0: avatarChooseAct();
+			case 1: avatarDoInputs(); break;
+			case 2: doWork(); break;
+			case 3: doOutputs(); break;
+			default: break;
+			}		
+		}
+		
 		@Override
 		public void pursue() {
 			switch (stage) {
@@ -70,7 +81,7 @@ public class WorkQuests {
 		public Act getChosenAct() {return chosenAct;}
 		
 		public void liquidateWM() {resetWM();}  // TODO and sell all to market
-		private void setChosenAct(Act a) {
+		public void setChosenAct(Act a) {
 			//liquidate if it's a new act
 			if (chosenAct != null && chosenAct.equals(a)) {} //do nothing if act is same
 			else {
@@ -88,11 +99,28 @@ public class WorkQuests {
 			}
 			return bestAct;
 		}
+		private void avatarChooseAct() {
+			avatarConsole.choices.clear();
+			avatarConsole.getComparator().setPOV(Me);
+			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().ACT_PROFIT_ORDER);
+			ClanAlone action;
+			for(Act act : Me.getJobActs()) {
+				action = Do.setChosenAct(act);
+				action.setup(Me);
+				avatarConsole.choices.put(act, action);
+			}
+			new APopupMenu(avatarConsole, avatarConsole.choices.values());
+			stage++;
+		}
 		private void chooseAct() {
 			setChosenAct(compareTrades());
 			//fill WORKMEMO with every possible g in A:
 			chosenAct.storeAllInputsInWM(Me);
 			stage++;
+		}
+		private void avatarDoInputs() {
+			chosenAct.storeAllInputsInWM(Me);
+			doInputs();
 		}
 		private void doInputs() {
 			//

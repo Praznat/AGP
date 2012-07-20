@@ -23,7 +23,7 @@ import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 import AMath.Calc;
 
-public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.SubjectivelyComparable {
+public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyComparable {
 	protected static final int DMC = 10; //daily millet consumption
 	//protected static final int MEMORY = 8;
 	//bio
@@ -55,6 +55,7 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 	//serfs revolt against master if not fed
 	//in case of revolt, master replaced with SERF CREED, all other serfs become family
 	
+	private boolean active;
 	protected boolean lastSuccess;
 	//protected int act;
 	protected int profitEMA;
@@ -97,12 +98,15 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 	
 
 	public void pursue() {
-		if (MB.QuestStack.empty()) {
-			Q_ q = FB.randomValueInPriority().pursuit(this);
-			Quest quest = Quest.QtoQuest(this, q);
-			MB.QuestStack.add(quest);
+		if (isActive()) {
+			if (MB.QuestStack.empty()) {
+				Q_ q = FB.randomValueInPriority().pursuit(this);
+				Quest quest = Quest.QtoQuest(this, q);
+				MB.QuestStack.add(quest);
+			}
+			MB.QuestStack.peek().pursue();
 		}
-		MB.QuestStack.peek().pursue();
+		setActive(true);
 	}
 	
 	public int getID() {return ID;}
@@ -145,7 +149,9 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 		else if (hisBoss == him) {return false;}
 		else {return isSomeBossOf(hisBoss, orig);}
 	}
-	public int getMinionNumber() {return minionN + subminionN;}
+	public int getTotalMinionNumber() {return minionN + subminionN;}
+	public int getMinionN() {return minionN;}
+	public int getSubminionN() {return subminionN;}
 	public int getMinionPoints() {return minionB + subminionB;}
 	public int getPointsBN() {return pointsBN;}
 	public Order myOrder() {return order;}
@@ -158,19 +164,23 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 	public boolean join(Clan newBoss) {
 		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
 		Clan oldBoss = this.getBoss();
-		if (oldBoss != this) {oldBoss.chgMinionN(-1 -subminionN);}
-		this.FB.setDisc(LORD, newBoss.FB.getDisc(LORD));
-		if (newBoss != this) {newBoss.chgMinionN(1 + subminionN);}
+		if (oldBoss != this) {oldBoss.removeMinion(this);}
+		this.FB.setDisc(LORD, newBoss.getID());
+		if (newBoss != this) {newBoss.addMinion(this);}
 		joinOrder(newBoss.myOrder());
 		return true;
 	}
-	private void chgMinionN(int n) {
-		int s = (int)Math.signum(n);   minionN += s;   chgSubMinionN(n - s);
+	private void addMinion(Clan minion) {
+		minionN++;   chgSubMinionN(1 + minion.getTotalMinionNumber(), true);
 	}
-	private void chgSubMinionN(int n) {
-		subminionN += n;
+	private void removeMinion(Clan minion) {
+		minionN--;   chgSubMinionN(-1 - minion.getTotalMinionNumber(), true);
+	}
+	private void chgSubMinionN(int n, boolean first) {
+		subminionN += n - (first ? Math.signum(n) : 0);
+//		n += (first && n != 0 ? (n > 0 ? 1 : -1) : 0);
 		Clan Boss = getBoss();
-		if (Boss != this) {Boss.chgSubMinionN(n);}
+		if (Boss != this) {Boss.chgSubMinionN(n, false);}
 	}
 	public void chgMyB(int b) {
 		myB += b; ///WHAT IS B???  soldiers vanquished? people converted?
@@ -231,6 +241,8 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 	public Act[] getJobActs() {return AGPmain.TheRealm.getJob(job).getActs();}
 	public void setLastSuccess(boolean b) {lastSuccess = b;}
 	public boolean getLastSuccess() {return lastSuccess;}
+	public boolean isActive() {return active;}
+	public void setActive(boolean a) {active = a;}
 	public boolean isHungry() {return true;}
 	public int getProfitEMA() {return profitEMA;}
 	public void alterProfitEMA(int m) {
@@ -395,4 +407,6 @@ public class Clan implements Defs, Stressor.Causable, Order.Serveable, Avatar.Su
 	public void addReport(Reportable R) {goblog.addReport(R);}
 	public Reportable[] getLog() {return goblog.getBook();}
 	
+	@Override
+	public String toString() {return getNomen();}
 }

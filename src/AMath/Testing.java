@@ -56,13 +56,18 @@ public class Testing {
 		Clan stark = AGPmain.TheRealm.getClan(1);
 		Clan theon = AGPmain.TheRealm.getClan(2);
 		Clan targaryan = AGPmain.TheRealm.getClan(3);
+		Clan baratheon = AGPmain.TheRealm.getClan(4);
+		Clan stannis = AGPmain.TheRealm.getClan(5);
 		Calc.p("greyjoy="+greyjoy.getNomen());
 		Calc.p("stark="+stark.getNomen());
 		Calc.p("theon="+theon.getNomen());
 		Calc.p("targaryan="+targaryan.getNomen());
+		Calc.p("baratheon="+baratheon.getNomen());
+		Calc.p("stannis="+stannis.getNomen());
 		Order.create(greyjoy);
 		Order.create(stark);
 		Order.create(targaryan);
+		Order.create(baratheon);
 		theon.join(greyjoy);
 		Calc.p(theon.getNomen() + " belongs to " + theon.myOrder().getNationName() + " and follows " + theon.FB.getRex().getNomen());
 		Calc.p(greyjoy.getNomen() + " belongs to " + greyjoy.myOrder().getNationName() + " and follows " + greyjoy.FB.getRex().getNomen());
@@ -75,8 +80,13 @@ public class Testing {
 		targaryan.join(theon);
 		Calc.p(theon.getNomen() + " belongs to " + theon.myOrder().getNationName() + " and follows " + theon.FB.getRex().getNomen());
 		Calc.p(greyjoy.getNomen() + " belongs to " + greyjoy.myOrder().getNationName() + " and follows " + greyjoy.FB.getRex().getNomen());
-		for (int i = 10; i < 35; i++) {AGPmain.TheRealm.getClan(i).join(theon);}
-		Calc.p(targaryan.getNomen());
+		stannis.join(baratheon);
+		Calc.p(stannis.getNomen() + " belongs to " + stannis.myOrder().getNationName() + " and follows " + stannis.FB.getRex().getNomen());
+		Calc.p(baratheon.getNomen() + " belongs to " + baratheon.myOrder().getNationName() + " and follows " + baratheon.FB.getRex().getNomen());
+		baratheon.join(stark);
+		Calc.p(stannis.getNomen() + " belongs to " + stannis.myOrder().getNationName() + " and follows " + stannis.FB.getRex().getNomen());
+		Calc.p(baratheon.getNomen() + " belongs to " + baratheon.myOrder().getNationName() + " and follows " + baratheon.FB.getRex().getNomen());
+		
 	}
 
 	public static void naming() {

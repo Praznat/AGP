@@ -4,10 +4,11 @@ import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import AMath.Calc;
+import Avatar.SubjectivelyComparable;
 import Defs.M_;
 import Defs.P_;
 
-public class Act implements Defs {
+public class Act implements Defs, SubjectivelyComparable {
 
 	private static final int MAXACTS = 10; // max acts in a job
 
@@ -72,6 +73,10 @@ public class Act implements Defs {
 		}
 		tmpIn[k] = E;
 		return tmpIn;
+	}
+	
+	public int estimateProfit(Clan doer) {
+		return doer.confuse(this.expOut(doer)[0] - this.expIn(doer)[0]);
 	}
 
 	public void storeAllInputsInWM(Clan doer) {

@@ -16,6 +16,7 @@ public class GUImain extends JFrame {
 	public PopupFace GM;
 	public PopupShire SM;
 	public AvatarConsole AC;
+	public FaceEditor Editor;
 	private static final double MW = 0.4;
 	private static final double MH = 0.85;
 	public GUImain(String title) {
@@ -28,7 +29,7 @@ public class GUImain extends JFrame {
 	}
 
 	public void repaintEverything() {
-		GM.loadClan();   SM.loadShire();
+		GM.load();   SM.load();
 		//validate();
 	}
 	
@@ -62,6 +63,9 @@ public class GUImain extends JFrame {
 		this.getLayeredPane().add(AC, new Integer(3));
 		AC.setBounds(50,50,AC.getDesWid(),AC.getDesHgt());
 		AC.setVisible(true);
+	}
+	public void initializeEditor() {
+		Editor = new FaceEditor();
 	}
 	public void movePopup(APanel P, int x, int y) {
 		P.setLocation(Calc.bound(x, 0, (int)(getContentPane().getWidth() - BUFF)), //*(1-MW))),

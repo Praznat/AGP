@@ -8,7 +8,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import AMath.Calc;
 import AMath.Testing;
-import GUI.FaceGoblin;
 import GUI.GUImain;
 import Sentiens.Values;
 import Sentiens.Values.Value;
@@ -19,7 +18,6 @@ public class AGPmain extends Applet {
 	//static Random rand = new Random(0);
 	public static GUImain mainGUI;
 	public static Realm TheRealm;
-	public static FaceGoblin FG;
 	
 	
 	//these are for shire naming... so they dont get new names every time u reload

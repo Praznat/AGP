@@ -47,17 +47,11 @@ public class PopupShire extends PopupAbstract {
 		sp.setBounds(0, h, w, getHeight()-h);
 		slider.refresh();
 	}
-		
-
-	public void setState() {  //just to load in the beginning right
-    	setState(INFO[POPULATION], POPULATION);
-    	setState(INFO[ENVIRONMENT], ENVIRONMENT);
-    	setState(INFO[POPULATION], POPULATION);
-	} 
 	
 	public Shire getShire() {return curShire;}
 
-    public void loadShire() {if (curShire != null) {loadShire(curShire);}}
+	@Override
+    public void load() {if (curShire != null) {loadShire(curShire);}}
     public void loadShire(Shire s) {
     	curShire = s;
     	namebox.setNomen(curShire.getName());

@@ -203,7 +203,7 @@ public class Values implements Defs {
 	};
 	public static final Value NUMVASSALS = new ValuatableValue(M_.S_NVASSALS, "Power (Number of Vassals)", Q_.RECRUIT) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return clan.getMinionNumber();}
+		protected int value(Clan POV, Clan clan) {return clan.getTotalMinionNumber();}
 		@Override
 		public double contentBuyable(Clan assessor, int millet) {return 0;} //TODO Figure out fair (min since quality of vassal ignored) price of hire
 	};

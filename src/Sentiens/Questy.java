@@ -1,16 +1,8 @@
 package Sentiens;
 
-import AMath.Calc;
-import Defs.M_;
-import Defs.P_;
-import Defs.Q_;
+import Defs.*;
 import Descriptions.Naming;
-import Descriptions.XWeapon;
-import Game.AGPmain;
-import Game.Act;
-import Game.Defs;
-import Game.Job;
-import Markets.*;
+import Game.*;
 import Sentiens.Values.Value;
 
 public class Questy implements Defs {

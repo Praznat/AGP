@@ -54,15 +54,11 @@ public class PopupFace extends PopupAbstract {
 		sp.setBounds(0, h, w, getHeight()-h);
 		slider.refresh();
 	}
-	public void setState() {  //just to load in the beginning right
-		setState(INFO[1], 1);
-		loadClan();
-    	setState(INFO[0], 0);
-	} 
 
 	public Clan getClan() {return curClan;}
 
-    public void loadClan() {if (curClan != null) {loadClan(curClan);}}
+	@Override
+    public void load() {if (curClan != null) {loadClan(curClan);}}
     public void loadClan(Clan c) {
     	curClan = c;
     	namebox.setNomen(curClan.getNomen());
@@ -84,7 +80,7 @@ public class PopupFace extends PopupAbstract {
     	if (vizible) {
     		AGPmain.TheRealm.goOnce();
     		loadClan(AGPmain.TheRealm.getRandClan());
-    		AGPmain.mainGUI.SM.loadShire();
+    		AGPmain.mainGUI.SM.load();
     	}
     }
 }

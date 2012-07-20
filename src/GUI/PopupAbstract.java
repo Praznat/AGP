@@ -14,7 +14,7 @@ import AMath.Calc;
 import GUI.TextDisplay.NameScroll;
 import GUI.TextDisplay.Papyrus;
 
-public class PopupAbstract extends APanel {
+public abstract class PopupAbstract extends APanel {
 
 	private static final int TOPBOXHGT = 22;
 
@@ -101,6 +101,17 @@ public class PopupAbstract extends APanel {
 	@Override
 	protected void pressed(MouseEvent e) {
 		if(vizible || e.getY() < TOPBOXHGT) {tmpX = e.getXOnScreen() - getX();   tmpY = e.getYOnScreen() - getY();}
+	}
+
+	public abstract void load();
+	public void setState() {
+		int prevTab = curTab;
+		int i = (prevTab+1) % info.getComponentCount();
+		setState(INFO[i], i);
+		load();
+		i = (i+1) % info.getComponentCount();
+		setState(INFO[i], i);
+    	setState(INFO[prevTab], prevTab);
 	}
 	
 

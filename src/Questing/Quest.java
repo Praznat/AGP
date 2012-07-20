@@ -67,15 +67,15 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			Clan avatar = avatar();
-			Clan[] pop = avatar.myShire().getCensus();
+			Clan[] pop = Me.myShire().getCensus();
 			avatarConsole.choices.clear();
-			avatarConsole.getComparator().setPOV(avatar);
+			avatarConsole.getComparator().setPOV(Me);
 			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().RESPECT_ORDER);
+			ClanOnClan action;
 			for (Clan c : pop) {
 				if(meetsReq(Me, c)) {
-					ClanOnClan action = Do.chooseTarget(c);
-					action.setup(avatar, c, 0);
+					action = Do.chooseTarget(c);
+					action.setup(Me, c, 0);
 					if (avatarConsole.choices.containsValue(action)) {continue;}
 					avatarConsole.choices.put(c, action);
 				}

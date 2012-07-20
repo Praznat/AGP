@@ -4,6 +4,7 @@ import AMath.Calc;
 import Defs.*;
 import Questing.*;
 import Questing.Quest.FindTargetAbstract;
+import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.Values;
 import Shirage.Shire;
@@ -83,7 +84,21 @@ public class Do {
 		@Override
 		protected boolean tryExecute() {return true;}
 	};
-
+	public static final ClanAlone setChosenAct(final Act act) {
+		return new ClanAlone() {
+			@Override
+			public String description() {return act.getDesc();}
+			@Override
+			protected boolean tryExecute() {
+				Quest q = doer.MB.QuestStack.peek();
+				if (q instanceof LaborQuest) {
+					((LaborQuest) q).setChosenAct(act);
+					return true;
+				}
+				else return false;
+			}
+		};
+	}
 	public static final ClanAlone addQuest(final Q_ quest) {
 		return new ClanAlone() {
 			@Override

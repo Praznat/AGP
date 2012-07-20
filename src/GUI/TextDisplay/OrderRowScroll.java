@@ -18,15 +18,15 @@ public class OrderRowScroll extends TableRowScroll {
 		public int compare(Clan o1, Clan o2) {
 			if (o2.myOrder().getRuler() == o2) {return 1;}
 			if (o1.myOrder().getRuler() == o1) {return -1;}
-			int s = (int)Math.signum(o2.getBoss().getMinionNumber() - o1.getBoss().getMinionNumber());
-			if (s == 0) {s = (int)Math.signum(o2.getMinionNumber() - o1.getMinionNumber());}
+			int s = (int)Math.signum(o2.getBoss().getTotalMinionNumber() - o1.getBoss().getTotalMinionNumber());
+			if (s == 0) {s = (int)Math.signum(o2.getTotalMinionNumber() - o1.getTotalMinionNumber());}
 			if (s == 0) {return (int)Math.signum(o1.getID() - o2.getID());}
 			else {return s;}
 		}
 	};
 	private Clan[] pop;
 	private SortedSet<Clan> order = new TreeSet<Clan>(ORDER_ORDER);
-	private final String[] LABELS = new String[] {"Clan", "Minions", "Leader", "Shire"};
+	private final String[] LABELS = new String[] {"Clan", "min", "sub", "Minions", "Leader", "Shire"};
 	
 	public OrderRowScroll(PopupAbstract P) {
 		super(P);
@@ -66,7 +66,9 @@ public class OrderRowScroll extends TableRowScroll {
 			String[] R = contents[r];
 			Clan c = pop[r-1];   int i = 0;
 			R[i] = c.getNomen(); adjustWidth(i, R[i]); i++;
-			R[i] = c.getMinionNumber()+""; adjustWidth(i, R[i]); i++;
+			R[i] = c.getMinionN()+""; adjustWidth(i, R[i]); i++;
+			R[i] = c.getSubminionN()+""; adjustWidth(i, R[i]); i++;
+			R[i] = c.getTotalMinionNumber()+""; adjustWidth(i, R[i]); i++;
 			R[i] = c.getBoss().getNomen(); adjustWidth(i, R[i]); i++;
 			R[i] = c.myShire().getName(); adjustWidth(i, R[i]); i++;
 		}

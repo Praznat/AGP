@@ -22,9 +22,13 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final int BUTTH = 20;
 	private int numButtons = 0;
 
+	private final String CREATEAVATAR = "Create Avatar";
+	private final String POSSESS = "Possess Goblin";
 	private final String AVATAR = "View Avatar";
 	private final String NEWQUEST = "New Quest";
 	private final String PURSUEQUEST = "Pursue Quest";
+	private final String STEPONCE = "Step Once";
+	private final String STEP100 = "100 Turns";
 	
 	private final SubjectiveComparator<SubjectivelyComparable> comparator;
 	public final TreeMap<SubjectivelyComparable, ClanAction> choices;
@@ -34,9 +38,13 @@ public class AvatarConsole extends APanel implements ActionListener {
 		comparator = new SubjectiveComparator<SubjectivelyComparable>();
 		choices = new TreeMap<SubjectivelyComparable, ClanAction>(comparator);
 		setLayout(null);
+		setButton(CREATEAVATAR, -1);
+		setButton(POSSESS, -1);
 		setButton(AVATAR, KeyEvent.VK_A);
 		setButton(NEWQUEST, KeyEvent.VK_Q);
 		setButton(PURSUEQUEST, KeyEvent.VK_P);
+		setButton(STEPONCE, KeyEvent.VK_S);
+		setButton(STEP100, -1);
 		
 	}
 	public static AvatarConsole create(GUImain P) {return new AvatarConsole(P);}
@@ -77,14 +85,27 @@ public class AvatarConsole extends APanel implements ActionListener {
 		if (AVATAR.equals(e.getActionCommand())) {
 			AGPmain.mainGUI.GM.loadClan(avatar);
 		}
+		else if (CREATEAVATAR.equals(e.getActionCommand())) {
+			AGPmain.mainGUI.initializeEditor();
+		}
+		else if (POSSESS.equals(e.getActionCommand())) {
+			setAvatar(AGPmain.mainGUI.GM.getClan());
+		}
 		else if (NEWQUEST.equals(e.getActionCommand())) {
 			newQuest();
 		}
-		else if (PURSUEQUEST.equals(e.getActionCommand())) {
+		else if (PURSUEQUEST.equals(e.getActionCommand()) && avatar.isActive()) {
 			if (avatar.MB.QuestStack.empty()) {newQuest();}
-			else {avatar.MB.QuestStack.peek().avatarPursue();}
+			else {avatar.MB.QuestStack.peek().avatarPursue(); avatar.setActive(false);}
 		}
-		AGPmain.mainGUI.GM.refreshAll();
+		else if (STEPONCE.equals(e.getActionCommand())) {
+			AGPmain.TheRealm.goOnce();
+		}
+		else if (STEP100.equals(e.getActionCommand())) {
+			for (int i = 0; i < 100; i++) {AGPmain.TheRealm.goOnce();}
+		}
+		AGPmain.mainGUI.GM.setState();
+		AGPmain.mainGUI.SM.setState();
 	}
 	
 
