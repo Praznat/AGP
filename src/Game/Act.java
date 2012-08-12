@@ -19,11 +19,11 @@ public class Act implements Defs, SubjectivelyComparable {
 	private Logic input;
 	private Logic output;
 	private int[] allPossibleInputs = {}; // one for each logic
-	private int envc, envr, njob, chance; // skill can point to prestige or
-											// quest!
+	private int envc, envr, chance; // skill can point to prestige or quest!
+	private Job njob;
 	private P_ skill;
 
-	public Act(String n, Logic in, Logic out, P_ s, int J, int denom) {
+	public Act(String n, Logic in, Logic out, P_ s, Job J, int denom) {
 		desc = n;
 		input = in;
 		output = out;
@@ -32,7 +32,7 @@ public class Act implements Defs, SubjectivelyComparable {
 		chance = denom;
 	}
 
-	public Act(String n, Logic in, Logic out, P_ s, int ec, int er, int J,
+	public Act(String n, Logic in, Logic out, P_ s, int ec, int er, Job J,
 			int denom) {
 		desc = n;
 		input = in;
@@ -44,7 +44,7 @@ public class Act implements Defs, SubjectivelyComparable {
 		chance = denom;
 	}
 
-	public Act(String n, Logic g, P_ s, int J, int denom) {
+	public Act(String n, Logic g, P_ s, Job J, int denom) {
 		desc = n;
 		input = g;
 		output = g;
@@ -137,20 +137,21 @@ public class Act implements Defs, SubjectivelyComparable {
 
 	private void ponder(Clan doer) {
 		int C = chance;
-		int J = njob;
-		if (J == -1) {
+		Job J = njob;
+		if (J == null) {
 			C = (16 - doer.useBeh(M_.RESPENV)) * 500;
-			J = HUNTERGATHERER;
+			J = Job.HUNTERGATHERER;
 		}
 		if (AGPmain.rand.nextInt(C) == 0) {
 			doer.addReport(GobLog.discovery(J));
-			doer.FB.setDisc(ASPIRATION, J);
+			doer.setAspiration(J);
 		}
 	}
 
 	private void learnSkill(Clan doer) {
-		final int pctStrDown = 5;
-		final int pctStrUp = 15;
+		final int meatModifier = (doer.eatMeat() ? 2 : 1);
+		final int pctStrDown = 5 / meatModifier;
+		final int pctStrUp = 15 * meatModifier;
 		boolean success = false;
 		if (skill == null) {
 			if (Calc.pPercent(pctStrDown)) {
@@ -194,8 +195,12 @@ public class Act implements Defs, SubjectivelyComparable {
 	public String getDesc() {
 		return desc;
 	}
+	@Override
+	public String toString() {
+		return desc;
+	}
 
-	public static Act newCraft(String n, Logic in, Logic out, P_ s, int J,
+	public static Act newCraft(String n, Logic in, Logic out, P_ s, Job J,
 			int denom) {
 		Act newAct = new Act(n, in, out, s, J, denom);
 		in.addNodesToAll(newAct);
@@ -203,20 +208,20 @@ public class Act implements Defs, SubjectivelyComparable {
 	}
 
 	public static Act newReapC(String n, Logic in, Logic out, P_ s, int c,
-			int J, int denom) {
+			Job J, int denom) {
 		Act newAct = new Act(n, in, out, s, c, E, J, denom);
 		in.addNodesToAll(newAct);
 		return newAct;
 	}
 
 	public static Act newReapR(String n, Logic in, Logic out, P_ s, int r,
-			int J, int denom) {
+			Job J, int denom) {
 		Act newAct = new Act(n, in, out, s, E, r, J, denom);
 		in.addNodesToAll(newAct);
 		return newAct;
 	}
 
-	public static Act newTrade(String n, Logic g, int J, int denom) {
+	public static Act newTrade(String n, Logic g, Job J, int denom) {
 		Act newAct = new Act(n, g, null, J, denom);
 		// g.addNodesToAll(newAct);
 		return newAct;

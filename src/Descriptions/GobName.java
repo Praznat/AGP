@@ -167,11 +167,11 @@ public class GobName {
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
 		Value V = goblin.FB.getValue(i);
-		if (V == Values.LOYALTY || V == Values.WEALTH || V == Values.NUMVASSALS || V == Values.ORDERMORALE || V == Values.DEFERENCE || V == Values.FEAR || V == Values.MONUMENTS) {
+		if (V == Values.LOYALTY || V == Values.WEALTH || V == Values.DOMINION || V == Values.INFLUENCE || V == Values.MIGHT || V == Values.ARCHITECTURE) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {
 				N = title + " " + N;
-				if (goblin.getJobInt() == Defs.HUNTERGATHERER) {return N + " the Barbarian";}
+				if (goblin.getJob() == Job.HUNTERGATHERER) {return N + " the Barbarian";}
 				P_ bestP = highestPrest(goblin);
 				if (bestP == null || goblin.FB.getPrs(bestP) != 15) {return N;}
 				switch (bestP) {
@@ -184,7 +184,7 @@ public class GobName {
 			else {return fullName(goblin, N, i+1);}
 		}
 		if (V == Values.PATRIOTISM && goblin.myShire() != goblin.FB.getHomeland()) {return N + " of " + goblin.myShire().getName();}
-		if (V == Values.OBESITY) {return N + " the Glutton";}
+		if (V == Values.HEALTH) {return N + " the Glutton";}
 		if (V == Values.SKILL) {return N + " the " + goblin.getJob().getDesc();}
 		
 		return fullName(goblin, N, i+1);

@@ -1,9 +1,10 @@
-package Game;
+package Government;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import Descriptions.GobName;
+import Game.Defs;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Sentiens.Clan;
 import Shirage.Shire;

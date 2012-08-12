@@ -1,12 +1,15 @@
 package AMath;
 
+import Defs.Q_;
 import Descriptions.XWeapon;
-import Game.AGPmain;
-import Game.Defs;
-import Game.Order;
+import Game.*;
+import Government.Order;
+import Markets.*;
+import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Sentiens.GobLog.Reportable;
+import Shirage.Shire;
 
 /**
  *  This class should be used for testing certain game concepts to make sure they are not broken
@@ -43,7 +46,24 @@ public class Testing {
 	}
 	
 	public static void normalMarketFunctions() {
-
+		Shire ourShire = AGPmain.TheRealm.getShire(0);
+		MktAbstract rentLandMarket = ourShire.getMarket(Defs.rentland);
+		Clan settler = ourShire.getCensus()[0];
+		Clan farmer = ourShire.getCensus()[1];
+		Job settling = new Job("Settler", Job.Settle);
+		settler.setJob(settling);
+		settler.MB.newQ(new LaborQuest(settler));
+		farmer.MB.newQ(new LaborQuest(farmer));
+		((LaborQuest)farmer.MB.QuestStack.peek()).setChosenAct(Job.Farm);
+		for (int i = 0; i < 5; i++) {
+			Calc.p(settler.MB);
+			settler.pursue();settler.pursue();
+			((LaborQuest)settler.MB.QuestStack.peek()).setChosenAct(Job.Settle);
+			settler.pursue();settler.pursue();
+		}
+		System.out.println(settler + " has " + settler.getAssets(Defs.land) + " land");
+		((MktO) rentLandMarket).printBaikai();
+		
 	}
 
 	public static void breeding() {

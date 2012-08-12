@@ -34,7 +34,6 @@ public class PersecutionQuests {
 			Contract.getInstance().setOfferThreat();  //wait is this the only difference with "recruit"?
 			boolean accepted = Contract.getInstance().acceptable();
 			if (accepted) {
-				Calc.p(Me.getNomen() +" converted " + target.getNomen() +"!!!!!!! in "+this.findWhat.description());
 				Me.addReport(GobLog.converted(target, accepted));
 				target.addReport(GobLog.wasConverted(Me, accepted));
 				Contract.getInstance().enact();

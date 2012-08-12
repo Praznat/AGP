@@ -6,7 +6,7 @@ import java.util.Timer;
 import Defs.P_;
 import Descriptions.Naming;
 import Descriptions.XWeapon;
-import Game.AGPmain;
+import Game.*;
 
 public class GobLog {
 	
@@ -119,9 +119,9 @@ public class GobLog {
 	}
 	
 
-	public static Reportable discovery(final int job) {
+	public static Reportable discovery(final Job job) {
 		return new Reportable() {
-			public String out() {return "Dreamt of being a " + AGPmain.TheRealm.getJob(job).getDesc();}
+			public String out() {return "Dreamt of being a " + job.getDesc();}
 		};
 	}
 	public static Reportable practice(final P_ skill) {

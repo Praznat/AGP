@@ -38,6 +38,7 @@ public class VarGetter implements Defs {
 	private static final int CLANQUEST = 2;
 	private static final int SHIRENAME = 3;
 	private static final int CLANORDER = 4;
+	private static final int CLANASPIRATION = 5;
 	
 	
 	private String varName;
@@ -57,7 +58,7 @@ public class VarGetter implements Defs {
 		all[k++] = new VarGetter("Creed", CLANDISCS, CREED);
 		all[k++] = new VarGetter("Ruler", CLANDISCS, LORD);
 		all[k++] = new VarGetter("Homeland", CLANDISCS, HOMELAND);
-		all[k++] = new VarGetter("Aspiration", CLANDISCS, ASPIRATION);
+		all[k++] = new VarGetter("Aspiration", CLANBASIC, CLANASPIRATION);
 		all[k++] = new VarGetter("1stValue", CLANRANKSANCS, 0);
 		all[k++] = new VarGetter("2ndValue", CLANRANKSANCS, 1);
 		all[k++] = new VarGetter("3rdValue", CLANRANKSANCS, 2);
@@ -132,6 +133,7 @@ public class VarGetter implements Defs {
 			switch(var) {
 			case CLANNAME: return dude.getNomen();
 			case CLANJOB: return dude.getJob().getDesc();
+			case CLANASPIRATION: return dude.getAspiration().getDesc();
 			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "None" : dude.MB.QuestStack.peek().shortName());
 			case CLANORDER: return (dude.myOrder() == null ? "None" : dude.myOrder().getFollowerName());
 			case SHIRENAME: return dude.myShire().getName();

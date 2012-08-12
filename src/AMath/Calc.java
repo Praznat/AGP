@@ -3,8 +3,9 @@ package AMath;
 import Game.AGPmain;
 
 public class Calc {
-	
+
 	public static void p(String s) {System.out.println(s);}
+	public static void p(Object s) {System.out.println(s);}
 	
 	//not extremely efficient
 	public static short bitPart(short X, int start, int len) {

@@ -10,7 +10,7 @@ import Game.Act;
 import Game.Defs;
 import Game.Goods;
 import Game.Job;
-import Game.Order;
+import Government.Order;
 import Markets.*;
 import Questing.Quest;
 import Questing.Quest.DefaultQuest;
@@ -37,7 +37,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	protected int ID;
 	protected int xloc;
 	protected int yloc;
-	protected int job;
+	protected Job job, aspiration;
 	protected int[] assets;
 	protected int[] inventory; //OBSOLETE
 	private short specialweapon;
@@ -81,7 +81,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		assets[millet] = 1000;
 //		inventory = recalcInv();
 //		expTerms = new int[][] {{0}, {}, {}, {}};
-		job = FARMER;  setRandomJob();
+		job = Job.FARMER;  setRandomJob();
 		profitEMA = 0;
 		setAge(AGPmain.rand.nextInt(100));
 		specialweapon = (short) AGPmain.rand.nextInt(); //XWeapon.NULL;
@@ -127,9 +127,10 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
 	public String getNomen() {return GobName.fullName(this);}
 	public String getSancName() {return FB.getDeusName();}
-	public Job getJob() {return AGPmain.TheRealm.getJob(job);}
-	public int getJobInt() {return job;}
-	public void setJob(int j) {job = j;}
+	public Job getJob() {return job;}
+	public void setJob(Job j) {job = j;}
+	public Job getAspiration() {return aspiration;}
+	public void setAspiration(Job j) {aspiration = j;}
 	public int[][] getExpTerms() {return expTerms;}
 	public void setExpTerms(int[][] ET) {expTerms = ET;}
 	
@@ -225,20 +226,17 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	private void setRandomJob() {   //just for sample purposes!
 		int n = AGPmain.rand.nextInt(12);
 		switch (n) {
-		case 0: job = HUNTERGATHERER; break;
-		case 1: job = HUNTERGATHERER; break;
-		case 2: job = HERDER; break;
-		case 3: job = MINER; break;
-		case 4: job = MASON; break;
-		default: job = FARMER; break;
+		case 0: job = Job.HUNTERGATHERER; break;
+		case 1: job = Job.HUNTERGATHERER; break;
+		case 2: job = Job.HERDER; break;
+		case 3: job = Job.MINER; break;
+		case 4: job = Job.MASON; break;
+		default: job = Job.FARMER; break;
 		}
 		
 	}
 	
-	
-	//public void setAct(int a) {act = a;}
-	//public int getAct() {return act;}
-	public Act[] getJobActs() {return AGPmain.TheRealm.getJob(job).getActs();}
+	public Act[] getJobActs() {return job.getActs();}
 	public void setLastSuccess(boolean b) {lastSuccess = b;}
 	public boolean getLastSuccess() {return lastSuccess;}
 	public boolean isActive() {return active;}
@@ -300,12 +298,20 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	//end OBSOLETE
 
 
-    public void eat() {
-    	assets[Goods.millet] -= DMC;
-    	if (assets[Goods.millet] < 0) {
-    		assets[Goods.millet] = 0;
+    public boolean eat() {
+    	assets[Defs.millet] -= DMC;
+    	if (assets[Defs.millet] < 0) {
+    		assets[Defs.millet] = 0;
+    		return false;
     		//starvation!
-    	}
+    	}	return true;
+    }
+    public boolean eatMeat() {
+    	assets[Defs.meat]--;
+    	if (assets[Defs.meat] < 0) {
+    		assets[Defs.meat] = 0;
+    		return false;
+    	}	return true;
     }
     
     
@@ -351,20 +357,20 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		if (cur > 0) {glorf(k, other);}
 		else if (cur < 0) {dnounce(k, other);}
 	}
-	public void raiseSanc(int s, Clan other) {
-		switch (s) {
-			case RX : other.FB.setDisc(LORD, FB.getDisc(LORD)); break;
-			case DE : other.FB.setDisc(CREED, FB.getDisc(CREED)); break;
-			case HL : int hl = FB.getDisc(HOMELAND);
-				if(hl == other.getShireXY()) {other.FB.setDisc(HOMELAND, FB.getDisc(HOMELAND));} break;
-			case JB : other.FB.setDisc(ASPIRATION, FB.getDisc(ASPIRATION)); break;
-			default : break;
-		}
-		other.FB.upSanc(s);
-	}
+//	public void raiseSanc(int s, Clan other) {
+//		switch (s) {
+//			case RX : other.FB.setDisc(LORD, FB.getDisc(LORD)); break;
+//			case DE : other.FB.setDisc(CREED, FB.getDisc(CREED)); break;
+//			case HL : int hl = FB.getDisc(HOMELAND);
+//				if(hl == other.getShireXY()) {other.FB.setDisc(HOMELAND, FB.getDisc(HOMELAND));} break;
+//			case JB : other.FB.setDisc(ASPIRATION, FB.getDisc(ASPIRATION)); break;
+//			default : break;
+//		}
+//		other.FB.upSanc(s);
+//	}
 	private void glorf(int s, Clan other) {
 		if (!other.iHigherPrest(P_.SANCP, this)) {
-			raiseSanc(s, other);   FB.upPrest(P_.PREACHP);
+//			raiseSanc(s, other);   FB.upPrest(P_.PREACHP);
 		}   else {FB.downPrest(P_.PREACHP);}
 	}
 	private void dnounce(int s, Clan other) {

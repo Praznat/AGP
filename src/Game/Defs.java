@@ -203,8 +203,7 @@ public interface Defs {
 	//DISCS
 	public static final int CREED = 0;
 	public static final int LORD = 1;
-	public static final int ASPIRATION = 2;
-	public static final int HOMELAND = 3;
+	public static final int HOMELAND = 2;
 	
 	
 	
@@ -246,25 +245,7 @@ public interface Defs {
 
 	
 	
-	//Jobs
-	public static final int numJobs = 20;
-	
-	public static final int VAGRANT = 0;
-	public static final int HUNTERGATHERER = 1;
-	public static final int BUILDER = 2;
-	public static final int FARMER = 3;
-	public static final int HERDER = 4;
-	public static final int MINER = 5;
-	public static final int LUMBERJACK = 6;
-	public static final int SMITHY = 7;
-	public static final int MASON = 8;
-	public static final int TRADER = 9;
-	public static final int JEWELER = 10;
-	public static final int CARPENTER = 11;
-	public static final int GUNSMITH = 12;
-	public static final int LOBOTOMIST = 13;
-	
-	
+
 	//Goods
 	public static int numAssets = 15; //fixed tracked owned goods
 	public static int numGoods = 25; //all goods

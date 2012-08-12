@@ -16,4 +16,7 @@ public class Entry {
 	public void makeRented() {setPX(-Math.abs(px));}
 	public void makeUnrented() {setPX(Math.abs(px));}
 	public boolean isRented() {return px < 0;}
+	
+	@Override
+	public String toString() {return (trader == null ? "null" : trader.toString() + " at " + px);}
 }

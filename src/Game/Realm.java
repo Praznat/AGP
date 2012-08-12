@@ -18,7 +18,6 @@ public class Realm {
 	private Mem[] MemDefs;
 	//	private Sanc[] SancDefs;
 	private Value[] ValueDefs;
-	private Job[] JobDefs;
 	private VarGetter[] PopVarGetters;
 	private VarGetter[] MktVarGetters;
 
@@ -44,7 +43,6 @@ public class Realm {
 	public void setupDefs() {
 		MemDefs = Mem.MemDefs();
 		//		SancDefs = Sanc.SancDefs();
-		JobDefs = Job.JobDefs();
 		PopVarGetters = VarGetter.popVGs();
 		MktVarGetters = VarGetter.mktVGs();
 	}
@@ -139,7 +137,6 @@ public class Realm {
 	//	public Value getValue(int v) {return Values.All[v];} //{return ValueDefs[v];}
 	//	public Value[] getValues() {return Values.All;} //{return ValueDefs;}
 	//	public Sanc getSanc(int s) {return SancDefs[s];}
-	public Job getJob(int j) {return JobDefs[j];}
 	public VarGetter[] getPopVarGetters() {return PopVarGetters;}
 	public VarGetter getPopVarGetter(int i) {return PopVarGetters[i];}
 	public VarGetter[] getMktVarGetters() {return MktVarGetters;}

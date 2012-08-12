@@ -159,12 +159,12 @@ public class MktO extends MktAbstract {
 //		report += (min == 0 && max == Integer.MAX_VALUE ? "" : ", bounded between " + min + " and " + max) + RET;
 		return Math.min(Math.max(PX, min), max);
 	}
-	private int estFairOffer(Clan doer) {
+	protected int estFairOffer(Clan doer) {
 		int bestoffer = (offerlen > 0 ? bestOffer() : offerFromNowhere(doer));
 		double FlowPX = addSpread(bestoffer, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
 		return fairPX(doer, FlowPX);
 	}
-	private int estFairBid(Clan doer) {
+	protected int estFairBid(Clan doer) {
 		int bestbid = (bidlen > 0 ? bestBid() : bidFromNowhere(doer));
 		double FlowPX = addSpread(bestbid, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
 		return Math.min(fairPX(doer, FlowPX), doer.getMillet());
@@ -256,7 +256,7 @@ public class MktO extends MktAbstract {
 		doer.addReport(GobLog.limitOrder(g, px, false));
 		report += doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px + RET;
 		int bbp = bestBidPlc();
-		if(bbp >= NOBID && px <= Bids[bbp].px) {hitBid(doer); return;}
+		if(bidlen > 0 && bbp >= NOBID && px <= Bids[bbp].px) {hitBid(doer); return;}
 		int k = findPlcInV(px, Offers, offerlen, 1);
 		offerlenUp();
 		for(int i = offerlen; i > k; i--) {Offers[i].set(Offers[i-1]);}
@@ -264,8 +264,8 @@ public class MktO extends MktAbstract {
 		finish();
 //		Log.info(doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px);
 	}
-	protected void bidlenDown() {bidlen--;}
-	protected void bidlenUp() {
+	protected final void bidlenDown() {bidlen--;}
+	protected final void bidlenUp() {
 		if (bidlen++ > Bids.length*expandSZ) {
 			Entry[] tmp = new Entry[2*bidlen];
 			System.arraycopy(Bids,0,tmp,0,Bids.length);
@@ -273,8 +273,8 @@ public class MktO extends MktAbstract {
 			Bids = tmp;
 		}
 	}
-	protected void offerlenDown() {offerlen--;}
-	protected void offerlenUp() {
+	protected final void offerlenDown() {offerlen--;}
+	protected final void offerlenUp() {
 		if (offerlen++ > Offers.length*expandSZ) {
 			Entry[] tmp = new Entry[2*offerlen];
 			System.arraycopy(Offers,0,tmp,0,Offers.length);
@@ -307,22 +307,23 @@ public class MktO extends MktAbstract {
 	protected int addSpread(int px, double s) {return (int) Math.round((double)px * (1+s));}
 	
 	public String[][] getBaikai() {
-		String[][] B = new String[offerlen+bidlen][3];
-		int k = 0;
+		String[][] B = new String[1+offerlen+bidlen][3];
+		B[0][0] = "trader";B[0][1] = "px";B[0][2] = "trader";
+		int k = 1;
 		for (int i = offerlen-1; i>=0; i--) {
-			B[k][0] = (Offers[i].trader!=null ? ""+ Offers[i].trader.getID() : "");
+			B[k][0] = (Offers[i].trader!=null ? ""+ Offers[i].trader.getNomen() : "");
 			B[k][1] = (Offers[i].px != -1 ? ""+ Offers[i].px : "");
 			B[k++][2] = "";
 		}
 		for (int i = 0; i<bidlen; i++) {
 			B[k][0] = "";
 			B[k][1] = (Bids[i].px != -1 ? ""+ Bids[i].px : "");
-			B[k++][2] = (Bids[i].trader!=null ? ""+ Bids[i].trader.getID() : "");
+			B[k++][2] = (Bids[i].trader!=null ? ""+ Bids[i].trader.getNomen() : "");
 		}
 		return B;
 	}
 	public void printBaikai() {
-		System.out.println("BAIKAI");
+		System.out.println(Naming.goodName(g) + " BAIKAI");
 		System.out.println("Offers: "+offerlen);
 		System.out.println("Bids: "+bidlen);
 		Calc.printArray(getBaikai());

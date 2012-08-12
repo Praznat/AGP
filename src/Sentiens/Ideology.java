@@ -49,7 +49,6 @@ public class Ideology implements Defs {
 		discs[CREED] = AGPmain.rand.nextInt();
 		discs[LORD] = getEu().getID();
 		discs[HOMELAND] = Me.getShireXY();
-		discs[ASPIRATION] = HUNTERGATHERER;
 		
 		//testing - delete later:
 //		for (M_ m : M_.SMems()) {setBeh(m, 0);}
@@ -207,6 +206,9 @@ public class Ideology implements Defs {
 	public int compareValues(Value A, Value B) {
 		for (Value v : sancs) {if (v == A) return -1; else if (v == B) return 1;} return 0;
 	}
+	public Value strongerLNof(Value A, Value B) {
+		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;
+	}
 
 	public int compareSanc(Clan other) { //true if eu > ele
 		int k;   int ihi;
@@ -293,13 +295,11 @@ public class Ideology implements Defs {
 		case CREED: return getDeusName();
 		case LORD: return (Me != getRex() ? getRex().getNomen() : "Self");
 		case HOMELAND: return getHomeland().getName();
-		case ASPIRATION: return getDesJob().getDesc();
 		default: return "";
 		}
 	}
 	public Clan getRex() {return AGPmain.TheRealm.getClan(getDisc(LORD));}
 	public Shire getHomeland() {return AGPmain.TheRealm.getShire(getDisc(HOMELAND));}
-	public Job getDesJob() {return AGPmain.TheRealm.getJob(getDisc(ASPIRATION));}
 	public String getDeusName() {
 		int [] deus = getDeusV();
 		return Naming.randGoblinSanctityName(deus);

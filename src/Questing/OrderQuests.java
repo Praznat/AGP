@@ -1,6 +1,6 @@
 package Questing;
 
-import Game.Order;
+import Government.Order;
 import Sentiens.Clan;
 
 public class OrderQuests {

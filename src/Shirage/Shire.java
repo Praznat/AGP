@@ -64,9 +64,6 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public static final int SORE = 6;
 	public static final int WEATHERVOL = 10;
 
-	private int[][] bidoffers = new int[Goods.numGoods][2];
-	private int[] produced = new int[Goods.numGoods];
-	private int[] consumed = new int[Goods.numGoods];
 	private MktAbstract[] markets;
 	
 	
@@ -83,19 +80,9 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		//?change to seasonal?
 		
 		System.arraycopy(vars, 0, lastvars, 0, numVars);
-		calcBidOffers();
 
-		//Calc.printArrayH(produced);
-		//Calc.printArrayH(consumed);
-		produced = Calc.allto(0, produced.length);
-		consumed = Calc.allto(0, consumed.length);
-		for(int i = 0; i < bidoffers.length; i++) {if(bidoffers[i][1]>9999){bidoffers[i][1]=9999;};}
-		//Calc.printArray(Calc.transpose(bidoffers));
 		int[] Gs = new int[Goods.numGoods];
 		for(int i = 0; i < Gs.length; i++) {Gs[i] = i;}
-		//Calc.printArrayH(Gs);
-		
-		//markets[Goods.silver].printBaikai();
 		
 		
 	}
@@ -127,9 +114,11 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public MktAbstract[] generateMkts() {
 		MktAbstract[] M = new MktAbstract[Defs.numGoods];
 		for (int i = 0; i < M.length; i++) {
-			if(i != Defs.millet) {M[i] = new MktO(i, this);}
+			if(i != Defs.millet && i != Defs.rentland && i != Defs.rentanimal) {M[i] = new MktO(i, this);}
 		}
 		M[Defs.millet] = new FoodMarket(Defs.millet, this);
+		M[Defs.rentland] = new RentMarket(Defs.rentland, this);
+		M[Defs.rentanimal] = new RentMarket(Defs.rentanimal, this);
 		return M;
 	}
 
@@ -230,16 +219,9 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public void incVar(byte v, byte x) {vars[v] = Calc.byteUp(vars[v], x);}
 	public void decVar(byte v, byte x) {vars[v] = Calc.byteDown(vars[v], x);}
 	public void setVar(byte v, byte x) {vars[v] = x;}
-	public void incProduced(int g, int p) {produced[g] += p;}
-	public void incConsumed(int g, int p) {consumed[g] += p;}
 	public int[] getBidOffer(int g) {
 		int[] BO = {markets[g].bestBid(), markets[g].bestOffer()};
 		return BO;
-	}
-	public void calcBidOffers() {
-		for (int i = 0; i < bidoffers.length; i++) {
-			bidoffers[i] = getBidOffer(i);
-		}
 	}
 	public byte[] getVars() {return vars;}
 	public byte[] getLastVars() {return lastvars;}

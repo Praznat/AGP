@@ -9,6 +9,7 @@ import Game.Do.ClanOnClan;
 import Questing.PersecutionQuests.PersecuteForeigner;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
+import Questing.PowerStartingQuests.IndPowerQuest;
 import Questing.RomanceQuests.BreedQuest;
 import Questing.OrderQuests.LoyaltyQuest;
 import Questing.WorkQuests.BuildWealthQuest;
@@ -28,6 +29,8 @@ public abstract class Quest {
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
 	public String shortName() {return description();}
 	public String description() {return "Undefined Quest";}
+	@Override
+	public String toString() {return description();}
 	
 	protected AvatarConsole avatarConsole = AGPmain.mainGUI.AC;
 	public Clan avatar() {return avatarConsole.getAvatar();}
@@ -93,6 +96,7 @@ public abstract class Quest {
 		case BREED: quest = new BreedQuest(clan); break;
 		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
 		case LOYALTYQUEST: quest = new LoyaltyQuest(clan); break;
+		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
 		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
 		case PERSECUTEFOREIGNER: quest = new PersecuteForeigner(clan); break;

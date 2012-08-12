@@ -1,5 +1,6 @@
 package Markets;
 
+import Defs.M_;
 import Descriptions.Naming;
 import Game.*;
 import Sentiens.Clan;
@@ -18,10 +19,17 @@ public class RentMarket extends MktO {
 	}
 	
 	public int bestOffer() {
-		if (offerlen == 0) {return NOASK;}
+		if (!unrentedLeft()) {return NOASK;}
 		else {return Offers[bestplc].px;}
 	}
 	
+	@Override
+	protected int estFairOffer(Clan doer) {
+		int bestoffer = (unrentedLeft() ? bestOffer() : offerFromNowhere(doer));
+		double FlowPX = addSpread(bestoffer, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
+		return fairPX(doer, FlowPX);
+	}
+	@Override
 	protected void hitBid(Clan seller, int plc) {
 		report += seller.getNomen() + " tries to hit bid for " + Naming.goodName(g) + RET;
 		if (plc != -1 && transaction(Bids[plc].trader, seller, Bids[plc].px)) {

@@ -35,7 +35,7 @@ public class WorkQuests {
 			super(P); setChosenAct(Job.NullAct); resetWM();
 		}
 		@Override
-		public String description() {return chosenAct.getDesc();}
+		public String description() {return chosenAct + " stage " + stage;}
 
 		@Override
 		public void avatarPursue() {
@@ -71,7 +71,7 @@ public class WorkQuests {
 		}
 		public void suspendG(int g) {
 			for(int i = 0; i < workmemo.length; i++) {
-				if (getAbsWM(i) == g) {workmemo[i] = -Math.abs(workmemo[i]);   i++;   return;}
+				if (workmemo[i] == g) {workmemo[i] = -g;   i++;   return;}
 			}
 		}
 		public int[] getWM() {return workmemo;}
@@ -88,6 +88,7 @@ public class WorkQuests {
 				liquidateWM();
 				chosenAct = a;
 			} //new WORKMEMO
+			if (chosenAct != Job.NullAct) {chosenAct.storeAllInputsInWM(Me);}
 		}
 		private Act compareTrades() {
 			Act[] actSet = Me.getJobActs();
@@ -115,11 +116,9 @@ public class WorkQuests {
 		private void chooseAct() {
 			setChosenAct(compareTrades());
 			//fill WORKMEMO with every possible g in A:
-			chosenAct.storeAllInputsInWM(Me);
 			stage++;
 		}
 		private void avatarDoInputs() {
-			chosenAct.storeAllInputsInWM(Me);
 			doInputs();
 		}
 		private void doInputs() {
@@ -128,32 +127,32 @@ public class WorkQuests {
 			// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?
 			
 			//
-			int[] in = chosenAct.expIn(Me); //why is first number zero?
-			int[] tmp = Calc.copyArray(in);
+			int[] totalNeeded = chosenAct.expIn(Me); //why is first number zero?
+			int[] stillNeeded = Calc.copyArray(totalNeeded);
 			int j;   int i = -1;   while (workmemo[++i] != Defs.E) {
 				int N = workmemoX[i];
-				j = 0;   while (tmp[++j] != Defs.E) { //goes through WM setting to E all nec inputs already owned
-					if(workmemo[i] == -tmp[j]) {in[j] = -Math.abs(in[j]);} //dont buy if already in market
-					if(N>0 && tmp[j]==getAbsWM(i)) {tmp[j] = 0;   N--;}  //0 should not be a good
+				j = 0;   while (stillNeeded[++j] != Defs.E) { //goes through WM setting to E all nec inputs already owned
+					if(workmemo[i] == -stillNeeded[j]) {totalNeeded[j] = -Math.abs(totalNeeded[j]);} //mark as dont buy if already in market
+					if(N>0 && stillNeeded[j]==getAbsWM(i)) {stillNeeded[j] = 0;   N--;}  //0 should not be a good
 				}
 			}
-			boolean go = true;   j = 0;   while (tmp[++j] != Defs.E) {if(tmp[j]!=0) {go=false; break;}}
+			boolean go = true;   j = 0;   while (stillNeeded[++j] != Defs.E) {if(stillNeeded[j]!=0) {go=false; break;}}
 			if (go) {   //in case all nec inputs owned
 				i = -1;   while (workmemo[++i] != Defs.E) {
 					int wmg = getAbsWM(i);
 					MktAbstract mkt = Me.myMkt(wmg);
-					j = 0;   while (in[++j] != Defs.E) {  //consume WM goods used in input:
+					j = 0;   while (totalNeeded[++j] != Defs.E) {  //consume WM goods used in input:
 						if(workmemoX[i] == 0) {break;}
 						//is this right?? setting in[j] to E even though the while loop stops at E?
 						//set in[j] to 0 to correct this problem... see if it works
-						if((in[j]) == wmg) {in[j] = 0;   workmemoX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
+						if((totalNeeded[j]) == wmg) {totalNeeded[j] = 0;   workmemoX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
 					}
 					for (int k = workmemoX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
 				}
 				stage++;   //move on
 			}
-			else {i = 0; while (in[++i] != Defs.E) {if(in[i] >= 0) {
-				Me.myMkt(in[i]).liftOffer(Me);   suspendG(in[i]);
+			else {i = 0; while (totalNeeded[++i] != Defs.E) {if(totalNeeded[i] >= 0) {
+				Me.myMkt(totalNeeded[i]).liftOffer(Me);   suspendG(totalNeeded[i]);
 			}}} //dont lift in case of - (see above)
 		}
 		private void doWork() {
