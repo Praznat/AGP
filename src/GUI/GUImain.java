@@ -37,7 +37,7 @@ public class GUImain extends JFrame {
 		MD = new MapDisplay();   MD.introduce();
 		this.getLayeredPane().add(MD, new Integer(0));
 		MD.setBounds(0, 0, getContentPane().getWidth(), getContentPane().getHeight());
-		MD.createMap(5000, 5000); //5000
+		MD.createMap(100, 1000); //5000
 		MD.setVisible(true);
 	}
 

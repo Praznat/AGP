@@ -1,5 +1,7 @@
 package AMath;
 
+import java.awt.Color;
+
 import Game.AGPmain;
 
 public class Calc {
@@ -39,6 +41,12 @@ public class Calc {
 	public static int AtoBbyRatio(double A, double B, int ratioToA, int denom) {
 		return roundy((A * ratioToA + B * (denom - ratioToA)) / denom);  //broken!
 	}
+	public static Color AtoBColor(Color A, Color B, double pctAtoB) {
+		int r = (int) Math.round((double)A.getRed() * pctAtoB + (double)B.getRed() * (1.0 - pctAtoB));
+		int g = (int) Math.round((double)A.getGreen() * pctAtoB + (double)B.getGreen() * (1.0 - pctAtoB));
+		int b = (int) Math.round((double)A.getBlue() * pctAtoB + (double)B.getBlue() * (1.0 - pctAtoB));
+		return new Color(r,g,b);
+	}
 
 	public static int sum(byte[] x) {
 		int sum = 0;
@@ -75,6 +83,9 @@ public class Calc {
 		else {return 0;}
 	}
 	public static int bound(int x, int min, int max) {
+		return Math.min(max, Math.max(min, x));
+	}
+	public static double bound(double x, double min, double max) {
 		return Math.min(max, Math.max(min, x));
 	}
 

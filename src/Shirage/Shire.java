@@ -171,6 +171,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 
 	public void linkToPlot(Plot p) {
 		linkedPlot = p;
+		p.linkHoodToShire(this);
 	}
 	public boolean isPopulateable() {
 		if (linkedPlot == null) {return false;}
@@ -232,7 +233,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	
 
 
-	
+	public Plot getLinkedPlot() {return linkedPlot;}
 	
 	
 }

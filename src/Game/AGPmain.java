@@ -73,8 +73,8 @@ public class AGPmain extends Applet {
 		
 	}
 	
-	public static int getShiresX() {return mainGUI.MD.getTCols() / 3;}
-	public static int getShiresY() {return mainGUI.MD.getTRows() / 3;}
+	public static int getShiresX() {return mainGUI.MD.getTCols() / 2;}
+	public static int getShiresY() {return mainGUI.MD.getTRows() / 2;}
 
 	private static void setLookAndFeel() {
 		try {

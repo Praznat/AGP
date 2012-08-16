@@ -13,7 +13,7 @@ import AMath.Calc;
 import GUI.MapDisplay;
 import Game.AGPmain;
 
-public class Plot {
+public class Plot extends AbstractPlot {
 	protected static final Plot[] HOOD = new Plot[6];
 	protected static final int CWGT = 3;
 	protected static final int BORDER = 5;
@@ -28,9 +28,9 @@ public class Plot {
 	protected static Color wCol = new Color(40, 40, 190);
 	protected static MapDisplay Map() {return AGPmain.mainGUI.MD;}
 	
+	protected Shire linkedShire;
 	protected double value, wval, hypw, wflow, myrbm;
 	private boolean ocean;
-	protected int x, y;
 	protected static final int BZLEN = 20;
 	protected Bezier GB = new Bezier(new int[][] {{}}, BZLEN);
 	protected Bezier edgeN = new Bezier(new int[3][2], BZLEN);
@@ -52,14 +52,16 @@ public class Plot {
 		fractal3 = Calc.fractal(.8, 2*(BZLEN+1));
 		fractal4 = Calc.fractal(.8, 2*(BZLEN+1));
 	}
+	@Override
 	public void setXY(int X, int Y) {
-		x=X; y=Y; myrbm = rbm * Math.random() * 2;
-		if (x < BORDER || x >= AGPmain.mainGUI.MD.getTCols() - BORDER)
-			{value = value * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;
-			myrbm = myrbm * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;}
-		if (y < BORDER || y >= AGPmain.mainGUI.MD.getTRows() - BORDER)
-			{value = value * Math.min(y, AGPmain.mainGUI.MD.getTRows() - 1 - y) / BORDER;
-			myrbm = myrbm * Math.min(y, AGPmain.mainGUI.MD.getTRows() - 1 - y) / BORDER;}
+		super.setXY(X, Y);
+		myrbm = rbm * Math.random() * 2;
+//		if (x < BORDER || x >= AGPmain.mainGUI.MD.getTCols() - BORDER)
+//			{value = value * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;
+//			myrbm = myrbm * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;}
+//		if (y < BORDER || y >= AGPmain.mainGUI.MD.getTRows() - BORDER)
+//			{value = value * Math.min(y, AGPmain.mainGUI.MD.getTRows() - 1 - y) / BORDER;
+//			myrbm = myrbm * Math.min(y, AGPmain.mainGUI.MD.getTRows() - 1 - y) / BORDER;}
 		setGradients();
 	}
 	public void setGradients() {
@@ -132,12 +134,19 @@ public class Plot {
 		double ev = Math.min(getWVal() , rate);
 		chgW(-ev);   return ev;
 	}
+	public void drawPlotSimple(Graphics g) {
+		int C = Calc.bound((int) (255. * getValue()), 0, 255);
+		g.setColor(new Color(C,C,C));
+		g.fillRect(x(), y(), W(), H());
+	}
 	public void drawPlot(Graphics g) {
-		g.setColor(fertile() ? dCol : dCol);
+		if (Map().SIMPLEDRAW) {drawPlotSimple(g); return;}
+		g.setColor(fertile() ? fertColor() : dryColor());
 		int W = W();   int H = H();
 		Graphics2D g2 = (Graphics2D) g;
 		if(!paintedOnce) {paintEdges(g);     paintedOnce=true; return;}
 		double V = getValue();   int a = W/3;
+		if(isWater()) {V /= 3;}
 		if (V > 0.3) {
 			int x1 = (int)(x()-a*V);   int x2 = (int)(x1 + W+2*a*V);
 			int y1 = (int)(y() + H + (double)H*V/4);   int y2 = (int)(y1 - (double)2*H*V);
@@ -158,7 +167,14 @@ public class Plot {
 		Imagery.drawBush(g, x() + 3*W()/6, y() + 3*H()/4, H()/10);
 		Imagery.drawBush(g, x() + 5*W()/6, y() + 3*H()/4, H()/10);	
 	}
-
+	private Color dryColor() {
+		double dryPct = Calc.bound(Math.sqrt((1.0 - getWVal()) / waterthresh), 0, 1);
+		return Calc.AtoBColor(dCol, fCol, dryPct);
+	}
+	private Color fertColor() {
+		double fertPct = Calc.bound(Math.sqrt(getWVal() / waterthresh), 0, 1);
+		return Calc.AtoBColor(fCol, dCol, fertPct);
+	}
 	public boolean fertile() {
 		refreshHood();   int n = 0;
 		if(isWater()) {return true;}
@@ -207,7 +223,7 @@ public class Plot {
 		edgeN.map();edgeE.map();edgeS.map();edgeW.map();
 		
 
-		g.setColor(type==0 ? wCol : (type==1 ? fCol : dCol));   int[] tmp;
+		g.setColor(type==0 ? wCol : (type==1 ? fertColor() : dryColor()));   int[] tmp;
 		int[] X = new int[4];   int[] Y = new int[4]; //NW,NE,SE,SW
 		tmp = edgeN.getPoint(0);  X[0] = tmp[0];  Y[0] = tmp[1];
 		tmp = edgeN.getPoint(2);  X[1] = tmp[0];  Y[1] = tmp[1];
@@ -242,5 +258,26 @@ public class Plot {
 	}
 	public void makeLand() {ocean = false;}
 	public boolean isOcean() {return ocean;}
+	
+	private static final int[] getShireDef = {1, 5, 3};
+	public void linkHoodToShire(Shire shire) {
+		refreshHood();
+		for (int neighbor : getShireDef) {HOOD[neighbor].linkToShire(shire);}
+		linkToShire(shire);
+	}
+	public void drawShireHighlighted(Graphics g) {
+		refreshHood();
+		for (int neighbor : getShireDef) {HOOD[neighbor].drawHighlighted(g);}
+		drawHighlighted(g);
+		g.drawString(linkedShire.getPopsize()+" "+linkedShire.getName(), x(), y() - H());
+	}
+	private void drawHighlighted(Graphics g) {
+		g.setColor(new Color(255,0,0));
+		g.drawRect(x()+1, y()+1, W()-2, H()-2);
+	}
+	private void linkToShire(Shire shire) {
+		linkedShire = shire;
+	}
+	public Shire getLinkedShire() {return linkedShire;}
 }
 

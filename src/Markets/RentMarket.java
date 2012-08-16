@@ -3,6 +3,8 @@ package Markets;
 import Defs.M_;
 import Descriptions.Naming;
 import Game.*;
+import Questing.Quest;
+import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Shirage.Shire;
 
@@ -40,7 +42,6 @@ public class RentMarket extends MktO {
 	public void placeOffer(Clan doer, int px){
 		 //must recalculate "best", not sure if working
 		super.placeOffer(doer, px);
-		
 	}
 	
 	public int chgOffer(int plc, int v) {
@@ -62,6 +63,7 @@ public class RentMarket extends MktO {
 		}   
 		else {buyFair(buyer);}   ///????
 	}
+	
 	/**
 	protected boolean transaction(Clan buyer, Clan seller, int price) {
 		if(seller == null || buyer == null) {return false;}

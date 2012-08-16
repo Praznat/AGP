@@ -145,7 +145,7 @@ public class WorkQuests {
 						if(workmemoX[i] == 0) {break;}
 						//is this right?? setting in[j] to E even though the while loop stops at E?
 						//set in[j] to 0 to correct this problem... see if it works
-						if((totalNeeded[j]) == wmg) {totalNeeded[j] = 0;   workmemoX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
+						if(Math.abs(totalNeeded[j]) == wmg) {totalNeeded[j] = 0;   workmemoX[i]--;   mkt.loseAsset(Me);   Me.addReport(GobLog.consume(wmg));}
 					}
 					for (int k = workmemoX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
 				}

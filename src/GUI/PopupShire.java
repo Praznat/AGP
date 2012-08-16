@@ -53,10 +53,12 @@ public class PopupShire extends PopupAbstract {
 	@Override
     public void load() {if (curShire != null) {loadShire(curShire);}}
     public void loadShire(Shire s) {
+    	if (s == null) {return;}
     	curShire = s;
     	namebox.setNomen(curShire.getName());
     	for (int i = 0; i < infoboxes.length; i++) {infoboxes[i].redefineShire();}
     	initialized = true;
+    	this.refreshAll();
     }
     
     public void selectVG(int plc, int vg) {selectedVGs[curTab][plc] = vg;}

@@ -84,7 +84,7 @@ public class Realm {
 		population = new Clan[C];
 		for (int i = 0; i < C; i++) {
 			Shire candidateHL = shires[AGPmain.rand.nextInt(shiresX * shiresY)];;
-			while (candidateHL != null && candidateHL.isPopulateable()) {
+			while (candidateHL == null || !candidateHL.isPopulateable()) {
 				candidateHL = shires[AGPmain.rand.nextInt(shiresX * shiresY)];
 			}
 			population[i] = new Clan(candidateHL, i);
@@ -98,7 +98,7 @@ public class Realm {
 		for (int x = 0; x < H; x++) {
 			for (int y = 0; y < V; y++) {
 				shires[x + y*H] = new Shire(x, y);
-				shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*3 + 1, y*3 + 1));
+				shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*2 + (y%2), y*2 + 1));
 			}
 		}
 	}

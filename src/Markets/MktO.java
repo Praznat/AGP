@@ -142,7 +142,7 @@ public class MktO extends MktAbstract {
 		gainAsset(buyer);
 		Quest q = buyer.MB.QuestStack.peek();
 		if (q instanceof LaborQuest) {((LaborQuest) q).getG(g); return;}
-		q = buyer.MB.QuestStack.peekUp();  //might as well
+		q = buyer.MB.QuestStack.peekUp();  //might as well check one quest up
 		if (q instanceof LaborQuest) {((LaborQuest) q).getG(g); return;}
 		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not laborquest
 	}
@@ -211,7 +211,9 @@ public class MktO extends MktAbstract {
 	public void removeOffer(Clan trader){
 		int k = findOffer(trader);
 		if(k != -1) {removeOffer(k);}
-		else {Log.warning(trader.getNomen() + " ERROR removeOffer(ENTRY NOT FOUND)");}
+		else {
+			Log.warning(trader.getNomen() + " ERROR removeOffer(ENTRY NOT FOUND)");
+		}
 	}
 
 	public void gainAsset(Clan gainer) {
@@ -312,12 +314,12 @@ public class MktO extends MktAbstract {
 		int k = 1;
 		for (int i = offerlen-1; i>=0; i--) {
 			B[k][0] = (Offers[i].trader!=null ? ""+ Offers[i].trader.getNomen() : "");
-			B[k][1] = (Offers[i].px != -1 ? ""+ Offers[i].px : "");
+			B[k][1] = (Offers[i].trader!=null ?  ""+ Offers[i].px : "");
 			B[k++][2] = "";
 		}
 		for (int i = 0; i<bidlen; i++) {
 			B[k][0] = "";
-			B[k][1] = (Bids[i].px != -1 ? ""+ Bids[i].px : "");
+			B[k][1] = (Bids[i].trader!=null ? ""+ Bids[i].px : "");
 			B[k++][2] = (Bids[i].trader!=null ? ""+ Bids[i].trader.getNomen() : "");
 		}
 		return B;

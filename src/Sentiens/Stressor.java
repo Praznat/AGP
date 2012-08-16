@@ -56,5 +56,8 @@ public class Stressor {
 	public boolean sameAndLessThan(Clan doer, Stressor other) {
 		return (other.getTarget().equals(target) && getLevel(doer) <= other.getLevel(doer));
 	}
+	
+	@Override
+	public String toString() {return "type " + type + " @ " + target.toString();}
 
 }

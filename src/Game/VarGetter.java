@@ -127,7 +127,7 @@ public class VarGetter implements Defs {
 			case BID: int b = getVarInt(dude, shire, good);   return (b == MktO.NOBID ? "" : b) + "";
 			case ASK: int a = getVarInt(dude, shire, good);   return (a == MktO.NOASK ? "" : a) + "";
 			case LAST:case STAVG:case LTAVG:  int p = getVarInt(dude, shire, good); return (p == -1 ? "-" : p+"");
-			default: return getVarInt(dude, shire, good) + "";
+			default: int i = getVarInt(dude, shire, good); return (i != 0 ? i + "" : "-");
 			}
 		case CLANBASIC:
 			switch(var) {

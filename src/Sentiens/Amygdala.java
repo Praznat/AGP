@@ -48,5 +48,8 @@ public class Amygdala {
 		}
 		for (removeN--; removeN >= 0; removeN--) {stressors.remove(removeStressors[removeN]);}
 	}
+	
+	@Override
+	public String toString() {return stressors.toString();}
 }
 

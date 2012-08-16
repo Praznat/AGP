@@ -81,6 +81,8 @@ public class Job implements Defs, Stressor.Causable {
 
 	
 		
-	
+
 	public String getDesc() {return desc;}
+	@Override
+	public String toString() {return getDesc();}
 }
