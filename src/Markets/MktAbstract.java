@@ -31,8 +31,8 @@ public abstract class MktAbstract implements Defs {
 	public abstract void removeOffer(Clan c);
 	protected abstract int chgOffer(int plc, int v);
 	protected abstract int chgBid(int plc, int v);
-	public abstract void auction();
-	protected abstract void clearMarket();
+	protected abstract void auction();
+	public abstract void clearMarket();
 	
 	protected void newDay() {
 		clearMarket();

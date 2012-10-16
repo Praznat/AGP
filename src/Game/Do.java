@@ -84,7 +84,7 @@ public class Do {
 		@Override
 		protected boolean tryExecute() {return true;}
 	};
-	public static final ClanAlone setChosenAct(final Act act) {
+	public static final ClanAlone setChosenAct(final Labor act) {
 		return new ClanAlone() {
 			@Override
 			public String description() {return act.getDesc();}

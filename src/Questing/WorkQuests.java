@@ -29,10 +29,10 @@ public class WorkQuests {
 		private int[] workmemo = new int [WORKMEMORY]; //stock id
 		private int[] workmemoX = new int [WORKMEMORY];//stock count
 		private int stage = 0;
-		private Act chosenAct;
+		private Labor chosenAct;
 		
 		public LaborQuest(Clan P) {
-			super(P); setChosenAct(Job.NullAct); resetWM();
+			super(P); setChosenAct((Labor) Job.NullAct); resetWM();
 		}
 		@Override
 		public String description() {return chosenAct + " stage " + stage;}
@@ -78,10 +78,10 @@ public class WorkQuests {
 		public int[] getWMX() {return workmemoX;}
 		public int getAbsWM(int i) {return Math.abs(workmemo[i]);}
 		public int getWMX(int i) {return workmemoX[i];}
-		public Act getChosenAct() {return chosenAct;}
+		public Labor getChosenAct() {return chosenAct;}
 		
 		public void liquidateWM() {resetWM();}  // TODO and sell all to market
-		public void setChosenAct(Act a) {
+		public void setChosenAct(Labor a) {
 			//liquidate if it's a new act
 			if (chosenAct != null && chosenAct.equals(a)) {} //do nothing if act is same
 			else {
@@ -90,11 +90,11 @@ public class WorkQuests {
 			} //new WORKMEMO
 			if (chosenAct != Job.NullAct) {chosenAct.storeAllInputsInWM(Me);}
 		}
-		private Act compareTrades() {
+		private Labor compareTrades() {
 			Act[] actSet = Me.getJobActs();
-			Act curAct;   Act bestAct = Job.NullAct;   int bestPL = 0;
+			Labor curAct;   Labor bestAct = (Labor) Job.NullAct;   int bestPL = 0;
 			for(int i = 0; i < actSet.length; i++) {
-				curAct = actSet[i];
+				curAct = (Labor) actSet[i];
 				int PL = Me.confuse(curAct.expOut(Me)[0] - curAct.expIn(Me)[0]);
 				if (PL > bestPL) {bestPL = PL; bestAct = curAct;}
 			}
@@ -106,7 +106,7 @@ public class WorkQuests {
 			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().ACT_PROFIT_ORDER);
 			ClanAlone action;
 			for(Act act : Me.getJobActs()) {
-				action = Do.setChosenAct(act);
+				action = Do.setChosenAct((Labor) act);
 				action.setup(Me);
 				avatarConsole.choices.put(act, action);
 			}
@@ -156,7 +156,7 @@ public class WorkQuests {
 			}}} //dont lift in case of - (see above)
 		}
 		private void doWork() {
-			chosenAct.ponderOrLearn(Me);
+			chosenAct.doit(Me);
 			stage++;
 		}
 		private void doOutputs() {

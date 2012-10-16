@@ -167,7 +167,7 @@ public class GobName {
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
 		Value V = goblin.FB.getValue(i);
-		if (V == Values.LOYALTY || V == Values.WEALTH || V == Values.DOMINION || V == Values.INFLUENCE || V == Values.MIGHT || V == Values.ARCHITECTURE) {
+		if (V == Values.ALLEGIANCE || V == Values.PROPERTY || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.MIGHT || V == Values.SPLENDOR) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {
 				N = title + " " + N;
@@ -183,9 +183,8 @@ public class GobName {
 			}
 			else {return fullName(goblin, N, i+1);}
 		}
-		if (V == Values.PATRIOTISM && goblin.myShire() != goblin.FB.getHomeland()) {return N + " of " + goblin.myShire().getName();}
 		if (V == Values.HEALTH) {return N + " the Glutton";}
-		if (V == Values.SKILL) {return N + " the " + goblin.getJob().getDesc();}
+		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc();}
 		
 		return fullName(goblin, N, i+1);
 	}

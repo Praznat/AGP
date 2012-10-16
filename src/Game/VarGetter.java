@@ -124,8 +124,8 @@ public class VarGetter implements Defs {
 		case MARKETVARS:
 			switch(var) {
 			case GOODNAME: return Naming.goodName(good, true, true);
-			case BID: int b = getVarInt(dude, shire, good);   return (b == MktO.NOBID ? "" : b) + "";
-			case ASK: int a = getVarInt(dude, shire, good);   return (a == MktO.NOASK ? "" : a) + "";
+			case BID: return MktO.bidString(getVarInt(dude, shire, good));
+			case ASK: return MktO.offerString(getVarInt(dude, shire, good));
 			case LAST:case STAVG:case LTAVG:  int p = getVarInt(dude, shire, good); return (p == -1 ? "-" : p+"");
 			default: int i = getVarInt(dude, shire, good); return (i != 0 ? i + "" : "-");
 			}

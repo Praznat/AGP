@@ -46,7 +46,7 @@ public class ExpertAI {
 		double max = 0;
 		for (Value V : regardedValues) {
 			if (V == null || V == ignoreValue) {continue;} //so for example ignore Loyalty milletvalue when someone is trying to buy your loyalty
-			max = Math.max(max, V.contentBuyable(clan, millet));
+//			max = Math.max(max, V.contentBuyable(clan, millet));
 		}
 		return max;
 	}

@@ -50,7 +50,7 @@ public class Realm {
 		int[] order = Calc.randomOrder(popSize());
 		for (int i = 0; i < 1; i++) {
 			for (int p : order) {
-				population[p].pursue();
+				if(true || population[p].myShire() == AGPmain.mainGUI.SM.getShire()) {population[p].pursue();}
 				//			population[p].QB.pursue();
 			}
 		}

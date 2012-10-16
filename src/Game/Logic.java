@@ -22,7 +22,7 @@ public class Logic {
 	public int[] getBest(Clan doer, int type) {X[0] = 0; X[1] = E; return X;}
 	
 
-	public void addNodesToAll(Act a) {
+	public void addNodesToAll(Labor a) {
 		if (subLogics != null) {
 			for(int i = 0; i < subLogics.length; i++) {subLogics[i].addNodesToAll(a);}
 		}
@@ -124,7 +124,7 @@ class Node extends Logic {
 		}
 		X[1] = node;   X[2] = E;   return X;
 	}
-	public void addNodesToAll(Act a) {a.addToAll(node);}
+	public void addNodesToAll(Labor a) {a.addToAll(node);}
 
 }
 

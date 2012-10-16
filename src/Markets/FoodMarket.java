@@ -58,7 +58,7 @@ public class FoodMarket extends MktAbstract {
 	public void removeOffer(Clan c) {error();}
 	protected int chgOffer(int plc, int v) {error();return 0;}
 	protected int chgBid(int plc, int v) {error();return 0;}
-	public void auction() {} // do nothing
-	protected void clearMarket() {error();}
+	protected void auction() {error();}
+	public void clearMarket() {} // do nothing
 	public void loseAsset(Clan me) {error();}
 }

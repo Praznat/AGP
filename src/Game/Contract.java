@@ -47,14 +47,12 @@ public class Contract {   // AND/OR combination of Terms
 	}
 	
 	public void setOfferThreat() {setOffer(THREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
-	public void setOfferPayment(int c) {setOffer(MONEY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
-	public void setOfferGratitude(int c) {setOffer((Assessable)Values.LOYALTY, c, null);}
-	public void setOfferBlessing(int c) {setOffer((Assessable)Values.ZEAL, c, null);}
+	public void setOfferPayment(int c) {setOffer((Assessable)Values.PROPERTY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
+	public void setOfferGratitude(int c) {setOffer((Assessable)Values.ALLEGIANCE, c, null);}
 
-	public void setDemandTribute(int c) {setDemand(MONEY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
+	public void setDemandTribute(int c) {setDemand((Assessable)Values.PROPERTY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
 	public void setDemandRespect() {setDemand((Assessable)Values.INFLUENCE, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
-	public void setDemandAllegiance() {setDemand((Assessable)Values.LOYALTY, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
-	public void setDemandConversion() {setDemand((Assessable)Values.ZEAL, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
+	public void setDemandAllegiance() {setDemand((Assessable)Values.ALLEGIANCE, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
 	public void setDemandExile() {setDemand(EXILE, 0, Do.NATURALIZE_HERE); Do.NATURALIZE_HERE.setup(evaluator, 0);}
 	public void setDemandQuest(Q_ q) {setDemand(NEWQUEST, q.ordinal(), null);}
 	
@@ -72,15 +70,6 @@ public class Contract {   // AND/OR combination of Terms
 	}
 	
 	
-	
-
-	
-	public static final Assessable MONEY = new Assessable() {
-		@Override
-		public double evaluate(Clan evaluator, Clan proposer, int content) { 
-			return evaluator.FB.randomValueInPriority().contentBuyable(evaluator, content);
-		}
-	};
 	public static final Assessable THREAT = new Assessable() {
 		@Override
 		public double evaluate(Clan evaluator, Clan proposer, int content) {   //returns perceived amount of value from avoiding this threat
@@ -96,9 +85,9 @@ public class Contract {   // AND/OR combination of Terms
 	public static final Assessable EXILE = new Assessable() {
 		@Override
 		public double evaluate(Clan evaluator, Clan proposer, int content) {
-			if (evaluator.FB.randomValueInPriority() == Values.PATRIOTISM) {return Values.MINVAL;}
+//			if (evaluator.FB.randomValueInPriority() == Values.PATRIOTISM) {return Values.MINVAL;}
 			int landval = evaluator.getAssets(Defs.land) * evaluator.myMkt(Defs.land).buyablePX(evaluator);
-			return MONEY.evaluate(evaluator, proposer, -landval);
+			return ((Assessable)Values.PROPERTY).evaluate(evaluator, proposer, -landval);
 		}
 	};
 	

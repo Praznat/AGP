@@ -12,6 +12,7 @@ import Descriptions.Naming;
 import Game.AGPmain;
 import Game.Defs;
 import Game.Job;
+import Sentiens.Law.Commandments;
 import Sentiens.Values.Value;
 import Shirage.Shire;
 
@@ -30,10 +31,12 @@ public class Ideology implements Defs {
 	private int[] discs;
 	private int[] discpts;
 	private Clan Me;
+	public Commandments commandments;
 	public Clan getEu() {return Me;}
 
 	public Ideology(Clan i) {   
 		Me = i;   initialize(defaultVars());   this.setPrs(P_.MARTIALP.ordinal(), AGPmain.rand.nextInt(15));
+		commandments = new Commandments();
 	}
 	
 	public void initialize(int[] in) {
@@ -159,6 +162,7 @@ public class Ideology implements Defs {
 			}
 		}
 	}
+	@Deprecated
 	public Value randomValueByWeight2() {  //way slower than randomValueInPriority
 		int L = Values.All.length;   M_ m = Values.All[0].getWeightMeme(Me);   int N = 0;
 		VALUECUMI[0] = (m == null ? 0 : getBeh(m));
@@ -168,6 +172,7 @@ public class Ideology implements Defs {
 		}   //if(N<=0) {Calc.p("N=0"); return Values.NULL;}
 		return Values.All[Calc.findLessThan(AGPmain.rand.nextInt(N), VALUECUMI)];
 	}
+	@Deprecated
 	public Value randomValueByWeight1() {  //way slower than randomValueInPriority
 		int N = 0;   int sofar = 0;
 		for (Value V : Values.All) {
@@ -199,6 +204,15 @@ public class Ideology implements Defs {
 		return sancs[v];
 	}
 	public Value getValue(int i) {return sancs[i];}
+	public int weightOfValue(Value V) {
+		boolean hit = false; int N = 0;
+		int[] R = FSM[getBeh(M_.STRICTNESS)];
+		for (int i : R) {
+			if (sancs[i] == V) {hit = true; N++;}
+			else if (hit) {break;}
+		}
+		return N;
+	}
 	public Value valueInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
 	public Value strongerOf(Value A, Value B) {
 		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;

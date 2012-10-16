@@ -20,6 +20,7 @@ public class MktO extends MktAbstract {
 	public static final double[] RATES = {0.01,0.0125,0.015,0.02,0.03,0.05,0.075,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5};
 	public static final int NOASK = Integer.MAX_VALUE;
 	public static final int NOBID = 0;
+	public static final int CANTPAY = -1;
 	
 	protected static String report;
 	
@@ -43,7 +44,8 @@ public class MktO extends MktAbstract {
 	}
 	
 	public static int annuity(int val, Clan doer) {
-		return Calc.roundy((double)val / RATES[doer.useBeh(M_.DISCRATE)]);
+		int result = Calc.roundy((double)val / RATES[doer.useBeh(M_.DISCRATE)]);
+		return result >= 0 ? result : val;
 	}
 	public static int interest(int val, Clan doer) {
 		return Calc.roundy((double)val * RATES[doer.useBeh(M_.DISCRATE)]);
@@ -59,12 +61,15 @@ public class MktO extends MktAbstract {
 		else {return Offers[0].px;}
 	}
 	public int bestBid() {
-		int plc = bestBidPlc();  if(plc == -1) {return NOBID;}
+		if (bidlen == 0) {return NOBID;}
+		int plc = bestBidPlc();  if(plc == CANTPAY) {return NOASK;}
 		else {return Bids[plc].px;}
 	}
+	public static String bidString(int b) {return b == NOASK || b == NOBID ? "" : b+"";}
+	public static String offerString(int b) {return b == NOASK ? "" : b+"";}
 	public int bestBidPlc() {
-		for(int i = 0; i < bidlen; i++) {if (Bids[i].px < Bids[i].trader.getMillet()) {return i;}}
-		return -1;
+		for(int i = 0; i < bidlen; i++) {if (Bids[i].px <= Bids[i].trader.getMillet()) {return i;}}
+		return CANTPAY;
 	}
 	
 	protected void updateAvgs(int p) {
@@ -82,9 +87,8 @@ public class MktO extends MktAbstract {
 		return estFairOffer(seller);
 	}
 
-
 	public void buyFair(Clan buyer) {
-		int px = estFairBid(buyer);
+		int px = Math.min(estFairBid(buyer), buyer.getAssets(Defs.millet));
 		report += buyer.getNomen() + " tries to buy " + Naming.goodName(g) + " at fair price of " + px + RET;
 		if(px >= bestOffer()) {liftOffer(buyer);}
 		else {placeBid(buyer, px);}
@@ -95,41 +99,55 @@ public class MktO extends MktAbstract {
 		//if(px <= bestBid() && px > NOBID) {hitBid(seller);}
 		if(px<0) {
 			System.out.println("SHWIIIIT");
-//			boolean tmp = true;
-			px = estFairOffer(seller);
-			placeOffer(seller, px);
+			throw new IllegalArgumentException();
 		}
 		else {placeOffer(seller, px);}
 	}
 	public void sellFairAndRemoveBid(Clan seller) {
-		removeBid(seller);
-		Calc.p("NOOOOOOOOOOOOO");
+//		removeBid(seller);
+		Calc.p("NOOOOOOOOOOOOO " + Naming.goodName(g));
 		report += seller.getNomen() + " finds " + Naming.goodName(g) + " UNNECESSARY" + RET;
 //		Log.info(seller.getNomen() + " finds " + Naming.goodName(g) + " UNNECESSARY");
 		placeOffer(seller, estFairOffer(seller));
 	}
 	public void liftOffer(Clan buyer) {liftOffer(buyer, 0);}
 	protected void liftOffer(Clan buyer, int plc) {
+		if (Offers[plc].trader == buyer) {selfTransaction(buyer, plc, Entry.OFFERDIR); finish(); return;}
 		report += buyer.getNomen() + " tries to lift offer for " + Naming.goodName(g) + RET;
 		Clan seller = Offers[plc].trader;
 		if (transaction(buyer, seller, Offers[plc].px)) {
 			loseAsset(seller);   removeOffer(plc);   finish();
 		} else {buyFair(buyer);}
 	}
-	public void hitBid(Clan seller) {hitBid(seller, bestBidPlc());}
+	public void hitBid(Clan seller) {
+		if (bidlen == 0) {sellFair(seller);}
+		else {hitBid(seller, bestBidPlc());}
+	}
 	protected void hitBid(Clan seller, int plc) {
 		report += seller.getNomen() + " tries to hit bid for " + Naming.goodName(g) + RET;
+		if (Bids[plc].trader == seller) {selfTransaction(seller, plc, Entry.BIDDIR); finish(); return;}
+		int oldbidlen = bidlen;
 		if (plc != -1 && transaction(Bids[plc].trader, seller, Bids[plc].px)) {
+			if (bidlen != oldbidlen) {
+				Calc.p("seriously wtf");
+			}
 			loseAsset(seller);   removeBid(plc);   finish();
 		} else {sellFair(seller);}
 	}
+	protected void selfTransaction(Clan clan, int plc, int bidorask) {
+		if (bidorask == Entry.BIDDIR) {removeBid(plc);}
+		else if (bidorask == Entry.OFFERDIR) {removeOffer(plc);}
+		report += clan.getNomen() + " takes own " + (bidorask == Entry.BIDDIR ? "bid" : "offer") + " of " + Naming.goodName(g) + " from market" + RET;
+		getG(clan);
+	}
 	protected boolean transaction(Clan buyer, Clan seller, int price) {
 		if(seller == null || buyer == null) {return false;}
-		seller.alterMillet(price);
-		if (!buyer.alterMillet(-price)) {
+		if (buyer.getMillet() < price) {
 			report += buyer.getNomen() + " has not enough millet to buy " + Naming.goodName(g) + RET;
-			seller.alterMillet(-price); return false;
+			return false;
 		}
+		seller.alterMillet(price);
+		buyer.alterMillet(-price);
 		buyer.addReport(GobLog.transaction(g, price, true, seller));
 		seller.addReport(GobLog.transaction(g, price, false, buyer));
 		report += buyer.getNomen() + " buys " + Naming.goodName(this.g) + " from " + seller.getNomen() + " for " + price + RET;
@@ -140,6 +158,9 @@ public class MktO extends MktAbstract {
 	}
 	protected void sendToInventory(Clan buyer) { //, int px) {
 		gainAsset(buyer);
+		getG(buyer);
+	}
+	protected void getG(Clan buyer) {
 		Quest q = buyer.MB.QuestStack.peek();
 		if (q instanceof LaborQuest) {((LaborQuest) q).getG(g); return;}
 		q = buyer.MB.QuestStack.peekUp();  //might as well check one quest up
@@ -157,6 +178,11 @@ public class MktO extends MktAbstract {
 //		report += doer.getNomen() + " estimates fair price for " + Naming.goodName(g) + " in following manner:" + RET;
 //		report += PX + " = [(Flow=" + flow + ")*" + F + " + " + "(Tech=" + TechPX + ")*" + T + "] / " + (T+F);
 //		report += (min == 0 && max == Integer.MAX_VALUE ? "" : ", bounded between " + min + " and " + max) + RET;
+		if (min < 0) {
+			Calc.p("what the fio");
+			min = Assets.FVmin(doer, g); 
+			throw new IllegalArgumentException();
+		}
 		return Math.min(Math.max(PX, min), max);
 	}
 	protected int estFairOffer(Clan doer) {
@@ -167,7 +193,7 @@ public class MktO extends MktAbstract {
 	protected int estFairBid(Clan doer) {
 		int bestbid = (bidlen > 0 ? bestBid() : bidFromNowhere(doer));
 		double FlowPX = addSpread(bestbid, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
-		return Math.min(fairPX(doer, FlowPX), doer.getMillet());
+		return fairPX(doer, FlowPX);
 	}
 	//buy inputs at estFairOffer or market offer
 	//sell outputs at estFairOffer
@@ -193,20 +219,31 @@ public class MktO extends MktAbstract {
 		if(bidlen + offerlen == 0) {return 0;}
 		else {return 2 * bidlen / (bidlen + offerlen) - 1;}
 	}
-	
+	public void removeBids(int num) {
+		for(int i = 0; i < bidlen; i++) {Bids[i].set(Bids[i+num]);}
+		bidlenDown(num);
+		report += num + " bids removed";
+	}
 	public void removeBid(int plc){
 		for(int i = plc; i < bidlen; i++) {Bids[i].set(Bids[i+1]);}
-		bidlenDown();
+		bidlenDown(1);
+		report += Bids[plc] + " removed";
 	}
 	public void removeBid(Clan trader){
 		int k = findBid(trader);
 		if(k != -1) {removeBid(k);}
 		else {Log.warning(trader.getNomen() + " ERROR removeBid(ENTRY NOT FOUND)");}
+		finish();
+	}
+	public void removeOffers(int num) {
+		for(int i = 0; i < offerlen; i++) {Offers[i].set(Offers[i+num]);}
+		offerlenDown(num);
+		report += num + " offers removed";
 	}
 	public void removeOffer(int plc){
-		//loseAsset(Offers[plc].trader);   ALREADY IN TRANSACTION!
 		for(int i = plc; i < offerlen; i++) {Offers[i].set(Offers[i+1]);}
-		offerlenDown();
+		offerlenDown(1);
+		report += Offers[plc] + " removed";
 	}
 	public void removeOffer(Clan trader){
 		int k = findOffer(trader);
@@ -214,6 +251,7 @@ public class MktO extends MktAbstract {
 		else {
 			Log.warning(trader.getNomen() + " ERROR removeOffer(ENTRY NOT FOUND)");
 		}
+		finish();
 	}
 
 	public void gainAsset(Clan gainer) {
@@ -246,27 +284,33 @@ public class MktO extends MktAbstract {
 		doer.addReport(GobLog.limitOrder(g, px, true));
 		report += doer.getNomen() + " places bid for " + Naming.goodName(g) + " at " + px + RET;
 		if(px >= bestOffer()) {liftOffer(doer); return;}
-		int k = findPlcInV(px, Bids, bidlen, -1);
+		int k = findPlcInV(px, Bids, bidlen, Entry.BIDDIR);
 		bidlenUp();
 		for(int i = bidlen; i > k; i--) {Bids[i].set(Bids[i-1]);}
 		Bids[k].set(px, doer);
 		finish();
 //		Log.info(doer.getNomen() + " places bid for " + Naming.goodName(this.g, false, false) + " at " + px);
 	}
-	public void placeOffer(Clan doer, int px){
+	public int placeOffer(Clan doer, int px){
 		if(px<NOBID){px = 1/0;}
 		doer.addReport(GobLog.limitOrder(g, px, false));
 		report += doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px + RET;
 		int bbp = bestBidPlc();
-		if(bidlen > 0 && bbp >= NOBID && px <= Bids[bbp].px) {hitBid(doer); return;}
-		int k = findPlcInV(px, Offers, offerlen, 1);
+		if(bidlen > 0 && bbp != CANTPAY && px <= Bids[bbp].px) {hitBid(doer); return Integer.MAX_VALUE;}
+		int k = findPlcInV(px, Offers, offerlen, Entry.OFFERDIR);
 		offerlenUp();
 		for(int i = offerlen; i > k; i--) {Offers[i].set(Offers[i-1]);}
 		Offers[k].set(px, doer);
 		finish();
-//		Log.info(doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px);
+		return k;
 	}
-	protected final void bidlenDown() {bidlen--;}
+	protected final void bidlenDown(int n) {
+		if (bidlen < n) {
+			System.out.println("ERROR TRYING TO MAKE NEGATIVE BIDLEN");
+			throw new IllegalArgumentException();
+		}
+		bidlen -= n;
+	}
 	protected final void bidlenUp() {
 		if (bidlen++ > Bids.length*expandSZ) {
 			Entry[] tmp = new Entry[2*bidlen];
@@ -275,7 +319,13 @@ public class MktO extends MktAbstract {
 			Bids = tmp;
 		}
 	}
-	protected final void offerlenDown() {offerlen--;}
+	protected final void offerlenDown(int n) {
+		if (offerlen < n) {
+			System.out.println("ERROR TRYING TO MAKE NEGATIVE OFFERLEN");
+			throw new IllegalArgumentException();
+		}
+		offerlen -= n;
+	}
 	protected final void offerlenUp() {
 		if (offerlen++ > Offers.length*expandSZ) {
 			Entry[] tmp = new Entry[2*offerlen];
@@ -300,13 +350,30 @@ public class MktO extends MktAbstract {
 	protected int chgEntry(int plc, int px, Entry[] bidorask, int dir) {return vchg(plc, px, bidorask, dir);}
 	protected int chgBid(int plc, int px) {return vchg(plc, px, Bids, Entry.BIDDIR);}
 	protected int chgOffer(int plc, int px) {return vchg(plc, px, Offers, Entry.OFFERDIR);}
-	public void auction() {
+	/** traders move to recalculated fair prices */
+	protected void auction() {
 		for (int i = 0; i < bidlen; i++) {if(Bids[i].trader!=null){chgBid(i, estFairBid(Bids[i].trader));}}
 		for (int i = 0; i < offerlen; i++) {if(Offers[i].trader!=null){chgOffer(i, estFairOffer(Offers[i].trader));}}
 		clearMarket();   //clear mkt!!!!!
 	}
-	protected void clearMarket() {}   //dont forget to clear bids&offers from same trader (who isnt market maker)
-	protected int addSpread(int px, double s) {return (int) Math.round((double)px * (1+s));}
+	public void clearMarket() {
+		   //dont forget to clear bids&offers from same trader (who isnt market maker)
+			//also should probably handle unwanted bids here
+		Entry bid, ask; int i = 0;
+		while (true) {
+			if (i >= offerlen || i >= bidlen) {return;}
+			bid = Bids[i]; ask = Offers[i];
+			if (bid.px >= ask.px) {
+				if (bid.trader == ask.trader) {selfTransaction(bid.trader, 0, Entry.AUCTION);}
+				transaction(bid.trader, ask.trader, (bid.px + ask.px) / 2);
+				i++;
+			}
+			else {break;}
+		}
+		// remove up to i
+		removeBids(i);   removeOffers(i);
+	}
+	protected int addSpread(int px, double s) {int result = (int) Math.round((double)px * (1+s)); return (result > 0 ? result : px);}
 	
 	public String[][] getBaikai() {
 		String[][] B = new String[1+offerlen+bidlen][3];
@@ -338,12 +405,16 @@ public class MktO extends MktAbstract {
 		int lo = 0; int hi = Vlen - 1;
 		int mid; int midpx;  int cur = -1;
 		while (true) {
-			midpx = V[mid =(lo+hi)/2].px;
+			if ((lo+hi)/2 < 0) {
+				Calc.p("this sucks");
+				throw new IllegalArgumentException();
+			}
+			midpx = V[mid =(lo+hi)/2].getPX();
 			if(cur==mid) {break;} else {cur = mid;}
 			if (dir*x < dir*midpx) {hi = cur;}
 			else if (dir*x > dir*midpx) {lo = cur;}
 		}
-		while (dir*V[cur].px <= dir*x) {cur++; if(cur==0||cur==Vlen){break;}}
+		while (dir*V[cur].getPX() <= dir*x) {cur++; if(cur==0||cur==Vlen){break;}}
 		return cur;
 	}
 	
@@ -351,8 +422,16 @@ public class MktO extends MktAbstract {
 	 * use when string of market actions is finished to get complete detailed briefing
 	 */
 	public void finish() {
-		//Log.info(report + RET);
+		report += this + RET;
+		for (int i = 0; i < bidlen; i++) {report += Bids[i] + ", ";} report += RET;
+		for (int i = 0; i < offerlen; i++) {report += Offers[i] + ", ";} report += RET;
+		if (home == AGPmain.mainGUI.SM.getShire()) {Log.info(report + RET);}
 		report = "";
+	}
+	
+	@Override
+	public String toString() {
+		return Naming.goodName(g) + " b/a: " + bidString(bestBid()) + "/" + offerString(bestOffer());
 	}
 
 }

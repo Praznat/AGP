@@ -5,11 +5,7 @@ import Defs.P_;
 import Defs.Q_;
 import Descriptions.GobName;
 import Descriptions.Naming;
-import Game.AGPmain;
-import Game.Act;
-import Game.Defs;
-import Game.Goods;
-import Game.Job;
+import Game.*;
 import Government.Order;
 import Markets.*;
 import Questing.Quest;
@@ -93,7 +89,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		FB = new Ideology(this);
 		QB = new Questy(this);
 		AB = new Amygdala(this);
-		MB = new Memory(this);
+		MB = new Memory();
 	}
 	
 
@@ -150,7 +146,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		else if (hisBoss == him) {return false;}
 		else {return isSomeBossOf(hisBoss, orig);}
 	}
-	public int getTotalMinionNumber() {return minionN + subminionN;}
+	public int getMinionTotal() {return minionN + subminionN;}
 	public int getMinionN() {return minionN;}
 	public int getSubminionN() {return subminionN;}
 	public int getMinionPoints() {return minionB + subminionB;}
@@ -172,10 +168,10 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		return true;
 	}
 	private void addMinion(Clan minion) {
-		minionN++;   chgSubMinionN(1 + minion.getTotalMinionNumber(), true);
+		minionN++;   chgSubMinionN(1 + minion.getMinionTotal(), true);
 	}
 	private void removeMinion(Clan minion) {
-		minionN--;   chgSubMinionN(-1 - minion.getTotalMinionNumber(), true);
+		minionN--;   chgSubMinionN(-1 - minion.getMinionTotal(), true);
 	}
 	private void chgSubMinionN(int n, boolean first) {
 		subminionN += n - (first ? Math.signum(n) : 0);
@@ -196,7 +192,6 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		Clan Boss = getBoss(); int id = Boss.getID();
 		if (id != -1 && id != getID()) {Boss.chgSubMinionB(b);}
 	}
-	private int getExpIncome() {return expIncome;}
 //	public int calcPoints(Clan hypoBoss) {
 //		Clan hypoTopBoss = hypoBoss.getTopBoss();
 //		double P = (double)hypoTopBoss.useBeh(M_.PYRAMIDALITY)/15;
@@ -218,7 +213,10 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	public int getMillet() {return assets[millet];}
 	public boolean alterMillet(int c) {
 		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
-		else if (assets[millet] + c < 0) {assets[millet] = 0; System.out.println("millet below zero " + ID + "job" + getJob() + getLastSuccess() + " $" + assets[millet] + "" + c); return false;}//System.out.println(1 / 0);}
+		else if (assets[millet] + c < 0) {
+			assets[millet] = 0; System.out.println("millet below zero " + ID + "job" + getJob() + getLastSuccess() + " $" + assets[millet] + "" + c);
+			throw new IllegalStateException(); // return false;
+		}//System.out.println(1 / 0);}
 		else {assets[millet] = assets[millet] + c; return true;}
 		return false;
 	}
@@ -388,6 +386,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 			other.FB.upPrest(P_.RSPCP);
 		}
 	}
+	@Deprecated
 	public void discourse(Clan other) {
 		boolean iHi = iHigherMem(lastBeh, other);
 		if (lastBeh == 0) {
@@ -399,6 +398,12 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 			else {FB.setBeh(lastBeh, other.FB.getBeh(lastBeh));}
 		}
 		lastBehN = 0;
+	}
+	public double conversation(Clan other) {
+		if (this == other) {return 0;}
+		double respect = FB.randomValueInPriority().compare(this, other, this);
+		if (respect > 0) {FB.setBeh(lastBeh, other.FB.getBeh(lastBeh)); lastBehN = 0;}
+		return respect;
 	}
 	
 	

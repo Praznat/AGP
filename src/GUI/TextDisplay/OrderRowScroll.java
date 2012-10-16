@@ -18,8 +18,8 @@ public class OrderRowScroll extends TableRowScroll {
 		public int compare(Clan o1, Clan o2) {
 			if (o2.myOrder().getRuler() == o2) {return 1;}
 			if (o1.myOrder().getRuler() == o1) {return -1;}
-			int s = (int)Math.signum(o2.getBoss().getTotalMinionNumber() - o1.getBoss().getTotalMinionNumber());
-			if (s == 0) {s = (int)Math.signum(o2.getTotalMinionNumber() - o1.getTotalMinionNumber());}
+			int s = (int)Math.signum(o2.getBoss().getMinionTotal() - o1.getBoss().getMinionTotal());
+			if (s == 0) {s = (int)Math.signum(o2.getMinionTotal() - o1.getMinionTotal());}
 			if (s == 0) {return (int)Math.signum(o1.getID() - o2.getID());}
 			else {return s;}
 		}
@@ -68,7 +68,7 @@ public class OrderRowScroll extends TableRowScroll {
 			R[i] = c.getNomen(); adjustWidth(i, R[i]); i++;
 			R[i] = c.getMinionN()+""; adjustWidth(i, R[i]); i++;
 			R[i] = c.getSubminionN()+""; adjustWidth(i, R[i]); i++;
-			R[i] = c.getTotalMinionNumber()+""; adjustWidth(i, R[i]); i++;
+			R[i] = c.getMinionTotal()+""; adjustWidth(i, R[i]); i++;
 			R[i] = c.getBoss().getNomen(); adjustWidth(i, R[i]); i++;
 			R[i] = c.myShire().getName(); adjustWidth(i, R[i]); i++;
 		}

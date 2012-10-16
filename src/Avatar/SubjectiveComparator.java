@@ -2,13 +2,13 @@ package Avatar;
 
 import java.util.Comparator;
 
-import Game.Act;
+import Game.*;
 import Game.Do.ClanOnClan;
 import Sentiens.*;
 import Sentiens.Values.Value;
 
 
-public class SubjectiveComparator<SubjectivelyComparable> implements Comparator<SubjectivelyComparable> {
+public class SubjectiveComparator<T extends SubjectivelyComparable> implements Comparator<SubjectivelyComparable> {
 	private Clan POV;
 	public void setPOV(Clan pov) {POV = pov;}
 	private Comparator<SubjectivelyComparable> comparator;

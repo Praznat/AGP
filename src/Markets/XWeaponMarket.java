@@ -39,16 +39,17 @@ public class XWeaponMarket extends MktO {
 		Log.info(doer.getNomen() + " places bid for " + Naming.goodName(this.g, false, false) + " at " + px);
 	}
 	@Override
-	public void placeOffer(Clan doer, int px){
+	public int placeOffer(Clan doer, int px){
 		if(px<0){px = 1/0;}
 		report += doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px + RET;
 		int bbp = bestBidPlc();
-		if(bbp > -1 && px <= Bids[bbp].px) {hitBid(doer); return;}
+		if(bbp > -1 && px <= Bids[bbp].px) {hitBid(doer); return Integer.MAX_VALUE;}
 		int k = findPlcInV(px, Offers, offerlen, 1);
 		offerlenUp();
 		for(int i = offerlen; i > k; i--) {Offers[i].set(Offers[i-1]);}
 		((EntryB)Offers[k]).set(px, doer, tmpXW);   //this is where its overridden
 		Log.info(doer.getNomen() + " places offer for " + Naming.goodName(this.g, false, false) + " at " + px);
+		return k;
 	}
 	@Override
 	protected int vchg(int plc, int px, Entry[] V, int dir) {

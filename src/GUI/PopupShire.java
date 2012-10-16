@@ -8,6 +8,7 @@ import javax.swing.JComboBox;
 import GUI.TextDisplay.Papyrus;
 import Game.AGPmain;
 import Game.VarGetter;
+import Markets.MktO;
 import Shirage.Shire;
 
 public class PopupShire extends PopupAbstract {

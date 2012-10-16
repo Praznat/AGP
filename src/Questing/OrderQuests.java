@@ -11,7 +11,7 @@ public class OrderQuests {
 		@Override
 		public void pursue() {
 			Me.MB.finishQ();
-			if (Me.myOrder() == null) {Order.create(Me);}
+			if (Me.myOrder() == null) {Order.createBy(Me);}
 			else {Me.myOrder().getQuest(Me);}
 		}
 		

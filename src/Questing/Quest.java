@@ -86,7 +86,13 @@ public abstract class Quest {
 			new APopupMenu(avatarConsole, avatarConsole.choices.values());
 		}
 	}
-	
+
+	public static abstract class QuestFactory {
+		private Class<? extends Quest> questType;
+		public QuestFactory(Class<? extends Quest> clasz) {questType = clasz;}
+		public abstract Quest createFor(Clan c);
+		public Class<? extends Quest> getQuestType() {return questType;}
+	}
 	
 	
 	public static Quest QtoQuest(Clan clan, Q_ q) {

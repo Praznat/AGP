@@ -2,19 +2,28 @@ package Questing;
 
 import java.util.Stack;
 
-import Sentiens.Clan;
-
-public class QStack<E> extends Stack<E> {
-	private Clan parent;
+@SuppressWarnings("serial")
+public class QStack extends Stack<Quest> {
 	private int maxCapacity;
-	public QStack(Clan P, int c) {parent = P; maxCapacity = c;}
+	public QStack(int c) {maxCapacity = c;}
+	public boolean prioritizeExistingMemberOfType(Class<? extends Quest> clasz) {
+		for (int i = this.size() - 1; i >= 0; i--) {
+			Quest member = this.get(i);
+			if (member.getClass().isAssignableFrom(clasz)) {
+				this.remove(member);
+				this.push(member);
+				return true;
+			}
+		}
+		return false;
+	}
 	@Override
-	public E push(E item) {
+	public Quest push(Quest item) {
 		if (this.elementCount >= maxCapacity) {explode(); return null;}
 		else {return super.push(item);}
 	}
 	/** look at item right before latest item */
-	public E peekUp() {return elementAt(size() - 2);}
+	public Quest peekUp() {return elementAt(size() - 2);}
 	private void explode() {
 		this.clear();
 	}

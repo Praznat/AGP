@@ -49,6 +49,7 @@ public class Assets implements Defs {
 	public static int FVmin(Clan doer, int good) {
 		switch (good) {
 		case land:   return MktO.annuity(doer.myMkt(rentland).bestBid(), doer);
+		case bovad:   return MktO.annuity(doer.myMkt(rentanimal).bestBid(), doer);
 		case donkey:   return MktO.annuity(doer.myMkt(rentanimal).bestBid(), doer);
 		case lobodonkey:   return doer.myMkt(donkey).bestBid();
 		default: return 0;

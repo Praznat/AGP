@@ -15,7 +15,7 @@ public class Questy implements Defs {
 	protected int[] WORKMEMO = new int [WORKMEMORY]; //stock id
 	protected int[] WORKMEMOX = new int [WORKMEMORY];//stock count
 	protected Clan Me;
-	protected Act chosenAct;
+	protected Labor chosenAct;
 	protected int AP;
 	protected String Report = "";
 	public boolean doReporting = false;

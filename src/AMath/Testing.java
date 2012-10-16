@@ -1,13 +1,11 @@
 package AMath;
 
-import Defs.Q_;
 import Descriptions.XWeapon;
 import Game.*;
 import Government.Order;
 import Markets.*;
 import Questing.WorkQuests.LaborQuest;
-import Sentiens.Clan;
-import Sentiens.GobLog;
+import Sentiens.*;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 
@@ -69,17 +67,25 @@ public class Testing {
 		doNPursue(butcher, 5, true);
 		System.out.println(butcher + " has "); Calc.printArrayH(butcher.getAssets());
 		((MktO) rentAnimalMarket).printBaikai();
+		
+		//now herder is butcher
+		Calc.p("now for some shit");
+		herder = setupClanForWork(ourShire, 2, Job.Butcher);
+		doNPursue(herder, 5, true);
+		System.out.println(herder + " has "); Calc.printArrayH(herder.getAssets());
+		((MktO) rentAnimalMarket).printBaikai();
+		herder.pursue();
 	}
-	private static Clan setupClanForWork(Shire s, int n, Act a) {
+	private static Clan setupClanForWork(Shire s, int n, Act butcher) {
 		Clan clan = s.getCensus()[n];
-		clan.setJob(new Job(a.getDesc() + " Pro", a));
+		clan.setJob(new Job(butcher.getDesc() + " Pro", butcher));
 		clan.MB.newQ(new LaborQuest(clan));
 		return clan;
 	}
 	private static void doNPursue(Clan clan, int n, boolean report) {
 		for (int i = 0; i < n; i++) {
 			clan.pursue();
-			if (report) {Calc.p(clan.MB);}
+			if (report) {Calc.p(clan + " " + clan.MB);}
 		}
 	}
 
@@ -101,10 +107,10 @@ public class Testing {
 		Calc.p("targaryan="+targaryan.getNomen());
 		Calc.p("baratheon="+baratheon.getNomen());
 		Calc.p("stannis="+stannis.getNomen());
-		Order.create(greyjoy);
-		Order.create(stark);
-		Order.create(targaryan);
-		Order.create(baratheon);
+		Order.createBy(greyjoy);
+		Order.createBy(stark);
+		Order.createBy(targaryan);
+		Order.createBy(baratheon);
 		theon.join(greyjoy);
 		Calc.p(theon.getNomen() + " belongs to " + theon.myOrder().getNationName() + " and follows " + theon.FB.getRex().getNomen());
 		Calc.p(greyjoy.getNomen() + " belongs to " + greyjoy.myOrder().getNationName() + " and follows " + greyjoy.FB.getRex().getNomen());

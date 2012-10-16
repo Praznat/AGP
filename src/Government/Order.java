@@ -16,7 +16,7 @@ public class Order {
 	private final byte[] founderName;
 	private final boolean founderGender;
 	
-	public static Order create(Clan creator) {
+	public static Order createBy(Clan creator) {
 		Order newOrder = new Order(creator);
 		creator.joinOrder(newOrder);
 		return newOrder;
@@ -74,7 +74,7 @@ public class Order {
 			if (n  > 50) {return (clan.getGender() == Defs.FEMALE ? "Empress" : "Emperor");}
 			if (n  > 20) {return (clan.getGender() == Defs.FEMALE ? "Queen" : "King");}
 		}
-		int n = clan.getTotalMinionNumber();
+		int n = clan.getMinionTotal();
 		if (n  > 10) {return (clan.getGender() == Defs.FEMALE ? "Lady" : "Lord");}
 		if (n  > 5) {return (clan.getGender() == Defs.FEMALE ? "Madam" : "Sir");}
 		return "";
@@ -95,7 +95,7 @@ public class Order {
 
 		public static Set<Clan> getFollowers(Clan leader, boolean includeMe) {
 			pop.clear();
-			int N = leader.getTotalMinionNumber() + (includeMe ? 1 : 0);
+			int N = leader.getMinionTotal() + (includeMe ? 1 : 0);
 			for (Clan m : leader.myOrder().getMembers()) {
 				if (N <= 0) {break;}
 				if ((leader == m && includeMe) || leader.isSomeBossOf(m)) {N--; pop.add(m);}
@@ -104,7 +104,7 @@ public class Order {
 		}
 		public static Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe) {
 			pop.clear();
-			int N = leader.getTotalMinionNumber() + (includeMe ? 1 : 0);
+			int N = leader.getMinionTotal() + (includeMe ? 1 : 0);
 			for (Clan m : leader.myOrder().getMembers()) {
 				if (N <= 0) {break;}
 				if (m.myShire() == place && ((leader == m && includeMe) || leader.isSomeBossOf(m))) {N--; pop.add(m);}

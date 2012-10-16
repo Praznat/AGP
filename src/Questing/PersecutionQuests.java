@@ -52,7 +52,7 @@ public class PersecutionQuests {
 	public static class PersecuteHeretic extends PersecuteAbstract {
 		public PersecuteHeretic(Clan P) {super(P); findWhat = new FindHeretic(Me);}
 		@Override
-		protected void setContractDemand() {Contract.getInstance().setDemandConversion();}
+		protected void setContractDemand() {} // TODO ???
 		@Override
 		public String description() {return "Persecute " + (target == null ? "Heretic" : target.getNomen());}
 	}
