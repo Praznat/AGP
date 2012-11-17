@@ -6,19 +6,23 @@ import Descriptions.XWeapon;
 import GUI.APopupMenu;
 import Game.*;
 import Game.Do.ClanAlone;
-import Markets.MktAbstract;
-import Markets.MktO;
-import Markets.XWeaponMarket;
+import Markets.*;
+import Questing.AllegianceQuests.AllegianceQuest;
+import Questing.Quest.QuestFactory;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 
-public class WorkQuests {
-
+public class PropertyQuests {
+	public static QuestFactory getFactory() {return new QuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
 	
 	public static class BuildWealthQuest extends Quest {
-		public BuildWealthQuest(Clan P) {super(P);}
+		private long goal;
+		public BuildWealthQuest(Clan P) {super(P); goal = 2 * P.getNetAssetValue(P);} //default is to double NAV
 		@Override
-		public void pursue() {Me.MB.newQ(new LaborQuest(Me));}
+		public void pursue() {
+			if (Me.getNetAssetValue(Me) >= goal) {success();} // TODO attribute to me or shire or what?
+			else {Me.MB.newQ(new LaborQuest(Me));}
+		}
 		public String description() {return "Build Wealth";}
 	}
 	
@@ -63,9 +67,13 @@ public class WorkQuests {
 			for(int i = 0; i < workmemo.length; i++) {workmemo[i] = Defs.E; workmemoX[i] = 0;}
 		}
 		public void setWM(int g, int plc) {workmemo[plc] = g;   workmemoX[plc] = 0;}
-		public void getG(int g) {
+		public void alterG(int g, int n) {
 			for(int i = 0; i < workmemo.length; i++) {
-				if (getAbsWM(i) == g) {workmemoX[i]++;   return;}
+				if (getAbsWM(i) == g) {
+					int newWMX = workmemoX[i] + n;
+					workmemoX[i] = newWMX < 0 ? 0 : newWMX;
+					return;
+				}
 			}
 			((MktO)Me.myMkt(g)).sellFairAndRemoveBid(Me);   //in case not needed for work (not in WORKMEMO)
 		}
@@ -79,6 +87,7 @@ public class WorkQuests {
 		public int getAbsWM(int i) {return Math.abs(workmemo[i]);}
 		public int getWMX(int i) {return workmemoX[i];}
 		public Labor getChosenAct() {return chosenAct;}
+		public int getStage() {return stage;}
 		
 		public void liquidateWM() {resetWM();}  // TODO and sell all to market
 		public void setChosenAct(Labor a) {
@@ -91,13 +100,20 @@ public class WorkQuests {
 			if (chosenAct != Job.NullAct) {chosenAct.storeAllInputsInWM(Me);}
 		}
 		private Labor compareTrades() {
-			Act[] actSet = Me.getJobActs();
+			final Act[] actSet = Me.getJobActs();
 			Labor curAct;   Labor bestAct = (Labor) Job.NullAct;   int bestPL = 0;
 			for(int i = 0; i < actSet.length; i++) {
 				curAct = (Labor) actSet[i];
-				int PL = Me.confuse(curAct.expOut(Me)[0] - curAct.expIn(Me)[0]);
-				if (PL > bestPL) {bestPL = PL; bestAct = curAct;}
+				final double expOut = curAct.expOut(Me)[0];
+				final double expIn = curAct.expIn(Me)[0];
+				double PL = expOut - expIn; //cuz of weird shit with MAX_INTEGER
+				PL = Me.confuse(PL);
+				System.out.println(Me + " " + PL + "=" + expOut + "-" + expIn + (expIn < expOut));
+				final int expTime = 1;
+				PL /= expTime;
+				if (PL > bestPL) {bestPL = (int)Math.round(PL); bestAct = curAct;}
 			}
+			System.out.println(bestPL);
 			return bestAct;
 		}
 		private void avatarChooseAct() {
@@ -126,7 +142,8 @@ public class WorkQuests {
 
 			// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?
 			
-			//
+			//but cheap input, but then in next round of doInputs, offer on recently bought cheap input is higher
+			//than alternative, so it doesnt go in totalNeeded..
 			int[] totalNeeded = chosenAct.expIn(Me); //why is first number zero?
 			int[] stillNeeded = Calc.copyArray(totalNeeded);
 			int j;   int i = -1;   while (workmemo[++i] != Defs.E) {
@@ -152,7 +169,12 @@ public class WorkQuests {
 				stage++;   //move on
 			}
 			else {i = 0; while (totalNeeded[++i] != Defs.E) {if(totalNeeded[i] >= 0) {
+				int prevAsk = Me.myMkt(totalNeeded[i]).getAskSz(); //TODO remove
 				Me.myMkt(totalNeeded[i]).liftOffer(Me);   suspendG(totalNeeded[i]);
+				if (Me.myMkt(totalNeeded[i]).getAskSz() != prevAsk - 1 && !(Me.myMkt(totalNeeded[i]) instanceof RentMarket)) {
+					System.out.print("Now " + Me + " observes poop for " + ((MktO)Me.myMkt(Defs.poop)).printOneLineStatus());
+					Calc.p(" ... should have bought instantly"); // remove
+				}
 			}}} //dont lift in case of - (see above)
 		}
 		private void doWork() {
@@ -176,6 +198,7 @@ public class WorkQuests {
 				Me.myMkt(g).sellFair(Me);
 			}
 			stage = 0;
+			success();
 		}
 
 	};

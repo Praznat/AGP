@@ -28,7 +28,7 @@ public class XWeaponMarket extends MktO {
 	
 
 	@Override
-	protected void placeBid(Clan doer, int px){
+	public void placeBid(Clan doer, int px){
 		if(px<0){px = 1/0;}
 		report += doer.getNomen() + " places bid for " + Naming.goodName(g) + " at " + px + RET;
 		if(px >= bestOffer()) {liftOffer(doer); return;}

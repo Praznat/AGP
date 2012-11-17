@@ -12,7 +12,6 @@ public class Memory implements Defs {
 
 	public Memory() {QuestStack = new QStack(QMEMORY);}
 	
-	
 	public void newQ(Quest q) {QuestStack.push(q);}
 	public void finishQ() {QuestStack.pop();}
 	

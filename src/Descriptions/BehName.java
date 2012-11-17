@@ -16,18 +16,16 @@ public class BehName {
 	}
 	
 	public static String describeMem(Clan clan, M_ m) {
-		int grade = (clan != null ? clan.FB.getBeh(m) : 0);
+		int grade = grade(clan != null ? clan.FB.getBeh(m) : -1);
 		if (grade > 3) {return "";}
 		String[] descs = new String[] {};
 		switch (m) {
 		case BIDASKSPRD: descs = new String[] {"Very tight spread when trading","Tight spread when trading","Wide spread when trading","Very wide spread when trading"}; break;
 		case STMOMENTUM: descs = new String[] {"Very passive trader", "Passive trader", "Aggressive trader", "Very aggressive trader"}; break;
 		case LTMOMENTUM: descs = new String[] {"Very passive investor", "Passive investor", "Aggressive investor", "Very aggressive investor"}; break;
-		case DISCRATE: descs = new String[] {}; break;
-		case MARGIN: descs = new String[] {}; break;
-		case INVORTRD: descs = new String[] {}; break;
-		case TECHNICAL: descs = new String[] {}; // {"Does not like to use price history to predict market","","","Likes to use price history to predict market"}; break;
-		case FLOW: descs = new String[] {}; // {"Does not like to use supply and demand to predict market","","","Likes to use supply and demand to predict market"}; break;
+		case RISKPREMIUM: descs = new String[] {"Very long investment horizon", "Long investment horizon", "Short investment horizon", "Very short investment horizon"}; break;
+		case TECHNICAL: descs = new String[] {}; break; // {"Does not like to use price history to predict market","","","Likes to use price history to predict market"}; break;
+		case FLOW: descs = new String[] {}; break; // {"Does not like to use supply and demand to predict market","","","Likes to use supply and demand to predict market"}; break;
 		case ARM: descs = new String[] {"Finds armor useless and cumbersome","Does not like armor","Likes armor","Finds armor indispensible in a fight"}; break;
 		case MIS: descs = new String[] {"Hates ranged weapons","Does not care for ranged weapons","Finds ranged weapons useful","Finds ranged weapons indispensible"}; break;
 		case PRC: descs = new String[] {"Loves blunt and armor-piercing weapons","Likes blunt and armor-piercing weapons","Likes sharp, bladed weapons","Loves sharp, bladed weapons"}; break;
@@ -59,6 +57,7 @@ public class BehName {
 		case WORKETHIC: descs = new String[] {}; break;
 		case OCD: descs = new String[] {"Dirty","Unwashed","Likes things to be clean and neat","Obsessive-compulsive"}; break;
 		case PROMISCUITY: descs = new String[] {"Puritanical","Prefers celibacy","Lecherous","Uncontrollable urges"}; break;
+		default: descs = new String[] {}; break;
 		}
 		return (grade < descs.length ? descs[grade] : "");
 	}

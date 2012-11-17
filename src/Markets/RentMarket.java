@@ -3,9 +3,6 @@ package Markets;
 import AMath.Calc;
 import Defs.M_;
 import Descriptions.Naming;
-import Game.*;
-import Questing.Quest;
-import Questing.WorkQuests.LaborQuest;
 import Sentiens.Clan;
 import Shirage.Shire;
 
@@ -18,17 +15,16 @@ public class RentMarket extends MktO {
 	
 	private void refresh() {
 		for (int i = 0; i < offerlen; i++) {Offers[i].makeUnrented();} //reclaim
-		bestplc = 0;
 	}
 	
 	public int bestOffer() {
-		if (!unrentedLeft()) {return NOASK;}
+		if (!anyUnrentedLeft()) {return NOASK;}
 		else {return Offers[bestplc].px;}
 	}
 	
 	@Override
 	protected int estFairOffer(Clan doer) {
-		int bestoffer = (unrentedLeft() ? bestOffer() : offerFromNowhere(doer));
+		int bestoffer = (anyUnrentedLeft() ? bestOffer() : offerFromNowhere(doer));
 		double FlowPX = addSpread(bestoffer, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
 		return fairPX(doer, FlowPX);
 	}
@@ -42,12 +38,12 @@ public class RentMarket extends MktO {
 		Offers[k].makeRented();
 //		if (k == bestplc) {findNextUnused();}
 		if (bid.trader == seller) {selfTransaction(seller, plc, Entry.BIDDIR); finish(); return;}
-		report += seller.getNomen() + " tries to hit bid for " + Naming.goodName(g) + RET;
+		addReport(seller.getNomen() + " tries to hit bid for " + Naming.goodName(g));
 		int oldbidlen = bidlen;
 		Clan tmpbuyer = bid.trader;
 		if (plc != -1 && transaction(bid.trader, seller, bid.px)) {
 			if (oldbidlen != bidlen) {
-				Calc.p("transaction fucked up");
+				addReport("transaction fucked up, buyer = " + tmpbuyer + ", seller = " + seller);
 			}
 			removeBid(plc);  //no loss of asset
 		} else {sellFair(seller);}
@@ -65,15 +61,15 @@ public class RentMarket extends MktO {
 	@Override
 	public void sellFairAndRemoveBid(Clan seller) {}
 	
-	public int chgOffer(int plc, int v) {
+	@Override
+	public void chgOffer(int plc, int v) {
 		int oldplc = plc;
 		int newplc = chgEntry(plc, v, Offers, Entry.OFFERDIR);
 		if(oldplc < bestplc && bestplc <= newplc) {bestplc--;}
 		else if(oldplc > bestplc && bestplc >= newplc) {bestplc++;}
-		return v;
 	}
 
-	private boolean unrentedLeft() {
+	private boolean anyUnrentedLeft() {
 		return bestplc < offerlen;
 	}
 	@Override
@@ -85,20 +81,33 @@ public class RentMarket extends MktO {
 	}
 	@Override
 	public void removeOffer(int plc){
-		super.removeOffer(plc);
+		Offers[plc].makeRented();
 		if(plc == bestplc) {findNextUnused();}
 		else if (plc < bestplc) {bestplc--;}
 	}
+	/** actually remove from market due to loss of asset */
+	public void removeRental(Clan trader) {
+		int k = findOffer(trader);
+		if(k != -1) {
+			removeOffer(k);
+			super.removeOffer(k);
+		}
+		else {
+			Log.warning(trader.getNomen() + " ERROR removeOffer(ENTRY NOT FOUND)");
+		}
+		finish();
+	}
 	@Override
 	public void liftOffer(Clan buyer) {
-		if (bestplc != solveBestPlc()) {
+		if (!isBestPlaceCorrect()) {
 			finish();
-			Calc.p("Serious problem");
+			addReport("Serious problem with " + buyer.getNomen() + " trying to lift " + Naming.goodName(g));
+			addReport(this.printOneLineStatus());
 		}
-		if (!unrentedLeft()) {buyFair(buyer); return;}
+		if (!anyUnrentedLeft()) {buyFair(buyer); return;}
 		Entry offer = Offers[bestplc];
 		if (offer.trader == buyer) {selfTransaction(buyer, bestplc, Entry.OFFERDIR); finish(); return;}
-		report += buyer.getNomen() + " tries to lift offer for " + Naming.goodName(g) + RET;
+		addReport(buyer.getNomen() + " tries to lift offer for " + Naming.goodName(g));
 		if (transaction(buyer, offer.trader, offer.px)) {
 			offer.makeRented(); //designate as used
 			findNextUnused();
@@ -110,8 +119,8 @@ public class RentMarket extends MktO {
 		if (bidorask == Entry.BIDDIR) {removeBid(plc);}
 		else if (bidorask == Entry.OFFERDIR) {Offers[plc].makeRented(); findNextUnused();}
 		else {throw new IllegalArgumentException();}
-		report += clan.getNomen() + " takes own " + (bidorask == Entry.BIDDIR ? "bid" : "offer") + " of " + Naming.goodName(g) + " from market" + RET;
-		getG(clan);
+		addReport(clan.getNomen() + " takes own " + (bidorask == Entry.BIDDIR ? "bid" : "offer") + " of " + Naming.goodName(g) + " from market");
+		alterWMG(clan, 1);
 	}
 	
 	/**
@@ -140,12 +149,27 @@ public class RentMarket extends MktO {
 	}
 	@Override
 	public void clearMarket() {
+		if (true) return;
 		//rent offers dont remove them
 		refresh();
 		auction();
+		// TODO must needs do clearing stuff here (likely source of problems)
+		bestplc = 0;
 	}
 	
 	@Override
 	public String toString() {return bestplc + super.toString();}
-
+	
+	@Override
+	public String printOneLineStatus() {
+		return bestplc + "bst, " + super.printOneLineStatus();
+	}
+	
+	/** for use in testing */
+	public int numberUnrentedRemaining() {
+		int n = 0; for (int i = 0; i < offerlen; i++) {if (!Offers[i].isRented()) {n++;}}
+		return n;
+	}
+	public boolean isBestPlaceCorrect() {return bestplc == solveBestPlc();}
+	
 }

@@ -4,17 +4,15 @@ import Avatar.AvatarConsole;
 import Defs.Q_;
 import GUI.APopupMenu;
 import Game.*;
-import Game.Do.ClanAlone;
 import Game.Do.ClanOnClan;
+import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.PersecutionQuests.PersecuteForeigner;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.PowerStartingQuests.IndPowerQuest;
 import Questing.RomanceQuests.BreedQuest;
-import Questing.OrderQuests.LoyaltyQuest;
-import Questing.WorkQuests.BuildWealthQuest;
+import Questing.PropertyQuests.BuildWealthQuest;
 import Sentiens.*;
-import Sentiens.Values.Value;
 
 public abstract class Quest {
 	protected Clan Me;
@@ -32,10 +30,12 @@ public abstract class Quest {
 	@Override
 	public String toString() {return description();}
 	
-	protected AvatarConsole avatarConsole = AGPmain.mainGUI.AC;
+	protected AvatarConsole avatarConsole = AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;
 	public Clan avatar() {return avatarConsole.getAvatar();}
 		
 	public static class DefaultQuest extends Quest {
+		public static QuestFactory getFactory() {return new QuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
+		
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
 		public void pursue() {Me.addReport(GobLog.idle()); Me.MB.finishQ();}
@@ -94,6 +94,9 @@ public abstract class Quest {
 		public Class<? extends Quest> getQuestType() {return questType;}
 	}
 	
+	protected static void replaceAndDoNewQuest(Clan c, Quest newQuest) {
+		c.MB.finishQ(); c.MB.newQ(newQuest); c.pursue();
+	}
 	
 	public static Quest QtoQuest(Clan clan, Q_ q) {
 		if (q == null) {return new DefaultQuest(clan);}
@@ -101,7 +104,7 @@ public abstract class Quest {
 		switch(q) {
 		case BREED: quest = new BreedQuest(clan); break;
 		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
-		case LOYALTYQUEST: quest = new LoyaltyQuest(clan); break;
+		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
 		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;

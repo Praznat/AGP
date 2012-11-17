@@ -2,13 +2,12 @@ package Game;
 
 import Defs.P_;
 import Questing.*;
-import Questing.AllegianceQuests.AllegianceQuest;
-import Sentiens.Stressor;
+import Sentiens.*;
 import Shirage.Shire;
 
 public class Job implements Defs, Stressor.Causable {
-	private Act[] acts;
-	private String desc;
+	protected Act[] acts;
+	protected String desc;
 	
 	public Job(String N, Act... A) {desc = N; acts = A;}
 
@@ -80,22 +79,23 @@ public class Job implements Defs, Stressor.Causable {
 	public final static Act HuntSloth = Labor.newReapC("Hunt Sloth",				N(),						I(meat),		P_.MARKSMANSHIP,Shire.WILDERNESS,	HERDER,		1000);
 	public static final Job HUNTERGATHERER = new Job("Savage", GatherMillet, HuntSloth);
 	
-	public static final Job JUDGE = new Job("");
-	public static final Job NOBLE = new Ministry(AllegianceQuests.getFactory());
-	public static final Job HISTORIAN = new Job("");
-	public static final Job PHILOSOPHER = new Job("");
-	public static final Job GUILDMASTER = new Job("");
-	public static final Job SORCEROR = new Job("");
-	public static final Job VIZIER = new Job("");
-	public static final Job GENERAL = new Job("");
-	public static final Job TREASURER = new Job("");
-	public static final Job COURTESAN = new Job("");
-	public static final Job APOTHECARY = new Job("");
-	public static final Job ARCHITECT = new Job("");
+	public static final Ministry JUDGE = new Ministry(CreedQuests.getFactory());
+	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getFactory());
+	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry GUILDMASTER = new Ministry(PropertyQuests.getFactory());
+	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getFactory());
+	public static final Ministry GENERAL = new Ministry(MightQuests.getFactory());
+	public static final Ministry TREASURER = new Ministry(PropertyQuests.getFactory());
+	public static final Ministry COURTESAN = new Ministry(RomanceQuests.getFactory());
+	public static final Ministry APOTHECARY = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getFactory());
 	
 		
 
 	public String getDesc() {return desc;}
+	public String getDesc(Clan c) {return desc;}
 	@Override
 	public String toString() {return getDesc();}
 }

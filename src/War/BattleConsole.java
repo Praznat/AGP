@@ -32,7 +32,7 @@ public class BattleConsole extends JPanel {
 	protected Rectangle view = new Rectangle(0, 0, VIEWWID, VIEWHGT);
 	protected Random rseed;
 	protected int turn;
-	protected Set<Dude> dudes;
+	protected Set<Warrior> dudes;
 	
 	private BattleConsole() {
 		setOpaque(false);
@@ -46,7 +46,7 @@ public class BattleConsole extends JPanel {
 	}
 	
 
-	public static Set<Dude> toDudes(Set<Clan> clans) {return null;}
+	public static Set<Warrior> toDudes(Set<Clan> clans) {return null;}
 	
 	public void setupBattleConsole(long dateInGame, Set<Clan> defenseArmy, Set<Clan> offenseArmy) {
 		rseed = new Random(dateInGame);   //so battles can be repeatable
@@ -86,20 +86,5 @@ public class BattleConsole extends JPanel {
 	protected double rand() {return rseed.nextDouble();}
 	protected int rand(int i) {return rseed.nextInt(i);}
 	
-	
-	
-	private class Dude {
-		private Rectangle areaOccupied = new Rectangle();
-		
-		public void draw(Graphics g) {
-			if (!inView()) {return;}
-			
-		}
-		private boolean inView() {return areaOccupied().intersects(view);}
-		private int turn() {return turn;}
-		private Rectangle areaOccupied() {return areaOccupied;}
-		
-		
-	}
 }
 

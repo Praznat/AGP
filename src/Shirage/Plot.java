@@ -55,7 +55,7 @@ public class Plot extends AbstractPlot {
 	@Override
 	public void setXY(int X, int Y) {
 		super.setXY(X, Y);
-		myrbm = rbm * Math.random() * 2;
+		myrbm = rbm * AGPmain.rand.nextDouble() * 2;
 //		if (x < BORDER || x >= AGPmain.mainGUI.MD.getTCols() - BORDER)
 //			{value = value * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;
 //			myrbm = myrbm * Math.min(x, AGPmain.mainGUI.MD.getTCols() - 1 - x) / BORDER;}

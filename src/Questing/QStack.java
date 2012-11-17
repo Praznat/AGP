@@ -15,7 +15,7 @@ public class QStack extends Stack<Quest> {
 				return true;
 			}
 		}
-		return false;
+		return false; //not found
 	}
 	@Override
 	public Quest push(Quest item) {

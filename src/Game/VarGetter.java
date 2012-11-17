@@ -106,7 +106,7 @@ public class VarGetter implements Defs {
 		case CLANBASIC:
 			switch(var) {
 			case CLANNAME: dude.getID();
-			case SHIRENAME: dude.myShire().getXY();
+			case SHIRENAME: dude.myShire().getID();
 			}
 		case CLANDISCS: return dude.FB.getDisc(var);
 		case CLANSANCPCTS: return dude.FB.getSancPct(Values.All[var]);
@@ -132,7 +132,7 @@ public class VarGetter implements Defs {
 		case CLANBASIC:
 			switch(var) {
 			case CLANNAME: return dude.getNomen();
-			case CLANJOB: return dude.getJob().getDesc();
+			case CLANJOB: return dude.getJob().getDesc(dude);
 			case CLANASPIRATION: return dude.getAspiration().getDesc();
 			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "None" : dude.MB.QuestStack.peek().shortName());
 			case CLANORDER: return (dude.myOrder() == null ? "None" : dude.myOrder().getFollowerName());

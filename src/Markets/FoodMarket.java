@@ -45,7 +45,6 @@ public class FoodMarket extends MktAbstract {
 	public int lastPrice() {return val;}
 	public int stAvg() {return val;}
 	public int ltAvg() {return val;}
-	protected void updateAvgs(int p) {}
 	public int getBidSz() {return Integer.MAX_VALUE;}
 	public int getAskSz() {return 0;}
 	public int bestOffer() {return val;}
@@ -56,8 +55,8 @@ public class FoodMarket extends MktAbstract {
 	public void removeBid(int plc) {error();}
 	public void removeOffer(int plc) {error();}
 	public void removeOffer(Clan c) {error();}
-	protected int chgOffer(int plc, int v) {error();return 0;}
-	protected int chgBid(int plc, int v) {error();return 0;}
+	public void chgOffer(int plc, int v) {error();}
+	public void chgBid(int plc, int v) {error();}
 	protected void auction() {error();}
 	public void clearMarket() {} // do nothing
 	public void loseAsset(Clan me) {error();}

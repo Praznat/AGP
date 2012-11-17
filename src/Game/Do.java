@@ -4,7 +4,7 @@ import AMath.Calc;
 import Defs.*;
 import Questing.*;
 import Questing.Quest.FindTargetAbstract;
-import Questing.WorkQuests.LaborQuest;
+import Questing.PropertyQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.Values;
 import Shirage.Shire;
@@ -169,7 +169,7 @@ public class Do {
 	};
 	public static final ClanAlone NATURALIZE_HERE = new ClanAlone() {
 		@Override
-		protected boolean tryExecute() {doer.FB.setDisc(Defs.HOMELAND, doer.myShire().getXY());   return true;}
+		protected boolean tryExecute() {doer.FB.setDisc(Defs.HOMELAND, doer.myShire().getID());   return true;}
 		@Override
 		public String description() {return doer.getNomen() + " becomes native of " + doer.myShire().getName();}
 	};

@@ -1,5 +1,6 @@
 package Markets;
 
+import AMath.Calc;
 import Sentiens.Clan;
 
 public class Entry {
@@ -11,7 +12,7 @@ public class Entry {
 	public Entry() {px = -1; trader = null;}
 	public void set(int p, Clan t) {px = p; trader = t;}
 	public void set(Entry e) {px = e.px; trader = e.trader;}
-	public void setPX(int p) {px = p;}
+	private void setPX(int p) {px = p;}
 	public void setTrader(Clan t) {trader = t;}
 	/** get absolute value posted price */
 	public int getPX() {return (px != Integer.MIN_VALUE ? Math.abs(px) : 0);}
@@ -20,5 +21,5 @@ public class Entry {
 	public boolean isRented() {return px < 0;}
 	
 	@Override
-	public String toString() {return (trader == null ? "null" : trader.toString() + " at " + px);}
+	public String toString() {return (trader == null ? "null" : trader.toString() + "@" + px);}
 }

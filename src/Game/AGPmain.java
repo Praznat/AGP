@@ -14,8 +14,8 @@ import Sentiens.Values.Value;
 
 public class AGPmain extends Applet {
 	private static int initpop = 10000;
-	public static Random rand = new Random();
-	//static Random rand = new Random(0);
+//	public static Random rand = new Random();
+	public static Random rand = new Random(0);
 	public static GUImain mainGUI;
 	public static Realm TheRealm;
 	
@@ -73,7 +73,7 @@ public class AGPmain extends Applet {
 		
 	}
 	
-	public static int getShiresX() {return mainGUI.MD.getTCols() / 2;}
+	public static int getShiresX() {return mainGUI != null ? mainGUI.MD.getTCols() / 2 : 100;}
 	public static int getShiresY() {return mainGUI.MD.getTRows() / 2;}
 
 	private static void setLookAndFeel() {

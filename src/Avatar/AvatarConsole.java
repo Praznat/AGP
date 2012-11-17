@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import javax.swing.JButton;
 
+import AMath.Calc;
 import GUI.*;
 import Game.*;
 import Game.Do.ClanAction;
@@ -102,7 +103,10 @@ public class AvatarConsole extends APanel implements ActionListener {
 			AGPmain.TheRealm.goOnce();
 		}
 		else if (STEP100.equals(e.getActionCommand())) {
-			for (int i = 0; i < 100; i++) {AGPmain.TheRealm.goOnce();}
+			for (int i = 0; i < 100; i++) {
+				Calc.p("Day " + i);
+				AGPmain.TheRealm.goOnce();
+			}
 		}
 		AGPmain.mainGUI.GM.setState();
 		AGPmain.mainGUI.SM.setState();

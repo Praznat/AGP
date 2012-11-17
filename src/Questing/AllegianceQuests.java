@@ -3,7 +3,7 @@ package Questing;
 import java.util.HashMap;
 
 import Defs.M_;
-import Game.AGPmain;
+import Game.*;
 import Government.Order;
 import Questing.Quest.QuestFactory;
 import Sentiens.Clan;
@@ -11,12 +11,25 @@ import Sentiens.Clan;
 public class AllegianceQuests {
 	public static QuestFactory getFactory() {return new QuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
 	
-	
 	public static class AllegianceQuest extends Quest {
 		public AllegianceQuest(Clan P) {super(P);}
 		@Override
 		public void pursue() {
-			// TODO Auto-generated method stub
+			if (Me.getBoss() == Me) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
+			// test if respect still strong
+			double resp = Me.conversation(Me.getBoss());
+			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {
+				// desert ?
+			}
+			Ministry proposedMinistry = Me.getBoss().FB.randomValueInPriority().getMinistry();
+			Service proposedService = proposedMinistry.getService();
+			// first inquire if proposedMinistry can pay more than current job
+			if (Me.getJob() != Job.NOBLE && proposedService.estimateProfit(Me) > Me.getProfitEMA()) {
+				Me.setJob(proposedMinistry);
+			}
+			Me.MB.finishQ();
+			if (proposedMinistry == Job.NOBLE) {return;} // TODO causes infinite loop if Allegiance is your only value. find something else for here
+			proposedService.doit(Me); // do it even if it's not your job... this is ALLEGIANCE Quest
 		}
 	}
 

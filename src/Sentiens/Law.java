@@ -17,7 +17,11 @@ public class Law {
 		public Commandment Murder = Murder();
 		public Commandment Theft = Theft();
 		public Commandment Adultery = Adultery();
-		public Commandment[] list = new Commandment[] {Murder, Theft, Adultery};
+		public Commandment Heresy = Heresy();
+		public Commandment Deception = Deception();
+		public Commandment Witchcraft = Witchcraft();
+		public Commandment Carnivory = Carnivory();
+		public Commandment[] list = new Commandment[] {Murder, Theft, Adultery, Heresy};
 	}
 
 	public static final Commandment Murder() {
@@ -35,17 +39,22 @@ public class Law {
 			
 		};
 	}
+	public static final Commandment Heresy() {
+		return new Commandment("WORSHIP OTHER GODS") {
+			
+		};
+	}
 	public static final Commandment Deception() {
 		return new Commandment("LIE") {
 			
 		};
 	}
-	public static final Commandment Prophecy() {
+	public static final Commandment Witchcraft() {
 		return new Commandment("PROPHECIZE") {
 			
 		};
 	}
-	public static final Commandment Carnivorize() {
+	public static final Commandment Carnivory() {
 		return new Commandment("EAT MEAT") {
 			
 		};

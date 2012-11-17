@@ -142,7 +142,7 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 	
 	
 	private Plot spawnPlot(Plot P, int[] ord){
-		if(Math.random() < 0.0001) {Calc.shuffle(ord);}
+		if(AGPmain.rand.nextDouble() < 0.0001) {Calc.shuffle(ord);}
 		P.refreshHood();
 		Plot N;
 		for (int i = P.myHood().length - 1; i >= 0; i--) {
@@ -182,7 +182,7 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 	private void WFall() {
 		double wpp = wamt / plots.length;
 		for (int i = 0; i < plots.length; i++) {
-			if(Math.random() < wfp) {
+			if(AGPmain.rand.nextDouble() < wfp) {
 				plots[i].chgW(wpp);
 				wamt -= wpp;
 			}

@@ -421,6 +421,10 @@ public class Calc {
 		return a == null ? (b == null) : a.equals(b);
 	}
 	
+	public static interface BooleanCheck {
+		public boolean check();
+	}
+	
 }
 
 

@@ -6,12 +6,15 @@ import Sentiens.Values;
 import Defs.M_;
 import Game.AGPmain;
 import Game.Defs;
-import Questing.Quest.FindTarget;
-import Questing.Quest.FindTargetAbstract;
-import Questing.Quest.TargetQuest;
+import Questing.AllegianceQuests.AllegianceQuest;
+import Questing.Quest.*;
 
 public class RomanceQuests {
+	public static QuestFactory getFactory() {return new QuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
 
+	public static class BreedWithBossQuest extends BreedQuest {
+		public BreedWithBossQuest(Clan P) {super(P); Clan boss = P.getBoss(); target = boss != Me ? boss : null;}
+	}
 	public static class BreedQuest extends TargetQuest {
 		private int courtsLeft = Defs.E;
 		private int failsLeft = Defs.E;

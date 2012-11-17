@@ -1,17 +1,9 @@
 package Sentiens;
 
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
-import AMath.ArrayUtils;
-import AMath.Calc;
-import Defs.F_;
-import Defs.M_;
-import Defs.P_;
+import AMath.*;
+import Defs.*;
 import Descriptions.Naming;
-import Game.AGPmain;
-import Game.Defs;
-import Game.Job;
+import Game.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Values.Value;
 import Shirage.Shire;
@@ -51,7 +43,7 @@ public class Ideology implements Defs {
 		discpts = new int[4];
 		discs[CREED] = AGPmain.rand.nextInt();
 		discs[LORD] = getEu().getID();
-		discs[HOMELAND] = Me.getShireXY();
+		discs[HOMELAND] = Me.getShireID();
 		
 		//testing - delete later:
 //		for (M_ m : M_.SMems()) {setBeh(m, 0);}
@@ -91,6 +83,7 @@ public class Ideology implements Defs {
 	public int getPrs(P_ p) {return getVar(P(p));}
 	public int getPrs(int plc) {return getVar(P(plc));}
 	public void setPrs(int plc, int val) {setVar(P(plc), val);}
+	public void setPrs(P_ p, int val) {setVar(P(p), val);}
 
 	public void upPrest(P_ plc) {
 		int p = P(plc);

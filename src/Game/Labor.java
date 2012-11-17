@@ -1,6 +1,6 @@
 package Game;
 
-import Questing.WorkQuests.LaborQuest;
+import Questing.PropertyQuests.LaborQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import AMath.Calc;
@@ -75,8 +75,8 @@ public class Labor implements Act, Defs {
 		return tmpIn;
 	}
 	
-	public int estimateProfit(Clan doer) {
-		return doer.confuse(this.expOut(doer)[0] - this.expIn(doer)[0]);
+	public double estimateProfit(Clan doer) {
+		return doer.confuse((double)this.expOut(doer)[0] - (double)this.expIn(doer)[0]);
 	}
 
 	public void storeAllInputsInWM(Clan doer) {

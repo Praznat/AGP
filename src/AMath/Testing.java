@@ -1,10 +1,11 @@
 package AMath;
 
+import Defs.*;
 import Descriptions.XWeapon;
 import Game.*;
 import Government.Order;
 import Markets.*;
-import Questing.WorkQuests.LaborQuest;
+import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
@@ -14,93 +15,47 @@ import Shirage.Shire;
  */
 public class Testing {
 	
+	protected static Realm testRealm;
+	
 
+	public static void main(String[] args) {
+		doAllTests();
+	}
+	
+	public static void reset() {
+		testRealm = Realm.makeRealm(2, 2, 100);
+		testRealm.doCensus();
+	}
+	
 	public static void doAllTests() {
-		normalMarketFunctions();
+		System.out.println("starting tests");
+		
+		TestMarkets.normalMarketFunctions();
 //		workInputManagement();
-		breeding();
-		ideologyInteractions();
+//		breeding();
+//		ideologyInteractions();
 		//naming();
 	}
 
-	public static void workInputManagement() {
-		Clan guy = AGPmain.TheRealm.getClan(0);
-		Clan other = AGPmain.TheRealm.getClan(1);
-		guy.addReport(GobLog.transaction(1, 9, true, other));
-		other.addReport(GobLog.transaction(1, 9, false, guy));
-		for (Reportable R : guy.getLog()) {
-			System.out.println(R.out());
-		}
-		for (Reportable R : other.getLog()) {
-			System.out.println(R.out());
-		}
-		for (Reportable R : guy.getLog()) {
-			System.out.println(R.out());
-		}
-		for (Reportable R : other.getLog()) {
-			System.out.println(R.out());
-		}
-		//FAAIL!!!!! on date()
-	}
-	
-	public static void normalMarketFunctions() {
-		Shire ourShire = AGPmain.TheRealm.getClan(0).myShire();
-		MktAbstract rentLandMarket = ourShire.getMarket(Defs.rentland);
-		Clan settler = setupClanForWork(ourShire, 0, Job.Settle);
-		Clan farmer = setupClanForWork(ourShire, 1, Job.Farm);
-		doNPursue(settler, 20, false);
-		System.out.println(settler + " has " + settler.getAssets(Defs.land) + " land");
-		((MktO) rentLandMarket).printBaikai();
-
-		doNPursue(farmer, 4, false);
-		System.out.println(farmer + " has " + farmer.getAssets(Defs.millet) + " millet");
-		
-		((MktO) rentLandMarket).printBaikai();
-
-		Clan herder = setupClanForWork(ourShire, 2, Job.HerdD);
-		Clan butcher = setupClanForWork(ourShire, 3, Job.Butcher);
-		doNPursue(herder, 8, true);
-		System.out.println(herder + " has "); Calc.printArrayH(herder.getAssets());
-		MktAbstract rentAnimalMarket = ourShire.getMarket(Defs.rentanimal);
-		((MktO) rentAnimalMarket).printBaikai();
-		
-		doNPursue(butcher, 5, true);
-		System.out.println(butcher + " has "); Calc.printArrayH(butcher.getAssets());
-		((MktO) rentAnimalMarket).printBaikai();
-		
-		//now herder is butcher
-		Calc.p("now for some shit");
-		herder = setupClanForWork(ourShire, 2, Job.Butcher);
-		doNPursue(herder, 5, true);
-		System.out.println(herder + " has "); Calc.printArrayH(herder.getAssets());
-		((MktO) rentAnimalMarket).printBaikai();
-		herder.pursue();
-	}
-	private static Clan setupClanForWork(Shire s, int n, Act butcher) {
-		Clan clan = s.getCensus()[n];
-		clan.setJob(new Job(butcher.getDesc() + " Pro", butcher));
-		clan.MB.newQ(new LaborQuest(clan));
-		return clan;
-	}
-	private static void doNPursue(Clan clan, int n, boolean report) {
-		for (int i = 0; i < n; i++) {
-			clan.pursue();
-			if (report) {Calc.p(clan + " " + clan.MB);}
-		}
-	}
+	protected static Clan setClanMemMax(Clan c, M_ m) {c.FB.setBeh(m, 15); return c;}
+	protected static Clan setClanMemMin(Clan c, M_ m) {c.FB.setBeh(m, 0); return c;}
+	protected static Clan setClanMemMax(Clan c, P_ p) {c.FB.setPrs(p, 15); return c;}
+	protected static Clan setClanMemMin(Clan c, P_ p) {c.FB.setPrs(p, 0); return c;}
+	protected static void affirm(boolean b) {affirm(b, "could not affirm");}
+	protected static void affirm(boolean b, String errorString) {if (!b) {throw new IllegalStateException(errorString);}}
 
 	public static void breeding() {
-		
+		reset();
 	}
 
 	public static void ideologyInteractions() {
-		if (true) return;
-		Clan greyjoy = AGPmain.TheRealm.getClan(0);
-		Clan stark = AGPmain.TheRealm.getClan(1);
-		Clan theon = AGPmain.TheRealm.getClan(2);
-		Clan targaryan = AGPmain.TheRealm.getClan(3);
-		Clan baratheon = AGPmain.TheRealm.getClan(4);
-		Clan stannis = AGPmain.TheRealm.getClan(5);
+		reset();
+		Clan greyjoy = testRealm.getClan(0);
+		Clan stark = testRealm.getClan(1);
+		Clan theon = testRealm.getClan(2);
+		Clan targaryan = testRealm.getClan(3);
+		Clan baratheon = testRealm.getClan(4);
+		Clan stannis = testRealm.getClan(5);
 		Calc.p("greyjoy="+greyjoy.getNomen());
 		Calc.p("stark="+stark.getNomen());
 		Calc.p("theon="+theon.getNomen());
@@ -133,6 +88,7 @@ public class Testing {
 	}
 
 	public static void naming() {
+		reset();
 		for(int i = 0; i < 1000; i++) {
 			System.out.println(XWeapon.weaponName(XWeapon.craftNewWeapon(0, 15)));
 		}

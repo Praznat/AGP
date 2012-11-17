@@ -21,16 +21,14 @@ public abstract class MktAbstract implements Defs {
 	public int smaVol() {return smavol;}
 	public abstract int sellablePX(Clan c);  //used in Logic
 	public abstract int buyablePX(Clan c);  //used in Logic
-	protected abstract void updateAvgs(int p);
 	public abstract void buyFair(Clan buyer);
 	public abstract void sellFair(Clan seller);
 	public abstract void liftOffer(Clan buyer);
 	public abstract void hitBid(Clan seller);
 	public abstract void removeBid(int plc);
 	public abstract void removeOffer(int plc);
-	public abstract void removeOffer(Clan c);
-	protected abstract int chgOffer(int plc, int v);
-	protected abstract int chgBid(int plc, int v);
+	public abstract void chgOffer(int plc, int v);
+	public abstract void chgBid(int plc, int v);
 	protected abstract void auction();
 	public abstract void clearMarket();
 	

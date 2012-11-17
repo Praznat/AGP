@@ -23,10 +23,7 @@ public class Mem implements Defs {
 		Defs[M_.BIDASKSPRD.ordinal()] = new Mem("Bid-Offer Spread",P_.TRADEP);
 		Defs[M_.STMOMENTUM.ordinal()] = new Mem("Momentum-following",P_.TRADEP);
 		Defs[M_.LTMOMENTUM.ordinal()] = new Mem("Bubble-riding",P_.TRADEP);
-		Defs[M_.DISCRATE.ordinal()] = new Mem("Discount Rate",P_.INVESTP);
-		Defs[M_.MARGIN.ordinal()] = new Mem("Savings Rate",P_.INVESTP);
-		Defs[M_.INVORTRD.ordinal()] = new Mem("Investment Horizon",P_.INVESTP);
-		
+		Defs[M_.RISKPREMIUM.ordinal()] = new Mem("Discount Rate",P_.INVESTP);
 
 		Defs[M_.ARM.ordinal()] = new Mem("Armor", P_.ARMORYP);
 		Defs[M_.MIS.ordinal()] = new Mem("Missile Arms", P_.ARMORYP);

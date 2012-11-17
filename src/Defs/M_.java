@@ -7,8 +7,7 @@ public enum M_ {
 	BIDASKSPRD,  //also how far away to initially price when haggling
 	STMOMENTUM, // 0-7 reversion 8-15 momentum (also how quickly to converge when haggling)
 	LTMOMENTUM, // 0-7 reversion 8-15 momentum
-	DISCRATE,
-	MARGIN,
+	RISKPREMIUM,
 	INVORTRD,
 	TECHNICAL,
 	FLOW,

@@ -1,23 +1,15 @@
 package Sentiens;
 
-import Defs.M_;
-import Defs.P_;
-import Defs.Q_;
-import Descriptions.GobName;
-import Descriptions.Naming;
+import AMath.Calc;
+import Defs.*;
+import Descriptions.*;
 import Game.*;
 import Government.Order;
-import Markets.*;
+import Markets.MktAbstract;
 import Questing.Quest;
-import Questing.Quest.DefaultQuest;
-import Questing.OrderQuests.LoyaltyQuest;
-import Questing.PersecutionQuests.*;
-import Questing.RomanceQuests.BreedQuest;
-import Questing.WorkQuests.BuildWealthQuest;
 import Sentiens.GobLog.Book;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
-import AMath.Calc;
 
 public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyComparable {
 	protected static final int DMC = 10; //daily millet consumption
@@ -31,9 +23,8 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	protected int suitor; //ID of suitor
 	
 	protected int ID;
-	protected int xloc;
-	protected int yloc;
-	protected Job job, aspiration;
+	protected Shire currentShire;
+	protected Job job, aspiration, backupJob;
 	protected int[] assets;
 	protected int[] inventory; //OBSOLETE
 	private short specialweapon;
@@ -64,12 +55,8 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	protected Book goblog = new Book();
 	
 	public Clan() {}
-	public Clan(Shire s, int id) {
-		this(s.getX(), s.getY(), id);
-	}
-	public Clan(int x, int y, int id) {
-		xloc = x;
-		yloc = y;
+	public Clan(Shire place, int id) {
+		currentShire = place;
 		ID = id;
 //		Boss = this;
 		suitor = ID;
@@ -77,6 +64,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		assets[millet] = 1000;
 //		inventory = recalcInv();
 //		expTerms = new int[][] {{0}, {}, {}, {}};
+		backupJob = Job.HUNTERGATHERER;
 		job = Job.FARMER;  setRandomJob();
 		profitEMA = 0;
 		setAge(AGPmain.rand.nextInt(100));
@@ -106,10 +94,8 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	}
 	
 	public int getID() {return ID;}
-	public int getXloc() {return xloc;}
-	public int getYloc() {return yloc;}
-	public int getShireXY() {return xloc + yloc * AGPmain.getShiresX();}
-	public Shire myShire() {return AGPmain.TheRealm.shires[xloc + yloc * AGPmain.getShiresX()];}
+	public int getShireID() {return myShire().getX() + myShire().getY() * AGPmain.getShiresX();}
+	public Shire myShire() {return currentShire;}
 	public MktAbstract myMkt(int g) {return myShire().getMarket(g);}
 	public int getAge() {return age;}
 	public void setAge(int a) {age = a;}
@@ -124,7 +110,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	public String getNomen() {return GobName.fullName(this);}
 	public String getSancName() {return FB.getDeusName();}
 	public Job getJob() {return job;}
-	public void setJob(Job j) {job = j;}
+	public void setJob(Job j) {backupJob = job; job = j;}
 	public Job getAspiration() {return aspiration;}
 	public void setAspiration(Job j) {aspiration = j;}
 	public int[][] getExpTerms() {return expTerms;}
@@ -164,6 +150,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		if (oldBoss != this) {oldBoss.removeMinion(this);}
 		this.FB.setDisc(LORD, newBoss.getID());
 		if (newBoss != this) {newBoss.addMinion(this);}
+		if(newBoss.myOrder() == null) {Order.createBy(newBoss);}
 		joinOrder(newBoss.myOrder());
 		return true;
 	}
@@ -214,7 +201,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	public boolean alterMillet(int c) {
 		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
 		else if (assets[millet] + c < 0) {
-			assets[millet] = 0; System.out.println("millet below zero " + ID + "job" + getJob() + getLastSuccess() + " $" + assets[millet] + "" + c);
+			assets[millet] = 0; System.out.println("millet below zero " + getNomen() + " the " + getJob() + " $" + assets[millet] + " altered by " + c);
 			throw new IllegalStateException(); // return false;
 		}//System.out.println(1 / 0);}
 		else {assets[millet] = assets[millet] + c; return true;}
@@ -246,17 +233,23 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		profitEMA = (p * m + (100 - p) * profitEMA) / 100;
 	}
 	
-	
+
+	public long getNetAssetValue(Clan POV) {
+		int sum = 0;   for (int g = 0; g < Defs.numAssets; g++) {
+			int px = POV.myMkt(g).sellablePX(POV);
+			sum += getAssets(g) * px;
+		}	return sum;
+	}
 	public int[] getAssets() {return assets;}
 	public int getAssets(int g) {return assets[g];}
-	public void incAssets(int p, int x) {if (x < 0) {System.out.println("error incAssets x is negative");}
-		assets[p] += x;
+	public void incAssets(int g, int x) {if (x < 0) {System.out.println("error incAssets x is negative");}
+		assets[g] += x;
 	}
-	public void decAssets(int p, int x) {
-		if (assets[p] - x < 0) {
-			System.out.println(Naming.goodName(p, false, false) + " error negative assets in decAssets for " + getNomen());
+	public void decAssets(int g, int x) {
+		if (assets[g] - x < 0) {
+			System.out.println(Naming.goodName(g, false, false) + " error negative assets in decAssets for " + getNomen());
 		}
-		else {assets[p] -= x;}
+		else {assets[g] -= x;}
 	}
 	public short getXWeapon() {return specialweapon;}
 	public void setXWeapon(short w) {specialweapon = w;}
@@ -321,10 +314,10 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
     public double getCourage() {  // range 0-1
     	return (useBeh(M_.CONFIDENCE) + 30 - useBeh(M_.MIERTE) - useBeh(M_.PARANOIA)) / 45;
     }
-    public int confuse(int in) {
+    public double confuse(double in) {
     	//returns number between 50%-150% of original number at min arithmetic + max madness
-    	int x = Math.abs((16 - FB.getPrs(P_.ARITHMETICP) + useBeh(M_.MADNESS)) * in / 64);
-    	return in + (x == 0 ? 0 : - x + AGPmain.rand.nextInt(x * 2));
+    	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETICP) + useBeh(M_.MADNESS)) * in / 64);
+    	return in + (x == 0 ? 0 : - x + AGPmain.rand.nextDouble()*x*2);
     }
 	public boolean iHigherMem(int m, Clan other) {
 		return iHigherPrest(mem(m).getPrestige(), other);
@@ -408,7 +401,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	
 	
 	public int useBeh(M_ m) {
-		if (Math.random() < (double) 1 / ++lastBehN) {
+		if (AGPmain.rand.nextDouble() < (double) 1 / ++lastBehN) {
 			lastBeh = m.ordinal();
 		}
 		return FB.getBeh(m);

@@ -11,12 +11,13 @@ public class Service implements Act {
 
 	@Override
 	public void doit(Clan doer) {
-		doer.MB.QuestStack.prioritizeExistingMemberOfType(questFactory.getQuestType());
-		doer.pursue(); //TODO maybe some logic about prioritizing previous quest
+		if (!doer.MB.QuestStack.prioritizeExistingMemberOfType(questFactory.getQuestType())) {
+			doer.MB.newQ(questFactory.createFor(doer));
+		} //dont actually call pursue() because usually already a good deal of work was done by doer just to get here
 	}
 
 	@Override
-	public int estimateProfit(Clan pOV) {
+	public double estimateProfit(Clan pOV) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

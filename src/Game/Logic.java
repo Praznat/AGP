@@ -3,11 +3,9 @@ package Game;
 import Sentiens.Clan;
 import Sentiens.Questy;
 
-public class Logic {
+public abstract class Logic {
 	protected static final int BUY = 0;
 	protected static final int SELL = 1;
-	protected static final int OBTAIN = 2;
-	protected static final int FORFEIT = 3;
 	protected static final int E = Defs.E;
 	
 	
@@ -31,8 +29,8 @@ public class Logic {
 	
 	protected boolean better(int p1, int type) {
 		if(X[0] < 0) {return true;}
-		if(type == BUY || type == FORFEIT) {return p1<X[0];}
-		else if (type == SELL || type == OBTAIN) {return p1>X[0];}
+		if(type == BUY) {return p1<X[0];}
+		else if (type == SELL) {return p1>X[0];}
 		else return false;
 	}
 	
@@ -57,7 +55,7 @@ class And extends Logic {
 		X[0] = 0;   int p = 1;   int k;
 		for (int i = 0; i < subLogics.length; i++) {
 			int[] tmp = subLogics[i].getBest(doer, type);
-			X[0] = (int) Math.min((long) X[0] + tmp[0], Integer.MAX_VALUE);  //add cost from sublogic i
+			X[0] = (int) Math.min((long)X[0] + tmp[0], Integer.MAX_VALUE);  //add cost from sublogic i
 			k = 1;   while (tmp[k] != E) {X[p++] = tmp[k++];}
 		}      X[p] = E;
 		return X;
@@ -98,7 +96,7 @@ class Mult extends Logic {
 	public int[] getBest(Clan doer, int type) {
 		int p = 1;   int k;
 		int[] tmp = subLogics[0].getBest(doer, type);
-		X[0] = mult * (int) Math.min((long) tmp[0], Integer.MAX_VALUE);
+		X[0] = (int) Math.min(mult * (long) tmp[0], Integer.MAX_VALUE);
 		for (int i = 0; i < mult; i++) {
 			k = 1;   while (tmp[k] != E) {X[p++] = tmp[k++];}
 		}      X[p] = E;
@@ -118,8 +116,6 @@ class Node extends Logic {
 		switch (type) {
 		case BUY: X[0] = Cost(doer); break;
 		case SELL: X[0] = Value(doer); break;
-		case OBTAIN: break;
-		case FORFEIT: break;
 		default: break;
 		}
 		X[1] = node;   X[2] = E;   return X;

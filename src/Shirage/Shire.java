@@ -76,16 +76,15 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	}
 
 	public void newDay() {
-		conditions[FERTILITY] = randWeather(conditions[FERTILITY]);
+//		conditions[FERTILITY] = randWeather(conditions[FERTILITY]);
 		//?change to seasonal?
 		
-		System.arraycopy(vars, 0, lastvars, 0, numVars);
+//		System.arraycopy(vars, 0, lastvars, 0, numVars);
 
-		int[] Gs = new int[Goods.numGoods];
-		for(int i = 0; i < Gs.length; i++) {Gs[i] = i;}
-		
-		
+		clearMarkets();
 	}
+	
+	public void clearMarkets() {for (MktAbstract mkt : markets) {mkt.clearMarket();}}
 	
 	public void newSeason() {
 		setPop();
@@ -162,15 +161,15 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	
 	public int getX() {return xcoor;}
 	public int getY() {return ycoor;}
-	public int getXY() {return xcoor + ycoor * AGPmain.getShiresX();}
+	public int getID() {return xcoor + ycoor * AGPmain.getShiresX();}
 	public int distanceFrom(Shire S) {
 		if (S == this) {return 0;}
 		//should ideally count how many steps to get to S, but for now...
 		return (int) Math.round(Math.sqrt(Math.pow(S.getX() - this.getX(), 2) + Math.pow(S.getY() - this.getY(), 2)));
 	}
-
+	public void setLinkedPlot(Plot p) {linkedPlot = p;}
 	public void linkToPlot(Plot p) {
-		linkedPlot = p;
+		setLinkedPlot(p);
 		p.linkHoodToShire(this);
 	}
 	public boolean isPopulateable() {
@@ -188,11 +187,11 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		//make faster by running it from AGPmain
 		int sum = 0;
 		for (int i = 0; i < AGPmain.TheRealm.popSize(); i++) {
-			if (AGPmain.TheRealm.getClan(i).getShireXY() == getXY()) {sum++;}
+			if (AGPmain.TheRealm.getClan(i).getShireID() == getID()) {sum++;}
 		}
 		popsize = sum;
 	}
-	public String getName() {return Naming.randShireName(getXY());}
+	public String getName() {return Naming.randShireName(getID());}
 	public MktAbstract getMarket(int g) {return markets[g];}
 	public int getResource(int r) {
 		if (r >= 0) {return resources[r];}

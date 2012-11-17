@@ -1,7 +1,7 @@
 package Game;
 
 import Descriptions.XWeapon;
-import Markets.MktO;
+import Markets.*;
 import Sentiens.Clan;
 
 public class Assets implements Defs {
@@ -31,7 +31,7 @@ public class Assets implements Defs {
 	public static void lose(Clan doer, int good) {
 		lose(doer, good, 1);   // rent only if number of goods is 1
 		int rg = getRentGood(good);
-		if (rg != -1) {doer.myMkt(rg).removeOffer(doer);}
+		if (rg != -1) {((RentMarket)doer.myMkt(rg)).removeRental(doer);}
 	}
 	public static void gain(Clan doer, int good, int N) {
 		doer.incAssets(good, N);
@@ -48,19 +48,27 @@ public class Assets implements Defs {
 	}
 	public static int FVmin(Clan doer, int good) {
 		switch (good) {
-		case land:   return MktO.annuity(doer.myMkt(rentland).bestBid(), doer);
-		case bovad:   return MktO.annuity(doer.myMkt(rentanimal).bestBid(), doer);
-		case donkey:   return MktO.annuity(doer.myMkt(rentanimal).bestBid(), doer);
-		case lobodonkey:   return doer.myMkt(donkey).bestBid();
+		case land:   return MktO.annuity(getBestBidOrBestOffer(doer, rentland, true), doer);
+		case bovad:   return MktO.annuity(getBestBidOrBestOffer(doer, rentanimal, true), doer);
+		case donkey:   return MktO.annuity(getBestBidOrBestOffer(doer, rentanimal, true), doer);
+		case lobodonkey:   return getBestBidOrBestOffer(doer, donkey, true);
 		default: return 0;
 		}
 	}
 	public static int FVmax(Clan doer, int good) {
 		switch (good) {
-		case rentland:   return MktO.interest(doer.myMkt(land).bestOffer(), doer);
-		case rentanimal:   return MktO.interest(Math.max(doer.myMkt(lobodonkey).bestOffer(), doer.myMkt(bovad).bestOffer()), doer);
+		case rentland:   return MktO.interest(getBestBidOrBestOffer(doer,land,false), doer);
+		case rentanimal:   return MktO.interest(Math.max(getBestBidOrBestOffer(doer,donkey,false), 
+				getBestBidOrBestOffer(doer,bovad,false)), doer);
 		default: return Integer.MAX_VALUE;
 		}
+	}
+	private static int getBestBidOrBestOffer(Clan c, int g, boolean bidFirst) {
+		int bb = c.myMkt(g).bestBid();
+		int bo = Math.abs(c.myMkt(g).bestOffer());
+		bo = bo >= 0 ? bo : MktO.NOASK;
+		if (bidFirst) {return bb != MktO.NOBID ? bb : (bo != MktO.NOASK ? bo : 0);}
+		else {return bo != MktO.NOASK ? bo : (bb != MktO.NOBID ? bb : Integer.MAX_VALUE);}
 	}
 	public static double estimateNAV(Clan POV, Clan clan) {
 		int sum = 0;

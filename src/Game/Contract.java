@@ -49,10 +49,15 @@ public class Contract {   // AND/OR combination of Terms
 	public void setOfferThreat() {setOffer(THREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
 	public void setOfferPayment(int c) {setOffer((Assessable)Values.PROPERTY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
 	public void setOfferGratitude(int c) {setOffer((Assessable)Values.ALLEGIANCE, c, null);}
+	public void setOfferBlessing(int c) {setOffer((Assessable)Values.CREED, c, null);}
 
 	public void setDemandTribute(int c) {setDemand((Assessable)Values.PROPERTY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
 	public void setDemandRespect() {setDemand((Assessable)Values.INFLUENCE, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
 	public void setDemandAllegiance() {setDemand((Assessable)Values.ALLEGIANCE, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
+	/**
+	 * TODO: probably needs a special term for violating Heresy law
+	 */
+	public void setDemandConversion() {setDemand((Assessable)Values.CREED, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
 	public void setDemandExile() {setDemand(EXILE, 0, Do.NATURALIZE_HERE); Do.NATURALIZE_HERE.setup(evaluator, 0);}
 	public void setDemandQuest(Q_ q) {setDemand(NEWQUEST, q.ordinal(), null);}
 	

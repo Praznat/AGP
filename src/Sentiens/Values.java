@@ -11,7 +11,7 @@ import Game.Do.ClanAlone;
 import Sentiens.Law.Commandment;
 
 public class Values implements Defs {
-	private static M_[] wealthMems = new M_[] {M_.BIDASKSPRD, M_.INVORTRD, M_.STMOMENTUM, M_.LTMOMENTUM, M_.MARGIN, M_.DISCRATE};
+	private static M_[] wealthMems = new M_[] {M_.BIDASKSPRD, M_.STMOMENTUM, M_.LTMOMENTUM, M_.RISKPREMIUM};
 //	private static M_[] alignmentMems = new M_[] {M_.S_LOYALTY, M_.S_PATRIOTISM, M_.S_ZEAL};
 
 //	private static M_[] WPWeights = new M_[] {M_.S_MONEY,M_.S_POPULARITY,M_.S_COMBAT,M_.S_NVASSALS,};
@@ -41,7 +41,7 @@ public class Values implements Defs {
 		public String description(Clan POV);
 		public Q_ pursuit(Clan clan);
 		public ClanAlone doPursuit(Clan clan);
-		public Job getMinistry();
+		public Ministry getMinistry();
 //		public double contentBuyable(Clan assessor, int millet);
 		public int ordinal();
 	}
@@ -60,7 +60,7 @@ public class Values implements Defs {
 		@Override
 		public Q_ pursuit(Clan clan) {return Q_.NOTHING;}
 		@Override
-		public Job getMinistry() {return null;}
+		public Ministry getMinistry() {return null;}
 		@Override
 		public int ordinal() {return ordinal;}
 		@Override
@@ -70,10 +70,10 @@ public class Values implements Defs {
 		protected final M_ weighting;
 		protected final String desc;
 		protected final Q_ quest;
-		protected final Job ministry;
+		protected final Ministry ministry;
 		private int ordinal;
 		private ClanAlone doPursuit;
-		public AbstractValue(M_ w, String d, Q_ q, Job j) {
+		public AbstractValue(M_ w, String d, Q_ q, Ministry j) {
 			weighting = w;
 			desc = d;
 			quest = q;
@@ -90,7 +90,7 @@ public class Values implements Defs {
 		@Override
 		public Q_ pursuit(Clan clan) {return (quest != null ? quest : Q_.NOTHING);}
 		@Override
-		public Job getMinistry() {return ministry;}
+		public Ministry getMinistry() {return ministry;}
 		@Override
 		public int ordinal() {return ordinal;}
 		@Override
@@ -98,7 +98,7 @@ public class Values implements Defs {
 	}
 
 	private static abstract class TeachableValue extends ValuatableValue implements Teachable {
-		public TeachableValue(M_ w, String d, Q_ q, Job j) {super(w, d, q, j);}
+		public TeachableValue(M_ w, String d, Q_ q, Ministry j) {super(w, d, q, j);}
 		protected abstract M_[] relMems();
 		@Override
 		public void teach(Clan teacher, Clan student) {
@@ -108,7 +108,7 @@ public class Values implements Defs {
 		}
 	}
 	private static abstract class ValuatableValue extends AbstractValue implements Assessable {
-		public ValuatableValue(M_ w, String d, Q_ q, Job j) {super(w, d, q, j);}
+		public ValuatableValue(M_ w, String d, Q_ q, Ministry j) {super(w, d, q, j);}
 		@Override
 		public double compare(Clan POV, Clan A, Clan B) {
 			return compare(value(POV, A), value(POV, B));
@@ -135,10 +135,7 @@ public class Values implements Defs {
 		protected M_[] relMems() {return wealthMems;}
 		@Override
 		protected int value(Clan POV, Clan clan) {
-			int sum = 0;   for (int g = 0; g < Defs.numAssets; g++) {
-				int px = POV.myMkt(g).sellablePX(POV);
-				sum += clan.getAssets(g) * px;
-			}   return sum;
+			return (int) Math.min(clan.getNetAssetValue(POV), Integer.MAX_VALUE);
 		}
 	};
 	public static final Value INFLUENCE = new ValuatableValue(M_.S_POPULARITY, "Power - Influence", Q_.BUILDPOPULARITY, Job.VIZIER) {

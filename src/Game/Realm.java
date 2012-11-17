@@ -5,7 +5,7 @@ import Sentiens.Mem;
 import Sentiens.Values;
 import Sentiens.Values.Value;
 //import Sentiens.Sanc;
-import Shirage.Shire;
+import Shirage.*;
 import AMath.Calc;
 
 public class Realm {
@@ -50,8 +50,10 @@ public class Realm {
 		int[] order = Calc.randomOrder(popSize());
 		for (int i = 0; i < 1; i++) {
 			for (int p : order) {
-				if(true || population[p].myShire() == AGPmain.mainGUI.SM.getShire()) {population[p].pursue();}
-				//			population[p].QB.pursue();
+				population[p].pursue();
+			}
+			for (Shire s : shires) {
+				s.newDay();
 			}
 		}
 	}
@@ -98,7 +100,12 @@ public class Realm {
 		for (int x = 0; x < H; x++) {
 			for (int y = 0; y < V; y++) {
 				shires[x + y*H] = new Shire(x, y);
-				shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*2 + (y%2), y*2 + 1));
+				if (AGPmain.mainGUI!=null && AGPmain.mainGUI.MD!=null) {
+					shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*2 + (y%2), y*2 + 1));
+				}	else {
+					Plot p = new Plot(0.5); p.makeLand();
+					shires[x + y*H].setLinkedPlot(p);
+				}
 			}
 		}
 	}
