@@ -1,24 +1,47 @@
 package Game;
 
+import Questing.PropertyQuests.LaborQuest;
+import Questing.*;
 import Sentiens.Clan;
-import Sentiens.Questy;
 
 public abstract class Logic {
 	protected static final int BUY = 0;
 	protected static final int SELL = 1;
 	protected static final int E = Defs.E;
-	
+	protected static final int[] tmpInventory = new int[Defs.numGoods];
 	
 	
 	protected Logic[] subLogics;
-	protected int[] X = new int[Questy.WORKMEMORY]; //one for each logic
+	protected int[] X = new int[LaborQuest.WORKMEMORY]; //one for each logic
 	
-
+	public abstract Logic replica();
+	public static Logic[] replicate(Logic[] others) {
+		Logic[] result = new Logic[others.length];
+		for (int i= 0; i < result.length; i++) {result[i] = others[i].replica();}
+		return result;
+	}
 	
 	public boolean sufficient(Clan doer) {return false;} //dont ask from here, use workmemo
 	
-	public int[] getBest(Clan doer, int type) {X[0] = 0; X[1] = E; return X;}
-	
+	public int[] getTheBest(Clan doer, int type) {
+		if (type == BUY) {setupTempInventory(doer);}
+		return getBest(doer, type);
+	}
+	protected abstract int[] getBest(Clan doer, int type);
+	protected void setupTempInventory(Clan doer) {
+		for (int i = 0; i < tmpInventory.length; i++) {tmpInventory[i] = 0;}
+		QStack qs = doer.MB.QuestStack;
+		if (qs.isEmpty()) {return;}
+		Quest q = qs.peek();
+		if (!(q instanceof LaborQuest)) {return;}
+		LaborQuest lq = (LaborQuest) q;
+		int[] wm = lq.getWM();   int[]wmx = lq.getWMX();
+		for (int i = 1; i < wm.length; i++) {
+			int g = Math.abs(wm[i]);
+			if(g == E) {return;}
+			tmpInventory[g] = wmx[i];
+		}
+	}
 
 	public void addNodesToAll(Labor a) {
 		if (subLogics != null) {
@@ -39,6 +62,17 @@ public abstract class Logic {
 		for (int i = 0; i < output.length; i++) {output[i] = new Node(inputs[i]);}
 		return output;
 	}
+	protected boolean searchTmp(int g) {
+		if (tmpInventory[g] > 0) {tmpInventory[g]--; return true;} else {return false;}
+	}
+	
+	protected void deleteFromX(int plc) {
+		for (int i = plc; i < X.length; i++) {
+			int next = X[i+1];
+			X[i] = next;
+			if (next == E) {break;}
+		}
+	}
 	
 }
 
@@ -51,7 +85,8 @@ class And extends Logic {
 			if(subLogics[i].sufficient(doer) == false) {return false;}
 		}   return true;
 	}
-	public int[] getBest(Clan doer, int type) {
+	@Override
+	protected int[] getBest(Clan doer, int type) {
 		X[0] = 0;   int p = 1;   int k;
 		for (int i = 0; i < subLogics.length; i++) {
 			int[] tmp = subLogics[i].getBest(doer, type);
@@ -60,6 +95,8 @@ class And extends Logic {
 		}      X[p] = E;
 		return X;
 	}
+	@Override
+	public Logic replica() {return new And(replicate(subLogics));}
 
 }
 
@@ -72,8 +109,9 @@ class Or extends Logic {
 			if(subLogics[i].sufficient(doer) == true) {return true;}
 		}   return false;
 	}
-	
-	public int[] getBest(Clan doer, int type) {
+
+	@Override
+	protected int[] getBest(Clan doer, int type) {
 		X[0] = E;   int k = 0;
 		for (int i = 0; i < subLogics.length; i++) {
 			int[] tmp = subLogics[i].getBest(doer, type);
@@ -83,7 +121,9 @@ class Or extends Logic {
 		}   X[k] = E;
 		return X;
 	}
-	
+
+	@Override
+	public Logic replica() {return new Or(replicate(subLogics));}
 
 }
 
@@ -92,8 +132,8 @@ class Mult extends Logic {
 	public Mult(int m, Logic subs) {mult = m; subLogics = new Logic[] {subs};}
 	public Mult(int m, int subs) {mult = m; subLogics = L(subs);}
 	
-	
-	public int[] getBest(Clan doer, int type) {
+	@Override
+	protected int[] getBest(Clan doer, int type) {
 		int p = 1;   int k;
 		int[] tmp = subLogics[0].getBest(doer, type);
 		X[0] = (int) Math.min(mult * (long) tmp[0], Integer.MAX_VALUE);
@@ -103,27 +143,41 @@ class Mult extends Logic {
 		return X;
 	}
 	
-
+	@Override
+	public Logic replica() {return new Mult(mult, replicate(subLogics)[0]);}
 	
 }
 
 class Node extends Logic {
 	int node;
 	public Node(int input) {node = input;}
-	private int Cost(Clan doer) {return doer.myMkt(node).buyablePX(doer);}
+	private int Cost(Clan doer) {
+		if (tmpInventory[node] > 0) {return 0;}
+		return doer.myMkt(node).buyablePX(doer);
+	}
 	private int Value(Clan doer) {return doer.myMkt(node).sellablePX(doer);}
-	public int[] getBest(Clan doer, int type) {
+	@Override
+	protected int[] getBest(Clan doer, int type) {
 		switch (type) {
 		case BUY: X[0] = Cost(doer); break;
 		case SELL: X[0] = Value(doer); break;
 		default: break;
 		}
-		X[1] = node;   X[2] = E;   return X;
+		X[1] = node;//searchTmp(node) ? E : node;
+		X[2] = E;   return X;
 	}
+	@Override
 	public void addNodesToAll(Labor a) {a.addToAll(node);}
+
+	@Override
+	public Logic replica() {return new Node(node);}
 
 }
 
 class Nada extends Logic {
 	//just leave empty, inherited from Logic
+	@Override
+	protected int[] getBest(Clan doer, int type) {X[0] = 0; X[1] = E; return X;}
+	@Override
+	public Logic replica() {return new Nada();}
 }

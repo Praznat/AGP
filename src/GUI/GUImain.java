@@ -25,7 +25,6 @@ public class GUImain extends JFrame {
 		this.getLayeredPane().add(MainPanel, new Integer(0));
 	    this.setSize(WWID, WHGT);
 	    this.setVisible(true);
-	    System.out.println();
 	}
 
 	public void repaintEverything() {

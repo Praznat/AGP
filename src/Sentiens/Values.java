@@ -88,6 +88,8 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return desc;}
 		@Override
+		public String toString() {return description(null);}
+		@Override
 		public Q_ pursuit(Clan clan) {return (quest != null ? quest : Q_.NOTHING);}
 		@Override
 		public Ministry getMinistry() {return ministry;}

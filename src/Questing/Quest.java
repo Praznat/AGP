@@ -1,6 +1,7 @@
 package Questing;
 
-import Avatar.AvatarConsole;
+import AMath.Calc;
+import Avatar.*;
 import Defs.Q_;
 import GUI.APopupMenu;
 import Game.*;
@@ -11,7 +12,7 @@ import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.PowerStartingQuests.IndPowerQuest;
 import Questing.RomanceQuests.BreedQuest;
-import Questing.PropertyQuests.BuildWealthQuest;
+import Questing.PropertyQuests.*;
 import Sentiens.*;
 
 public abstract class Quest {
@@ -70,20 +71,27 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			Clan[] pop = Me.myShire().getCensus();
-			avatarConsole.choices.clear();
-			avatarConsole.getComparator().setPOV(Me);
-			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().RESPECT_ORDER);
-			ClanOnClan action;
-			for (Clan c : pop) {
-				if(meetsReq(Me, c)) {
-					action = Do.chooseTarget(c);
-					action.setup(Me, c, 0);
-					if (avatarConsole.choices.containsValue(action)) {continue;}
-					avatarConsole.choices.put(c, action);
+			avatarConsole.showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+				@Override
+				public void call(Object arg) {
+					FindTargetAbstract.this.setTarget((Clan) arg);
+					Me.MB.finishQ();
 				}
-			}
-			new APopupMenu(avatarConsole, avatarConsole.choices.values());
+			});
+//			Clan[] pop = Me.myShire().getCensus();
+//			avatarConsole.choices.clear();
+//			avatarConsole.getComparator().setPOV(Me);
+//			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().RESPECT_ORDER);
+//			ClanOnClan action;
+//			for (Clan c : pop) {
+//				if(meetsReq(Me, c)) {
+//					action = Do.chooseTarget(c);
+//					action.setup(Me, c, 0);
+//					if (avatarConsole.choices.containsValue(action)) {continue;}
+//					avatarConsole.choices.put(c, action);
+//				}
+//			}
+//			new APopupMenu(avatarConsole, avatarConsole.choices.values());
 		}
 	}
 

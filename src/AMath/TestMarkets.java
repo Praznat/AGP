@@ -50,7 +50,9 @@ public class TestMarkets extends Testing {
 	}
 	public static void normalMarketFunctions(Shire shire, Clan a, Clan b) {
 		produceOne(setupClanForWork(shire, a, Job.Settle), 0, 0, Defs.land, 1);
+		produceOne(setupClanForWork(shire, a, Job.Settle), 0, 0, Defs.land, 1);
 		produceOne(setupClanForWork(shire, a, Job.Farm), Defs.rentland, 1, Defs.millet, 3);
+		produceOne(setupClanForWork(shire, b, Job.Farm), Defs.rentland, 1, Defs.millet, 3);
 		produceOne(setupClanForWork(shire, b, Job.HerdD), 0, 0, Defs.donkey, 1);
 //		int donkeyBestOffer = shire.getMarket(Defs.donkey).bestOffer();
 //		produceOne(setupClanForWork(shire, b, Job.HerdD), 0, 0, Defs.donkey, 1);
@@ -88,10 +90,11 @@ public class TestMarkets extends Testing {
 		for(int i = 1; expOut[i] != Defs.E; i++) {outG = expOut[i];}
 		if(expOut[0] <= expIn[0]) {inN = 0; outN = 0;}
 		final Shire shire = doer.myShire();
+		final int rentInG = Assets.getRentGood(inG);
 		final int rentOutG = Assets.getRentGood(outG);
 		final int prevOutAskSz = shire.getMarket(outG).getAskSz();
+		final int prevInRentSz = rentInG >= 0 ? shire.getMarket(rentInG).getAskSz() : 0;
 		final int prevOutRentSz = rentOutG >= 0 ? shire.getMarket(rentOutG).getAskSz() : 0;
-		final int prevDoerOutN = outG < Defs.numAssets ? doer.getAssets(outG) : 0;
 		final MktAbstract inMarket = shire.getMarket(inG);
 		final boolean inputIsRental = inMarket instanceof RentMarket;
 		final int prevInBidSz = inMarket.getBidSz();
@@ -101,6 +104,7 @@ public class TestMarkets extends Testing {
 //		affirm(inMarket.getAskSz() == prevInAskSz);
 //		affirm(((MktO)inMarket).findNumberOf(doer, Entry.OFFERDIR) == prevMyAsksForInG + inG);
 		doPursueUntilConsumed(doer, true);
+		if (inputIsRental) {affirm(((RentMarket)inMarket).isBestPlaceCorrect());}
 		if (inN > 0) {
 			affirm(inMarket.getBidSz() == prevInBidSz);
 			if (inputIsRental) {
@@ -110,12 +114,21 @@ public class TestMarkets extends Testing {
 				affirm(((MktO)inMarket).findNumberOf(doer, Entry.OFFERDIR) == prevMyAsksForInG);
 			}
 		}
+		if(rentInG>0)System.out.println(( (RentMarket) shire.getMarket(rentInG)).isBestPlaceCorrect());
 		if(rentOutG>0)System.out.println(( (RentMarket) shire.getMarket(rentOutG)).isBestPlaceCorrect());
+		final int prevDoerOutN = outG < Defs.numAssets ? doer.getAssets(outG) : 0;
 		doPursueUntilProduced(doer, true);
 		//food is consumed so this will definitely need to change... meat is already being consumed during learn process
 		if (outG < Defs.numAssets && outG!=Defs.meat) affirm(doer.getAssets(outG) == prevDoerOutN + outN * (outG==Defs.millet ? FoodMarket.MILLETVAL: 1));
 		
 		if (!(shire.getMarket(outG) instanceof FoodMarket)) {affirm(shire.getMarket(outG).getAskSz() == prevOutAskSz + outN);}
+		if (rentInG >= 0) {
+			final RentMarket rMarket = (RentMarket) shire.getMarket(rentInG);
+			affirm(rMarket.getAskSz() == prevInRentSz - inN);
+			affirm(rMarket.bestOffer() <= shire.getMarket(inG).bestOffer());
+			affirm(rMarket.isBestPlaceCorrect());
+			rMarket.printBaikai();
+		}
 		if (rentOutG >= 0) {
 			final RentMarket rMarket = (RentMarket) shire.getMarket(rentOutG);
 			affirm(rMarket.getAskSz() == prevOutRentSz + outN);
@@ -125,6 +138,31 @@ public class TestMarkets extends Testing {
 		}
 		
 	}
+	
+	public static void testLogics() {
+		reset();
+		Clan clan = testRealm.getClan(0);
+		Shire shire = clan.myShire();
+		((MktO)shire.getMarket(Defs.donkey)).placeOffer(clan, 10);
+		((MktO)shire.getMarket(Defs.bovad)).placeOffer(clan, 5);
+		int[] expIn = ((Labor)Job.Butcher).expIn(clan);
+		affirm(expIn[0] == 5 && expIn[1] == Defs.bovad && expIn[2] == Defs.E);
+
+		reset();
+		clan = testRealm.getClan(0);
+		shire = clan.myShire();
+		clan = setupClanForWork(shire, clan, Job.Butcher);
+		clan.MB.newQ(new LaborQuest(clan));
+		((MktO)shire.getMarket(Defs.bovad)).placeOffer(clan, 5);
+		((MktO)shire.getMarket(Defs.donkey)).placeOffer(clan, 10);
+		clan.pursue();
+		clan.pursue();
+		clan.MB.QuestStack.peek();
+		((MktO)shire.getMarket(Defs.donkey)).liftOffer(clan);
+		expIn = ((Labor)Job.Butcher).expIn(clan);
+		affirm(expIn[0] == 0 && expIn[1] == Defs.donkey && expIn[2] == Defs.E);
+	}
+	
 	private static Clan setupClanForWork(Shire s, Clan clan, Act act) {
 		clan.setJob(new Job(act.getDesc() + " Pro", act));
 		clan.MB.newQ(new LaborQuest(clan));

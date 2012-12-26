@@ -1,6 +1,9 @@
 package Questing;
 
+import java.util.ArrayList;
+
 import AMath.Calc;
+import Avatar.SubjectivelyComparable;
 import Defs.P_;
 import Descriptions.XWeapon;
 import GUI.APopupMenu;
@@ -44,7 +47,7 @@ public class PropertyQuests {
 		@Override
 		public void avatarPursue() {
 			switch (stage) {
-			case 0: avatarChooseAct();
+			case 0: avatarChooseAct(); break; //avatarDoInputs called by avatarChooseAct
 			case 1: avatarDoInputs(); break;
 			case 2: doWork(); break;
 			case 3: doOutputs(); break;
@@ -108,26 +111,34 @@ public class PropertyQuests {
 				final double expIn = curAct.expIn(Me)[0];
 				double PL = expOut - expIn; //cuz of weird shit with MAX_INTEGER
 				PL = Me.confuse(PL);
-				System.out.println(Me + " " + PL + "=" + expOut + "-" + expIn + (expIn < expOut));
+//				System.out.println(Me + " " + PL + "=" + expOut + "-" + expIn + (expIn < expOut));
 				final int expTime = 1;
 				PL /= expTime;
 				if (PL > bestPL) {bestPL = (int)Math.round(PL); bestAct = curAct;}
 			}
-			System.out.println(bestPL);
+//			System.out.println(bestPL);
 			return bestAct;
 		}
 		private void avatarChooseAct() {
-			avatarConsole.choices.clear();
-			avatarConsole.getComparator().setPOV(Me);
-			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().ACT_PROFIT_ORDER);
-			ClanAlone action;
-			for(Act act : Me.getJobActs()) {
-				action = Do.setChosenAct((Labor) act);
-				action.setup(Me);
-				avatarConsole.choices.put(act, action);
-			}
-			new APopupMenu(avatarConsole, avatarConsole.choices.values());
-			stage++;
+//			avatarConsole.choices.clear();
+//			avatarConsole.getComparator().setPOV(Me);
+//			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().ACT_PROFIT_ORDER);
+//			ClanAlone action;
+//			for(Act act : Me.getJobActs()) {
+//				action = Do.setChosenAct((Labor) act);
+//				action.setup(Me);
+//				avatarConsole.choices.put(act, action);
+//			}
+//			new APopupMenu(avatarConsole, avatarConsole.choices.values());
+			avatarConsole.showChoices(Me, Me.getJobActs(), SubjectivelyComparable.Type.ACT_PROFIT_ORDER, new Calc.Listener() {
+				@Override
+				public void call(Object arg) {
+					Quest q = Me.MB.QuestStack.peek();
+					if (q instanceof LaborQuest) {((LaborQuest) q).setChosenAct((Labor) arg);}
+					stage++;
+					avatarDoInputs();
+				}
+			});
 		}
 		private void chooseAct() {
 			setChosenAct(compareTrades());

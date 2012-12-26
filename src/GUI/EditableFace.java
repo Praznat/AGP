@@ -1,6 +1,7 @@
 package GUI;
 
 import java.awt.event.*;
+import java.awt.image.Raster;
 
 public class EditableFace extends Face implements MouseListener, MouseMotionListener {
 	private boolean dragging;
@@ -21,16 +22,24 @@ public class EditableFace extends Face implements MouseListener, MouseMotionList
 		selectedparte = k;
 	}
 
+	public void setMsplc(MouseEvent e) {
+		if (offscreen == null) {return;}
+		final Raster r = offscreen.getRaster();
+		msplc[0] = e.getX()*r.getWidth()/this.getWidth() + x;
+		msplc[1] = e.getY()*r.getHeight()/this.getHeight() + y;
+		System.out.println(msplc[0] +", "+ msplc[1]);
+	}
+	
 	public void mouseMoved(MouseEvent e) {
 		if(!dragging){
-			msplc[0] = e.getX(); msplc[1] = e.getY();
+			setMsplc(e);
 			paintFace();
 		}
 	}
 
     public void mouseDragged(MouseEvent e) {
     	if (dragging) {
-    		msplc[0] = e.getX(); msplc[1] = e.getY();
+    		setMsplc(e);
 	    	partez[selectedparte].dragged();
 	    	paintFace();
     	}
@@ -50,7 +59,7 @@ public class EditableFace extends Face implements MouseListener, MouseMotionList
     	}
     	dragging = true;
     	partez[NASO].megafix();
-    	msplc[0] = e.getX(); msplc[1] = e.getY();
+    	setMsplc(e);
     	paintFace();
     }
 

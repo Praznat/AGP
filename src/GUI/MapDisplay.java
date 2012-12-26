@@ -253,10 +253,6 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 	public int getTmpY() {return 0;} //return tmpY;}
 	
     public void mousePressed(MouseEvent e) {
-    	if (e.getX() < 20 && e.getY() < 20) {
-    		new APopupMenu(this, Do.StepOnce, Do.ShowRandomGoblin, Do.ShowRandomShire);
-    		return;
-    	}
     	tmpX = Math.min(Math.max(tmpX + e.getX() - hsX(), 0), maxW - getWidth());
     	tmpY = Math.min(Math.max(tmpY + e.getY() - hsY(), 0), maxH - getHeight());
     	for (int i = 0; i < plots.length; i++) {plots[i].setGradients();}

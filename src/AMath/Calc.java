@@ -425,6 +425,10 @@ public class Calc {
 		public boolean check();
 	}
 	
+	public static interface Listener {
+		public void call(Object arg);
+	}
+	
 }
 
 

@@ -1,12 +1,9 @@
 package Game;
 
-import Questing.PropertyQuests.LaborQuest;
-import Sentiens.Clan;
-import Sentiens.GobLog;
 import AMath.Calc;
-import Avatar.SubjectivelyComparable;
-import Defs.M_;
-import Defs.P_;
+import Defs.*;
+import Questing.PropertyQuests.LaborQuest;
+import Sentiens.*;
 
 public class Labor implements Act, Defs {
 
@@ -66,7 +63,7 @@ public class Labor implements Act, Defs {
 
 	public int[] expIn(Clan doer) {
 		// {fill txpL with sum of expPrices, determined inGs, Es}
-		int[] tmp = input.getBest(doer, Logic.BUY);
+		int[] tmp = input.getTheBest(doer, Logic.BUY);
 		int k = 0;
 		while (tmp[k] != E) {
 			tmpIn[k] = tmp[k++];

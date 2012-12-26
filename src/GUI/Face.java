@@ -119,6 +119,8 @@ public class Face extends JPanel {
 		partez[MIRO].paintPart(g);
 		partez[NASO].paintPart(g);
 		partez[NASO].megafix();
+		g.setColor(Color.GREEN);
+		g.fillOval(msplc[0]-1, msplc[1]-1, 3, 3);
 		//if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
 		repaint();

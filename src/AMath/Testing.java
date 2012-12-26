@@ -3,6 +3,7 @@ package AMath;
 import Defs.*;
 import Descriptions.XWeapon;
 import Game.*;
+import Game.Do.SetupableThing;
 import Government.Order;
 import Markets.*;
 import Questing.PropertyQuests.LaborQuest;
@@ -30,7 +31,10 @@ public class Testing {
 	public static void doAllTests() {
 		System.out.println("starting tests");
 		
+		TestMarkets.testLogics();
+		
 		TestMarkets.normalMarketFunctions();
+		
 //		workInputManagement();
 //		breeding();
 //		ideologyInteractions();
@@ -94,4 +98,6 @@ public class Testing {
 		}
 		
 	}
+	
+
 }

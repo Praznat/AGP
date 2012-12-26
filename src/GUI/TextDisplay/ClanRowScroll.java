@@ -35,7 +35,7 @@ public class ClanRowScroll extends TableRowScroll {
 			}
 			x += widths[col];
 		}
-		paintComponents(g);
+		if (g != null) {paintComponents(g);}
 	}
 
 	

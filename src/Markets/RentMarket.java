@@ -1,6 +1,5 @@
 package Markets;
 
-import AMath.Calc;
 import Defs.M_;
 import Descriptions.Naming;
 import Sentiens.Clan;
@@ -8,8 +7,7 @@ import Shirage.Shire;
 
 
 public class RentMarket extends MktO {
-	private int bestplc = offerlen; //place of first unused offer
-
+	private int bestplc;
 	
 	public RentMarket(int ggg, Shire h) {super(ggg, h);} 
 	
@@ -89,8 +87,9 @@ public class RentMarket extends MktO {
 	public void removeRental(Clan trader) {
 		int k = findOffer(trader);
 		if(k != -1) {
-			removeOffer(k);
 			super.removeOffer(k);
+			if(k == bestplc) {findNextUnused();}
+			else if (k < bestplc) {bestplc--;}
 		}
 		else {
 			Log.warning(trader.getNomen() + " ERROR removeOffer(ENTRY NOT FOUND)");

@@ -17,7 +17,15 @@ public class Job implements Defs, Stressor.Causable {
 	private static Logic AND(int... L) {return new And(Logic.L(L));}
 	private static Logic OR(Logic... L) {return new Or(L);}
 	private static Logic OR(int... L) {return new Or(Logic.L(L));}
-	private static Logic M(int n, int L) {return new Mult(n, L);}
+	private static Logic M(int n, int L) {
+		int[] gs = new int[n]; for (int i = 0; i < gs.length; i++) {gs[i] = L;}
+		return AND(gs);
+	}
+	private static Logic M(int n, Logic L) {
+		Logic[] ls = new Logic[n]; for (int i = 0; i < ls.length; i++) {ls[i] = L.replica();}
+		return AND(ls);
+	}
+//	private static Logic M(int n, int L) {return new Mult(n, L);}
 	private static Logic I(int i) {return new Node(i);}
 	private static Logic N() {return new Nada();}
 	

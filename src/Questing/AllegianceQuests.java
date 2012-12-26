@@ -2,10 +2,12 @@ package Questing;
 
 import java.util.HashMap;
 
+import AMath.Calc;
+import Avatar.SubjectivelyComparable;
 import Defs.M_;
 import Game.*;
 import Government.Order;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.*;
 import Sentiens.Clan;
 
 public class AllegianceQuests {
@@ -21,7 +23,7 @@ public class AllegianceQuests {
 			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {
 				// desert ?
 			}
-			Ministry proposedMinistry = Me.getBoss().FB.randomValueInPriority().getMinistry();
+			Ministry proposedMinistry = getMinistryProposal(Me);
 			Service proposedService = proposedMinistry.getService();
 			// first inquire if proposedMinistry can pay more than current job
 			if (Me.getJob() != Job.NOBLE && proposedService.estimateProfit(Me) > Me.getProfitEMA()) {
@@ -32,6 +34,15 @@ public class AllegianceQuests {
 			proposedService.doit(Me); // do it even if it's not your job... this is ALLEGIANCE Quest
 		}
 	}
+	private static Ministry getMinistryProposal(Clan clan) {
+		Ministry proposedMinistry = clan.getBoss().FB.randomValueInPriority().getMinistry();
+		if (proposedMinistry == Job.NOBLE) {
+			Clan boss = clan.getBoss();
+			if (boss != clan) {return getMinistryProposal(boss);}
+			else {} //TODO handle what to do when top proposal is just Noble... same as above ... delete one or the other
+		}
+		return proposedMinistry;
+	}
 
 	public static class FindNewMaster extends Quest {
 		private final HashMap<Clan, Double> respectMemo = new HashMap<Clan, Double>();
@@ -39,7 +50,22 @@ public class AllegianceQuests {
 		public FindNewMaster(Clan P) {
 			super(P);
 		}
-
+		@Override
+		public String description() {return "Find new master";}
+		
+		@Override
+		public void avatarPursue() {
+			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
+			avatarConsole.showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+				@Override
+				public void call(Object arg) {
+					Clan clan = (Clan) arg;
+					if (clan == Me && Me.myOrder() == null) {Order.createBy(Me); success(Me);}
+					else {Me.join(clan);   success(clan);}
+				}
+			});
+		}
+		
 		@Override
 		public void pursue() {
 			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
