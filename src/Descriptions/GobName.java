@@ -190,7 +190,7 @@ public class GobName {
 		String p1 = SYL1[N[0]], p2 = SYL2[N[1]].get(gender);
 		
 		String suffix = "";
-		if (gender == Defs.FEMALE) {
+		if (gender == Misc.FEMALE) {
 			switch ((fn * ln) % 3) {
 			case 0: suffix += "a"; break;
 			case 1: suffix += "i"; break;
@@ -208,7 +208,7 @@ public class GobName {
 		private final String n1, n2;
 		BiName(String s) {n1=s; n2=s;}
 		BiName(String s1, String s2) {n1=s1; n2=s2;}
-		protected String get(boolean gender) {return gender == Defs.FEMALE ? n1 : n2;}
+		protected String get(boolean gender) {return gender == Misc.FEMALE ? n1 : n2;}
 	}
 	
 	public static String fullName(Clan goblin) {return fullName(goblin, goblin.getFirstName(), 0);}

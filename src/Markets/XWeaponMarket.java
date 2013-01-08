@@ -1,6 +1,6 @@
 package Markets;
 
-import Defs.Defs;
+import Defs.Misc;
 import Descriptions.Naming;
 import Descriptions.XWeapon;
 import Game.*;
@@ -12,7 +12,7 @@ public class XWeaponMarket extends MktO {
 	private short tmpXW;
 
 	public XWeaponMarket(Shire h) {
-		g = Defs.xweapon;   //this is where its overridden
+		g = Misc.xweapon;   //this is where its overridden
 		Offers = new EntryB[STARTSZ];   //this is where its overridden
 		Bids = new EntryB[STARTSZ];   //this is where its overridden
 		for(int i = 0; i < STARTSZ; i++) {

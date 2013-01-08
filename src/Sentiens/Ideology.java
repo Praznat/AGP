@@ -8,7 +8,7 @@ import Ideology.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Law.PersonalCommandment;
 
-public class Ideology implements Defs {
+public class Ideology implements Misc {
 
 	private static final int NUMPRESTS = P_.length();
 	private static final int NUMBEHS = M_.length();
@@ -342,5 +342,4 @@ public class Ideology implements Defs {
 	}
 	
 }
-
 

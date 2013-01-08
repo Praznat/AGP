@@ -21,7 +21,7 @@ public class MktO extends MktAbstract {
 	public static final int NOBIDDERCANPAY = -1;
 	
 	private static final int TOO_MANY_TRANSACTIONS_THRESH = 10;
-	private static final int reportG = Defs.poop;
+	private static final int reportG = Misc.poop;
 	
 	protected String report = "";
 	
@@ -54,9 +54,9 @@ public class MktO extends MktAbstract {
 		return Calc.roundy((double)val * RATES[doer.useBeh(M_.RISKPREMIUM)]);
 	}
 	
-	public int lastPrice() {return (smaVol() > 0 ? LastPX : -1);}
-	public int stAvg() {return (smaVol() > 0 ? STAvg : -1);}
-	public int ltAvg() {return (smaVol() > 0 ? LTAvg : -1);}
+	public int lastPrice() {return (hasTradedEver ? LastPX : -1);}
+	public int stAvg() {return (hasTradedEver ? STAvg : -1);}
+	public int ltAvg() {return (hasTradedEver ? LTAvg : -1);}
 	public int getBidSz() {return bidlen;}
 	public int getAskSz() {return offerlen;}
 	public int bestOffer() {
@@ -81,12 +81,13 @@ public class MktO extends MktAbstract {
 		STAvg = (int) Math.round(0.5 * p + 0.5 * STAvg);
 		MaxPX = (p > MaxPX ? p : MaxPX);
 		MinPX = (p < MinPX ? p : MinPX);
-		periodVol++;
+		periodVol++; // -1 -> to 0 on first trade ever... :S cheapskate
+		hasTradedEver = true;
 	}
 
 	public int buyablePX(Clan buyer) {
 		int px = bestOffer();
-		return px <= buyer.getAssets(Defs.millet) ? px : NOASK;
+		return px <= buyer.getAssets(Misc.millet) ? px : NOASK;
 	}
 	public int sellablePX(Clan seller) {
 		return estFairOffer(seller);
@@ -96,7 +97,7 @@ public class MktO extends MktAbstract {
 		return (int) Math.round(estFairOffer(clan) / r);
 	}
 	public void buyFair(Clan buyer) {
-		int px = Math.min(estFairBid(buyer), buyer.getAssets(Defs.millet));
+		int px = Math.min(estFairBid(buyer), buyer.getAssets(Misc.millet));
 		addReport(buyer.getNomen() + " tries to buy " + Naming.goodName(g) + " at fair price of " + px);
 		if (px == 0) return;
 		placeBid(buyer, px);
@@ -169,12 +170,15 @@ public class MktO extends MktAbstract {
 	protected void alterWMG(Clan buyer, int n) {
 		QStack qs = buyer.MB.QuestStack; int sz = qs.size();
 		if (sz > 0) {
-			Quest q = qs.peek();
-			if (accountForGood(q, n)) {return;}
-			if (sz > 1) {
-				q = qs.peekUp();  //might as well check one quest up
+			for (Quest q : qs) {
 				if (accountForGood(q, n)) {return;}
 			}
+//			Quest q = qs.peek();
+//			if (accountForGood(q, n)) {return;}
+//			if (sz > 1) {
+//				q = qs.peekUp();  //might as well check one quest up
+//				if (accountForGood(q, n)) {return;}
+//			}
 		}
 		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not GoodsAcquirable quest
 	}
@@ -302,17 +306,17 @@ public class MktO extends MktAbstract {
 	}
 	protected int findBid(Clan doer) {
 		for(int i = 0; i < bidlen; i++) {
-			if(Bids[i].trader.equals(doer)) {return i;}
+			if(Bids[i].trader == doer) {return i;}
 		}  return -1;
 	}
 	protected int findOffer(Clan doer) {
 		for(int i = 0; i < offerlen; i++) {
-			if(Offers[i].trader.equals(doer)) {return i;}
+			if(Offers[i].trader == doer) {return i;}
 		}  return -1;
 	}
 
 	public void placeBid(final Clan doer, final int px){
-		if(px >= bestOffer()) {liftOffer(doer); return;}
+		if(px >= bestOffer()) {liftOffer(doer); return;} // redundant!!
 		checkPriceLegality(doer, px);
 		doer.addReport(GobLog.limitOrder(g, px, true));
 		addReport(doer.getNomen() + " places bid for " + Naming.goodName(g) + " at " + px);
@@ -367,6 +371,16 @@ public class MktO extends MktAbstract {
 			Offers = tmp;
 		}
 	}
+	public Entry alterEntry(Entry entry, int dir, int newPx) {
+		Entry[] V = dir == Entry.BIDDIR ? Bids : (dir == Entry.OFFERDIR ? Offers : null);
+		for (int plc = 0; plc < V.length; plc++) {
+			if (entry == V[plc]) {
+				int newplc = chgEntry(plc, newPx, V, dir);
+				return V[newplc];
+			}
+		}
+		return null;
+	}
 	protected int vchg(int plc, int px, Entry[] V, int dir) {
 		int newplc = findPlcInV(px, V, (dir>0?offerlen:bidlen), dir);
 		Clan oldie = V[plc].trader;
@@ -414,7 +428,7 @@ public class MktO extends MktAbstract {
 		removeBids(i);   removeOffers(i);
 
 		//finish day stuff
-		if (periodVol > TOO_MANY_TRANSACTIONS_THRESH) {
+		if (getPeriodVol() > TOO_MANY_TRANSACTIONS_THRESH) {
 			System.out.println("TOO MANY MARKET REPORTS... INF LOOP?   " + report);
 		}
 	}

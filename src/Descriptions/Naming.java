@@ -5,7 +5,7 @@ import Defs.*;
 import Game.*;
 import Sentiens.Clan;
 
-public class Naming implements Defs {
+public class Naming implements Misc {
 	
 	public static String randShireName(int s) {
 		String FP[] = new String[AGPmain.shireFPLen];

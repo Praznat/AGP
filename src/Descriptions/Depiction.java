@@ -1,6 +1,6 @@
 package Descriptions;
 
-import Defs.Defs;
+import Defs.Misc;
 import Government.Order;
 import Shirage.Shire;
 
@@ -30,8 +30,8 @@ public class Depiction {
 	
 	private String translate(byte b1, byte b2, byte t) {
 		if (t == SHIRE) return Shire.getName(b1, b2);
-		else if (t == ORDERFEMALE || t == ORDERMALE) return Order.getName(b1, b2, t == ORDERFEMALE ? Defs.FEMALE : Defs.MALE);
-		else return GobName.firstName(b1, b2, t == FEMALE ? Defs.FEMALE : Defs.MALE);
+		else if (t == ORDERFEMALE || t == ORDERMALE) return Order.getName(b1, b2, t == ORDERFEMALE ? Misc.FEMALE : Misc.MALE);
+		else return GobName.firstName(b1, b2, t == FEMALE ? Misc.FEMALE : Misc.MALE);
 	}
 
 	private String subject() {return translate(subject1, subject2, subjectType);}

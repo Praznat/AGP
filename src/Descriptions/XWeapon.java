@@ -1,7 +1,7 @@
 package Descriptions;
 
 import AMath.Calc;
-import Defs.Defs;
+import Defs.Misc;
 import Game.AGPmain;
 
 public class XWeapon {
@@ -16,8 +16,8 @@ public class XWeapon {
 	
 	public static short craftNewWeapon(int wtype, int skill) {
 		short result = (short) (AGPmain.rand.nextInt() << 6);
-		if (wtype == Defs.sword) {result = Calc.setBitPart(result, 0, 1, 1);}
-		else if (wtype == Defs.mace) {result = Calc.setBitPart(result, 0, 1, 0);}
+		if (wtype == Misc.sword) {result = Calc.setBitPart(result, 0, 1, 1);}
+		else if (wtype == Misc.mace) {result = Calc.setBitPart(result, 0, 1, 0);}
 		int rarety = 0;
 		final int denom = 11;
 		for (int i = 0; i < 5; i++) {

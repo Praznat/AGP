@@ -7,7 +7,7 @@ import Questing.ExpertiseQuests;
 import Questing.Wealth.LaborQuest;
 import Sentiens.Clan;
 
-public class Labor implements Act, Defs {
+public class Labor implements Act, Misc {
 
 	private static final int MAXACTS = 10; // max acts in a job
 
@@ -79,8 +79,8 @@ public class Labor implements Act, Defs {
 		return doer.confuse((double)this.expOut(doer)[0] - (double)this.expIn(doer)[0]);
 	}
 
+	/** fill WORKMEMO with allPossibleInputs */
 	public void storeAllInputsInWM(LaborQuest lq) {
-		// fill WORKMEMO with allPossibleInputs
 		for (int i = 0; i < allPossibleInputs.length; i++) {
 			lq.setWM(allPossibleInputs[i], i);
 		}

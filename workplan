@@ -2,12 +2,16 @@ WORKPLAN
 
 Stuff to do:
 
+BUGFIX bid > ask sometimes..?
+subjective knowledgequest for shire allegiance is unusable for ppl of different order than observer
+
 map display different stuff (trade routes, orders, etc)
 
 allegiance: Order legacy, Order treasury(wealth), Order domain(might), Order library(knowledge)
 *Order must be at least certain size OR control at least one shire before it can have its own legacy, library, etc
 *until then, those things refer to order leader's legacy, home shire's library, etc
 
+BUGS
 hungry goblins' conversion to savage should be temporary (thats why no construction: builders starve and become savages)
 bug? number of buyers of (r) good > 0 even when it shows no bid price?
 bug? unit test: check auction clearing with self-transaction (bidder = offerer)
@@ -15,7 +19,7 @@ on unheired death, etc, owned property goes to lord/governor/market?
 
 new Clan Scroll GUI?
 BASIC - basic info, values/ideology, behaviors
-PLEASURE (diamond) - copulation: suitor, numspawn; beauty: grandeur; harmony: stuff
+COMFORT (diamond) - copulation: suitor, numspawn; beauty: grandeur; harmony: stuff
 HONOR (club) - allegiance: order accomplishments?; legacy: legacy buckets; righteousness: commandments
 POWER (spade) - might: battle stats; influence: order chart; wealth: nav, millet, assets
 WISDOM (heart) - expertise: skills; knowledge: library contributions, wisdom; spirituality: holiness, etc
@@ -59,7 +63,7 @@ might
 	maybe num shires conquered - num shires lost... then this can attribute both to the person doing the fighting AND the patron!
 	when comparing value, if this num is equal then rely on COMBATP...
 	after wealth, choice between influence (light side) and might (dark side),
-	with influence being about "having" people and might being about "having"
+	with influence being about "having" people and might being about "having" (territory?)
 	governor benefits such as border control, tariffs, taxes, book-burning rights, etc.
 	maybe even works requiring writing to attribute to order but just building to attribute to shire
 	IN THIS CASE VALUATION OF MIGHT, PURSUIT OF MIGHT ARE ABOUT SHIRES, BUT ESTIMATION OF COMBAT STRENGTH IS SEPARATE
@@ -78,22 +82,5 @@ top 3 memes in shire/order
 top predictor meme for given value
 top discrete stat for given value (job, prayer)
 
-
-
-
-Game of Thrones Examples
-
-wealth - littlefinger
-copulation - king robert
-allegiance - brienne
-talent - jamie
-influence - margaery
-beauty - renly
-righteousness - ned stark, daenarys
-knowledge - tyrion
-might - khal drogo
-harmony - vaerys
-legacy - tywin, cersei
-spirituality - melisandre
 
 

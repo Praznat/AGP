@@ -45,8 +45,8 @@ public class TestTrading extends Testing {
 		resetTrading();
 		a.MB.newQ(new TradingQuest(a));
 		pursueUntilDone(a);
-		for (int g = 0; g < Defs.numGoods; g++) affirm(s1.getMarket(g).smaVol() == 0);
-		for (int g = 0; g < Defs.numGoods; g++) affirm(s2.getMarket(g).smaVol() == 0);
+		for (int g = 0; g < Misc.numGoods; g++) affirm(s1.getMarket(g).getPeriodVol() == 0);
+		for (int g = 0; g < Misc.numGoods; g++) affirm(s2.getMarket(g).getPeriodVol() == 0);
 		//TODO someone comes and hits bids, make sure offers are then placed
 	}
 	

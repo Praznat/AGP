@@ -53,19 +53,19 @@ public class LaborQuest extends Quest implements GoodsAcquirable {
 	}
 	
 	public void resetWM() {
-		for(int i = 0; i < workmemo.length; i++) {workmemo[i] = Defs.E; workmemoX[i] = 0;}
+		for(int i = 0; i < workmemo.length; i++) {workmemo[i] = Misc.E; workmemoX[i] = 0;}
 	}
 	public void setWM(int g, int plc) {workmemo[plc] = g;   workmemoX[plc] = 0;}
-	public void alterG(MktO origin, int n) {
+	public boolean alterG(MktO origin, int n) {
 		int g = origin.getGood();
 		for(int i = 0; i < workmemo.length; i++) {
 			if (getAbsWM(i) == g) {
 				int newWMX = workmemoX[i] + n;
 				workmemoX[i] = newWMX < 0 ? 0 : newWMX;
-				return;
+				return true;
 			}
 		}
-		((MktO)Me.myMkt(g)).sellFairAndRemoveBid(Me);   //in case not needed for work (not in WORKMEMO)
+		return false;
 	}
 	public void suspendG(int g) {
 		for(int i = 0; i < workmemo.length; i++) {
@@ -130,7 +130,7 @@ public class LaborQuest extends Quest implements GoodsAcquirable {
 	}
 	private void doInputs() {
 		if (turnsLeft <= 0) { // untested
-			int i = -1;   while (workmemo[++i] != Defs.E) { //liquidate
+			int i = -1;   while (workmemo[++i] != Misc.E) { //liquidate
 				MktO mkt = (MktO)Me.myMkt(getAbsWM(i));
 				mkt.removeBids(Me); // TODO no idea if this works.. pls test
 				for (int k = workmemoX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
@@ -146,19 +146,19 @@ public class LaborQuest extends Quest implements GoodsAcquirable {
 		//than alternative, so it doesnt go in totalNeeded..
 		int[] totalNeeded = chosenAct.expIn(Me); //first number zero for expProfit
 		int[] stillNeeded = Calc.copyArray(totalNeeded);
-		int j;   int i = -1;   while (workmemo[++i] != Defs.E) {
+		int j;   int i = -1;   while (workmemo[++i] != Misc.E) {
 			int N = workmemoX[i];
-			j = 0;   while (stillNeeded[++j] != Defs.E) { //goes through WM setting to E all nec inputs already owned
+			j = 0;   while (stillNeeded[++j] != Misc.E) { //goes through WM setting to E all nec inputs already owned
 				if(workmemo[i] == -stillNeeded[j]) {totalNeeded[j] = -Math.abs(totalNeeded[j]);} //mark as dont buy if already in market
 				if(N>0 && stillNeeded[j]==getAbsWM(i)) {stillNeeded[j] = 0;   N--;}  //0 should not be a good
 			}
 		}
-		boolean go = true;   j = 0;   while (stillNeeded[++j] != Defs.E) {if(stillNeeded[j]!=0) {go=false; break;}}
+		boolean go = true;   j = 0;   while (stillNeeded[++j] != Misc.E) {if(stillNeeded[j]!=0) {go=false; break;}}
 		if (go) {   //in case all nec inputs owned
-			i = -1;   while (workmemo[++i] != Defs.E) {
+			i = -1;   while (workmemo[++i] != Misc.E) {
 				int wmg = getAbsWM(i);
 				MktAbstract mkt = Me.myMkt(wmg);
-				j = 0;   while (totalNeeded[++j] != Defs.E) {  //consume WM goods used in input:
+				j = 0;   while (totalNeeded[++j] != Misc.E) {  //consume WM goods used in input:
 					if(workmemoX[i] == 0) {break;}
 					//is this right?? setting in[j] to E even though the while loop stops at E?
 					//set in[j] to 0 to correct this problem... see if it works
@@ -168,7 +168,7 @@ public class LaborQuest extends Quest implements GoodsAcquirable {
 			}
 			stage++;   //move on
 		}
-		else {i = 0; while (totalNeeded[++i] != Defs.E) {if(totalNeeded[i] >= 0) {
+		else {i = 0; while (totalNeeded[++i] != Misc.E) {if(totalNeeded[i] >= 0) {
 			Me.myMkt(totalNeeded[i]).liftOffer(Me);   suspendG(totalNeeded[i]);
 		}}} //dont lift in case of - (see above)
 	}
@@ -178,17 +178,17 @@ public class LaborQuest extends Quest implements GoodsAcquirable {
 	}
 	private void doOutputs() {
 		int[] out = chosenAct.expOut(Me);
-		int i = 1; for (; out[i] != Defs.E; i++) {
+		int i = 1; for (; out[i] != Misc.E; i++) {
 			int g = out[i];
-			if (g == Defs.sword || g == Defs.mace) {
+			if (g == Misc.sword || g == Misc.mace) {
 				short x = XWeapon.craftNewWeapon(g, Me.FB.getPrs(P_.SMITHING));
 				if (x != XWeapon.NULL) {
-					g = Defs.xweapon;
+					g = Misc.xweapon;
 					Me.addReport(GobLog.produce(x));
-					((XWeaponMarket) Me.myMkt(Defs.xweapon)).setUpTmpXP(x);
+					((XWeaponMarket) Me.myMkt(Misc.xweapon)).setUpTmpXP(x);
 				}
 			}
-			if (g != Defs.xweapon) {Me.addReport(GobLog.produce(g));}
+			if (g != Misc.xweapon) {Me.addReport(GobLog.produce(g));}
 			Me.myMkt(g).gainAsset(Me);
 			Me.myMkt(g).sellFair(Me);
 		}

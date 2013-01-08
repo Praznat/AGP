@@ -25,7 +25,10 @@ public class QuestScroll extends Papyrus {
 		r = REPORTSTART;
 		g.drawString("GobLog:", 2, BHGT+BHGT*r++);
 		Reportable[] report = clan.getLog();
+		int d = -1;
 		for (Reportable R : report) {
+			int rd = R.getDate();
+			if (rd != d) {d = rd; g.drawString("Day " + rd, 2, BHGT+BHGT*r++);}
 			S = R.toString();
 			if (S != "") {g.drawString(S, 2, BHGT+BHGT*r++);}
 		}

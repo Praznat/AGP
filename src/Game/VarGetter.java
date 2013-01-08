@@ -7,7 +7,7 @@ import Markets.MktO;
 import Sentiens.*;
 import Shirage.Shire;
 
-public class VarGetter implements Defs {
+public class VarGetter implements Misc {
 	//types
 	public static final int SHIREVARS = 0;
 	public static final int MARKETVARS = 1;

@@ -6,6 +6,7 @@ import AMath.Calc.DoubleWrapper;
 import Defs.*;
 import Descriptions.Naming;
 import Game.*;
+import Government.Treasury;
 import Markets.*;
 import Sentiens.Clan;
 import Sentiens.Stress.Blameable;
@@ -41,9 +42,10 @@ public class Shire extends AbstractShire implements Blameable {
 	public static byte productivityF = 19;
 	//
 
-	private Collection<Clan> census = new ArrayList<Clan>();
+	private final Collection<Clan> census = new ArrayList<Clan>();
 	private Plot linkedPlot;
 	private Clan governor;
+	private final Treasury treasury;
 	
 	private byte[] lastvars = new byte[numVars];
 	private byte[] vars = new byte[numVars];
@@ -73,7 +75,8 @@ public class Shire extends AbstractShire implements Blameable {
 	public Shire(int x, int y) {
 		super(x, y);
 		markets = generateMkts();
-
+		treasury = new Treasury(census);
+		
 		initializeVars();
 	}
 
@@ -112,13 +115,13 @@ public class Shire extends AbstractShire implements Blameable {
 
 
 	public MktAbstract[] generateMkts() {
-		MktAbstract[] M = new MktAbstract[Defs.numGoods];
+		MktAbstract[] M = new MktAbstract[Misc.numGoods];
 		for (int i = 0; i < M.length; i++) {
-			if(i != Defs.millet && i != Defs.rentland && i != Defs.rentanimal) {M[i] = new MktO(i, this);}
+			if(i != Misc.millet && i != Misc.rentland && i != Misc.rentanimal) {M[i] = new MktO(i, this);}
 		}
-		M[Defs.millet] = new FoodMarket(Defs.millet, this);
-		M[Defs.rentland] = new RentMarket(Defs.rentland, this);
-		M[Defs.rentanimal] = new RentMarket(Defs.rentanimal, this);
+		M[Misc.millet] = new FoodMarket(Misc.millet, this);
+		M[Misc.rentland] = new RentMarket(Misc.rentland, this);
+		M[Misc.rentanimal] = new RentMarket(Misc.rentanimal, this);
 		return M;
 	}
 
@@ -189,6 +192,7 @@ public class Shire extends AbstractShire implements Blameable {
 	public String getName() {return Naming.randShireName(getID());}
 	public MktAbstract getMarket(G_ g) {return markets[g.ordinal()];}
 	public MktAbstract getMarket(int g) {return markets[g];}
+	public Treasury getTreasury() {return treasury;}
 	public Library getLibrary() {return library;}
 	public int getResource(int r) {
 		if (r >= 0) {return resources[r];}
@@ -283,11 +287,11 @@ public class Shire extends AbstractShire implements Blameable {
 	}
 	
 	public long getNetAssetValue(Clan POV, boolean skipMillet) {
-		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
-			if (g == Defs.millet && skipMillet) continue;
-			int px = g != Defs.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.getMarket(g).bestBid()) : 1;
+		int sum = 0;   for (int g = 1; g < Misc.numAssets; g++) {
+			if (g == Misc.millet && skipMillet) continue;
+			int px = g != Misc.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.getMarket(g).bestBid()) : 1;
 			if (px != MktO.NOASK && px != MktO.NOBID) {
-				int quantity = g != Defs.millet ? this.getMarket(g).getAskSz() : getMilletWealthOfPop();
+				int quantity = g != Misc.millet ? this.getMarket(g).getAskSz() : getMilletWealthOfPop();
 				sum += quantity * px;
 			}
 		}	return sum;
@@ -308,6 +312,6 @@ public class Shire extends AbstractShire implements Blameable {
 	
 	@Override
 	public String toString() {return getName() + " @ " + getID();}
-	
+
 }
 

@@ -67,18 +67,12 @@ class AMenuItem extends JRadioButton {
 					public Object apply(Object event) {
 						parent.getFrame().setVisible(false);
 						listener.call(obj);
-						AGPmain.play();
 						AGPmain.mainGUI.repaintEverything();
 						return null;
 					};
 				});
 			}
 		});
-		return AMI;
-	}
-	public static AMenuItem createNonClickable(final String content) {
-		AMenuItem AMI = new AMenuItem(content);
-		AMI.setEnabled(false);
 		return AMI;
 	}
 

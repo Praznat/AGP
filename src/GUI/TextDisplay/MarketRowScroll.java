@@ -5,7 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import AMath.Calc;
-import Defs.Defs;
+import Defs.Misc;
 import GUI.PopupAbstract;
 import GUI.PopupShire;
 import Game.*;
@@ -23,7 +23,7 @@ public class MarketRowScroll extends TableRowScroll {
 	
 	public void calcRealizedSize() {
 		int skip = 1;
-		setupTableLabels(PopupShire.MARKETS, Defs.numGoods - 1 - skip, vars());
+		setupTableLabels(PopupShire.MARKETS, Misc.numGoods - 1 - skip, vars());
 		String S;   Shire thisShire = ((PopupShire) parent).getShire();
 		for (int r = 1; r < contents.length; r++) {
 			String[] R = contents[r];

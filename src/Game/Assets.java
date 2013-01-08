@@ -1,11 +1,11 @@
 package Game;
 
-import Defs.Defs;
+import Defs.Misc;
 import Descriptions.XWeapon;
 import Markets.*;
 import Sentiens.Clan;
 
-public class Assets implements Defs {
+public class Assets implements Misc {
 	
 	public static int getRentGood(int asset) {
 		switch (asset) {

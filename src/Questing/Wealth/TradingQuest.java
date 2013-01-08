@@ -22,13 +22,13 @@ public class TradingQuest extends Quest implements GoodsAcquirable {
 	private Shire[] route;
 	private int plcInRoute = 0;
 	private Trade favTrade = Job.TradeC; // TODO
-	private int[] sellPlcs = new int[Defs.numGoods];
+	private int[] sellPlcs = new int[Misc.numGoods];
 	private int numRounds;
 	
 	public TradingQuest(Clan P) {
 		super(P);
 		route = Me.myShire().getNeighborRoute(true, 2 + P.FB.getBeh(M_.WANDERLUST) / 4);
-		for (int i = 0; i < sellPlcs.length; i++) sellPlcs[i] = Defs.E;
+		for (int i = 0; i < sellPlcs.length; i++) sellPlcs[i] = Misc.E;
 		numRounds = 3 + Me.FB.getBeh(M_.PATIENCE) / 5;
 	}
 
@@ -44,7 +44,7 @@ public class TradingQuest extends Quest implements GoodsAcquirable {
 			int g = tp.g; int buyPx = tp.buyPx; int sellPx = tp.sellPx;
 			if (sellPx > 0) {
 				((MktO)lastShire.getMarket(g)).placeBid(Me, buyPx);
-				if (sellPlcs[g] == Defs.E || sellPx >= ((MktO)route[sellPlcs[g]].getMarket(g)).riskySellPX(Me)) {
+				if (sellPlcs[g] == Misc.E || sellPx >= ((MktO)route[sellPlcs[g]].getMarket(g)).riskySellPX(Me)) {
 					sellPlcs[g] = newshireplc;
 				}
 			}
@@ -83,13 +83,15 @@ public class TradingQuest extends Quest implements GoodsAcquirable {
 	public String description() {return "Trading";}
 
 	@Override
-	public void alterG(MktO origin, int num) {
+	public boolean alterG(MktO origin, int num) {
 		int good = origin.getGood();
 		int p = sellPlcs[good];
+		if (p == Misc.E) return false;
 		Shire sellShire = p < 0 ? Me.currentShire() : route[p];
 		origin.removeBids(Me);
 		for (int i = 0; i < num; i++) sellShire.getMarket(good).sellFair(Me);
 		sellShire.getGraphingInfo("TRADER").alterValue(1);
+		return true;
 	}
 	
 	private static class TradePlan {

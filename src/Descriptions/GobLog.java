@@ -20,8 +20,12 @@ public class GobLog {
 	 * @author alexanderbraylan
 	 *
 	 */
-	public static interface Reportable {
-		public String toString();
+	public static abstract class Reportable {
+		private final int date;
+		private Reportable(boolean undated) {date = -1;};
+		private Reportable() {date = AGPmain.TheRealm.getDay();};
+		public abstract String toString();
+		public int getDate() {return date;}
 	}
 	
 	public static class Book {
@@ -37,13 +41,9 @@ public class GobLog {
 			return out;
 		}
 	}
-
-	private static final String date() {
-		return (new Date()).getTime()+"";
-	}
 	
 	private static Reportable blank() {
-		return new Reportable() {
+		return new Reportable(true) {
 			public String toString() {return "";}
 		};
 	}
@@ -54,9 +54,14 @@ public class GobLog {
 		};
 	}
 	
-	public static Reportable newQuest(final Quest q) {
+	public static Reportable beginQuest(final Quest q) {
 		return new Reportable() {
 			public String toString() {return "Began " + q;}
+		};
+	}
+	public static Reportable endQuest(final Quest q) {
+		return new Reportable() {
+			public String toString() {return "Finished " + q;}
 		};
 	}
 
@@ -95,6 +100,28 @@ public class GobLog {
 			public String toString() {return "Forged " + XWeapon.weaponName(W);}
 		};
 	}
+
+	public static Reportable accumulated(final int amt) {
+		return new Reportable() {
+			public String toString() {return "Accumulated " + amt + " millet";}
+		};
+	}
+
+	public static Reportable hungry() {
+		return new Reportable() {
+			public String toString() {return "Hungry...";}
+		};
+	}
+	public static Reportable lostChild() {
+		return new Reportable() {
+			public String toString() {return "Lost a spawn";}
+		};
+	}
+	public static Reportable died() {
+		return new Reportable() {
+			public String toString() {return "Died";}
+		};
+	}
 	
 	public static Reportable dealTermTribute(final Clan prop, final Clan eval, final int millet) {
 		return new Reportable() {
@@ -104,6 +131,11 @@ public class GobLog {
 	public static Reportable dealTermReward(final Clan prop, final Clan eval, final int millet) {
 		return new Reportable() {
 			public String toString() {return prop.getNomen() + " offered " + millet + " millet to " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermPatronage(final Clan prop, final Clan eval) {
+		return new Reportable() {
+			public String toString() {return prop.getNomen() + " offered patronage to " + eval.getNomen();}
 		};
 	}
 	public static Reportable dealTermAllegiance(final Clan prop, final Clan eval) {
@@ -294,7 +326,24 @@ public class GobLog {
 			}
 		};
 	}
+	
+	public static Reportable tookFromTreasury(final int amount) {
+		return new Reportable() {
+			public String toString() {return "Took " + amount + " millet from treasury";}
+		};
+	}
+	
+	public static Reportable paidTax(final Clan collector, final int amount) {
+		return new Reportable() {
+			public String toString() {return "Paid " + amount + " tax to " + collector;}
+		};
+	}
 
+	public static Reportable enoughTaxes(final Clan taxee, final Clan taxer) {
+		return new Reportable() {
+			public String toString() {return taxee + " has had enough of paying taxes to " + taxer;}
+		};
+	}
 	public static Reportable beginBloodVengeance(final Clan blamee) {
 		return new Reportable() {
 			public String toString() {return "Begun blood vengeance against " + blamee;}

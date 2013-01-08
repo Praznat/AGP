@@ -1,6 +1,6 @@
 package War;
 
-import Defs.Defs;
+import Defs.Misc;
 import Sentiens.Clan;
 
 public class CombatDefs {
@@ -71,15 +71,15 @@ public class CombatDefs {
 		private SoldierType bow() {range = Range.MISSILE; edge = Edge.SHARP; return this;}
 		
 		public boolean canFulfill(Clan clan) {
-			if (Armor.HEAVY == armor && clan.getAssets(Defs.armor) <= 0) {return false;}
-			if (Mount.CAVALRY == mount && clan.getAssets(Defs.lobodonkey) <= 0) {return false;}
+			if (Armor.HEAVY == armor && clan.getAssets(Misc.armor) <= 0) {return false;}
+			if (Mount.CAVALRY == mount && clan.getAssets(Misc.lobodonkey) <= 0) {return false;}
 			if (range != null) { //if you dont care about range then we assume you dont care about edge either..
 				if (edge == null) {
-					if (Range.MISSILE == range && (clan.getAssets(Defs.bow) <= 0 && clan.getAssets(Defs.gun) <= 0)) {return false;}
-					if (Range.MELEE == range && (clan.getAssets(Defs.sword) <= 0 && clan.getAssets(Defs.mace) <= 0 && clan.getAssets(Defs.xweapon) <= 0)) {return false;}
+					if (Range.MISSILE == range && (clan.getAssets(Misc.bow) <= 0 && clan.getAssets(Misc.gun) <= 0)) {return false;}
+					if (Range.MELEE == range && (clan.getAssets(Misc.sword) <= 0 && clan.getAssets(Misc.mace) <= 0 && clan.getAssets(Misc.xweapon) <= 0)) {return false;}
 				}
-				else if (edge == Edge.BLUNT && clan.getAssets(Defs.gun) <= 0) {return false;}
-				else if (edge == Edge.SHARP && clan.getAssets(Defs.bow) <= 0) {return false;}
+				else if (edge == Edge.BLUNT && clan.getAssets(Misc.gun) <= 0) {return false;}
+				else if (edge == Edge.SHARP && clan.getAssets(Misc.bow) <= 0) {return false;}
 			}
 			return true;
 		}

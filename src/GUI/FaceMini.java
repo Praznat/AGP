@@ -1255,7 +1255,7 @@ class FaceMini extends JPanel {
 		partez[CARA] = new Cabeza(new int[] {140, 220});
 		partez[JITA] = new Oreja(new int[] {140, 220});
     	partez[NASO].megafix();
-    	if (gob.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
+    	if (gob.getGender() == Misc.MALE) {setFemale(false);} else {setFemale(true);}
     	
     	x = partez[NASO].getBaseXY()[0] - 60;
     	w = 180;

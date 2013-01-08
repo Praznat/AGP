@@ -26,15 +26,15 @@ public class RomanceQuests {
 	}
 	
 	public static class BreedQuest extends TargetQuest {
-		private int courtsLeft = Defs.E;
-		private int failsLeft = Defs.E;
+		private int courtsLeft = Misc.E;
+		private int failsLeft = Misc.E;
 		public BreedQuest(Clan P) {super(P); resetFails();}
 		public BreedQuest(Clan P, Clan target) {this(P); this.target = target;}
 		@Override
 		public void pursue() {
 			if (failsLeft <= 0) {failure(Values.COPULATION); return;}
 			if (target == null) {Me.MB.newQ(new FindMate(Me)); failsLeft--; return;}  //failsleft-- cuz it means findmate failed
-			if (courtsLeft == Defs.E) {courtsLeft = 1 + (15 - target.useBeh(M_.PROMISCUITY)) / 5;}
+			if (courtsLeft == Misc.E) {courtsLeft = 1 + (15 - target.useBeh(M_.PROMISCUITY)) / 5;}
 			if (courtsLeft <= 0) {Me.breed(target); success(Me); return;}
 			Me.MB.newQ(new Compete4MateQuest(Me, target));
 		}
@@ -54,7 +54,6 @@ public class RomanceQuests {
 			if (POV.getGender() == target.getGender()) return false;
 			boolean success = POV.FB.randomValueInPriority().compare(POV, target, POV) > 0; // promiscuity?
 			if (success) {((BreedQuest) upQuest()).resetFails();} //previous fails were for finding target
-			Me.addReport(GobLog.findSomeone((success ? target : null), "mate"));
 			return success;
 		}
 		@Override
@@ -65,6 +64,8 @@ public class RomanceQuests {
 		protected void onFailure() {
 			failure(StressorFactory.createShireStressor(Me.myShire(), Values.COPULATION));
 		}
+		@Override
+		protected String searchDesc() {return "mate";}
 	}
 
 

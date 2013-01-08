@@ -2,7 +2,7 @@ package Government;
 
 import java.util.*;
 
-import Defs.Defs;
+import Defs.Misc;
 import Descriptions.GobName;
 import Questing.Quest.TargetQuest;
 import Sentiens.Clan;
@@ -15,8 +15,9 @@ public class Order implements Blameable {
 	private Clan ruler;
 	private final byte[] founderName;
 	private final boolean founderGender;
+	private final Treasury treasury;
+	private final Set<Clan> members;
 	
-	private int treasury;
 	
 	public static Order createBy(Clan creator) {
 		Order newOrder = new Order(creator);
@@ -28,11 +29,11 @@ public class Order implements Blameable {
 		founderName = creator.getNameBytes();
 		founderGender = creator.getGender();
 		members = new HashSet<Clan>();
+		treasury = new Treasury(members);
 	}
 
 
 	
-	private Set<Clan> members;
 	public Set<Clan> getMembers() {return members;}
 	private void addMembers(Set<Clan> s) {members.addAll(s);} 
 	public void addMember(Clan m) {members.add(m); m.setOrder(this);}
@@ -78,20 +79,16 @@ public class Order implements Blameable {
 	public String getTitle(Clan clan) {
 		if (clan == getRuler()) {
 			int n = members.size();
-			if (n  > 50) {return (clan.getGender() == Defs.FEMALE ? "Empress" : "Emperor");}
-			if (n  > 20) {return (clan.getGender() == Defs.FEMALE ? "Queen" : "King");}
+			if (n  > 50) {return (clan.getGender() == Misc.FEMALE ? "Empress" : "Emperor");}
+			if (n  > 20) {return (clan.getGender() == Misc.FEMALE ? "Queen" : "King");}
 		}
 		int n = clan.getMinionTotal();
-		if (n  > 10) {return (clan.getGender() == Defs.FEMALE ? "Lady" : "Lord");}
-		if (n  > 5) {return (clan.getGender() == Defs.FEMALE ? "Madam" : "Sir");}
+		if (n  > 10) {return (clan.getGender() == Misc.FEMALE ? "Lady" : "Lord");}
+		if (n  > 5) {return (clan.getGender() == Misc.FEMALE ? "Madam" : "Sir");}
 		return "";
 	}
-	private void tax(Clan c) { // should be some affects on Clan's measured Allegiance contribution as well as Stressors
-		double taxRate = 0.15;
-		if (this != c.myOrder()) {
-			c.AB.add(new Stressor(Stressor.ANNOYANCE, this));
-		}
-	}
+	public Treasury getTreasury() {return treasury;}
+	
 	private void raiseFunds() { // should be various ways to do this
 		// TODO probably should be done through Quest stuff?
 	}

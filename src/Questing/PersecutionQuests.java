@@ -112,6 +112,8 @@ public class PersecutionQuests {
 		protected void onFailure() {
 			finish();
 		}
+		@Override
+		protected String searchDesc() {return "heretic";}
 
 		@Override
 		public String description() {
@@ -131,6 +133,8 @@ public class PersecutionQuests {
 					"infidel"));
 			return success;
 		}
+		@Override
+		protected String searchDesc() {return "infidel";}
 
 		@Override
 		public String description() {

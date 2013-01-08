@@ -1,5 +1,7 @@
 package Questing.Knowledge;
 
+import java.util.*;
+
 import AMath.Calc;
 import Defs.K_;
 import Game.Job;
@@ -8,6 +10,8 @@ import Sentiens.Clan;
 import Shirage.Shire;
 
 public class JobObserver extends MapKnowledgeObserver<Clan, Job> {
+	private final Map<Job, int[]> map2 = new HashMap<Job, int[]>();
+	
 	/** 
 	 * observes the job and average income of one clan
 	 */
@@ -15,8 +19,10 @@ public class JobObserver extends MapKnowledgeObserver<Clan, Job> {
 	public void observe(Clan c) {
 		final Job j = c.getJob();
 		final int x = (int)Math.round(c.getAvgIncome()); // NAV ?
-		final Integer oldX = map.get(j); // from possible previous Clans
-		map.put(j, oldX == null ? x : oldX + x);
+		int[] sumAndCount = map2.get(j);
+		if (sumAndCount == null) map2.put(j, sumAndCount = new int[] {x, 1});
+		else {sumAndCount[0] += x; sumAndCount[1]++;}
+		map.put(j, (int) Math.round((double)sumAndCount[0] / sumAndCount[1]));
 	}
 	@Override
 	public KnowledgeBlock<Job> createKnowledgeBlock(Clan creator) {

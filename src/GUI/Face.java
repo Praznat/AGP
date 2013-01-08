@@ -10,7 +10,9 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import AMath.Calc;
-import Defs.*;
+import Defs.F_;
+import Defs.GlobalParameters;
+import Defs.Misc;
 import Game.AGPmain;
 import Sentiens.Clan;
 import Sentiens.Ideology;
@@ -48,7 +50,7 @@ public class Face extends JPanel {
 	protected Clan gobCache;
 	protected Ideology fbCache;
 	protected double resize;
-	protected double blursize;
+	protected double blursize = 1;
 	protected boolean female;
 	protected Parte[] partez;
 	protected Nariz naso;
@@ -99,7 +101,6 @@ public class Face extends JPanel {
 		setOpaque(false);
 	}
 	
-	
 	public void paintComponent(Graphics gx) {
 		super.paintComponent(gx);
 		if (!loaded) {return;}
@@ -108,6 +109,10 @@ public class Face extends JPanel {
 	}
 	public void paintFace() {
 		if (!loaded) return;
+		offscreen = getFace();
+		repaint();
+	}
+	public BufferedImage getFace() {
 		offscreen = new BufferedImage(900,900, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = offscreen.createGraphics();
 		
@@ -130,7 +135,7 @@ public class Face extends JPanel {
 		
 		//if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
-		repaint();
+		return offscreen;
 	}
 	
 	public void resize(double factor) {
@@ -1472,7 +1477,7 @@ public class Face extends JPanel {
 	}
 	public void redefine() {
 		if (gobCache == null) {setFemale(AGPmain.rand.nextBoolean());}
-		else {setFemale(gobCache.getGender() != Defs.MALE);}
+		else {setFemale(gobCache.getGender() != Misc.MALE);}
 		
 		int green = SKING.val();
 		int red = green + SKINR.val() * (241 - green)/2/99; //randInt((241 - green)/2);

@@ -122,7 +122,7 @@ public class FaithQuests {
 			}
 			else if (numCaptives == NOBIDS4CAPTIVES) {
 				numCaptives = 0;
-				subject.myMkt(Defs.captive).liftOffer(subject); // TODO alterG...
+				subject.myMkt(Misc.captive).liftOffer(subject); // TODO alterG...
 			}
 			return 0;
 		}
@@ -131,7 +131,10 @@ public class FaithQuests {
 			numCaptives += (Integer) arg;
 		}
 		@Override
-		public void alterG(MktO origin, int num) {if(origin.getGood() == Defs.captive) {affect(num);}}
+		public boolean alterG(MktO origin, int num) {
+			if(origin.getGood() == Misc.captive) {affect(num); return true;}
+			else return false;
+		}
 	};
 	private static final ActOfFaith[] ACTS_OF_FAITH = new ActOfFaith[] {
 		INCANTATE, RITUAL, ONEWITHNATURE, ONEWITHGOD, SACRIFICE

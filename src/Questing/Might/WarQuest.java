@@ -6,7 +6,7 @@ import Descriptions.GobLog;
 import Questing.*;
 import Questing.Quest.RootQuest;
 import Sentiens.Clan;
-import Sentiens.Stress.StressorFactory;
+import Sentiens.Stress.*;
 import Shirage.Shire;
 import War.*;
 import War.BattleField.EndStatus;
@@ -58,11 +58,13 @@ public class WarQuest extends RootQuest implements InvolvesArmy {
 		
 		public void winWar() {
 			status = Status.VICTORIOUS;
+			Me.AB.relieveFrom(new Stressor(Stressor.HATRED, target));
 			endWar();
 			// TODO force demands one conquered foe!! where is it?
 		}
 		public void loseWar() {
 			status = Status.DEFEATED;
+			Me.AB.add(new Stressor(Stressor.HATRED, target));
 			endWar();
 		}
 		private void endWar() {

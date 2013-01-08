@@ -15,7 +15,7 @@ import Sentiens.Stress.*;
 
 public abstract class Quest {
 	protected Clan Me;
-	public Quest(Clan P) {Me = P; Me.addReport(GobLog.newQuest(this));}
+	public Quest(Clan P) {Me = P; Me.addReport(GobLog.beginQuest(this));}
 	public void pursueQuest() {
 		if (!AGPmain.AUTOPILOT && Me == avatar()) {
 			avatarPursue();
@@ -29,6 +29,7 @@ public abstract class Quest {
 	protected void success(Blameable relief) {success(); Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));}
 	protected void success(Blameable... reliefs) {success(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
 	protected void finish() {
+		 Me.addReport(GobLog.endQuest(this));
 		if (!this.getClass().isAssignableFrom(Me.MB.QuestStack.peek().getClass())) {
 			System.out.println("bullshit "+this+" finish");specialDelete();
 		}
@@ -142,11 +143,14 @@ public abstract class Quest {
 				Clan candidate = candidates[AGPmain.rand.nextInt(candidates.length)];
 				if(meetsReq(Me, candidate)) {
 					setTarget(candidate);
+					Me.addReport(GobLog.findSomeone(candidate, searchDesc()));
 					success(Me.myShire()); return;
 				}
 			}
+			Me.addReport(GobLog.findSomeone(null, searchDesc()));
 			onFailure();
 		}
+		protected abstract String searchDesc();
 		protected abstract void onFailure();
 		@Override
 		public void avatarPursue() {

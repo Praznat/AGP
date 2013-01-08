@@ -88,7 +88,9 @@ public class Contract {   // AND/OR combination of Terms??
 	}
 	
 	protected abstract class DealTerm {
-		public double getEvaluation() {evaluator.addReport(loggy()); proposer.addReport(loggy()); return evaluate();}
+		public double getEvaluation() {
+			final Reportable loggy = loggy();
+			evaluator.addReport(loggy); proposer.addReport(loggy); return evaluate();}
 		protected abstract double evaluate();
 		protected abstract boolean doit();
 		protected abstract Reportable loggy();
@@ -191,9 +193,7 @@ public class Contract {   // AND/OR combination of Terms??
 			return evaluator.join(proposer);
 		}
 		@Override
-		protected Reportable loggy() {
-			return null;
-		}
+		protected Reportable loggy() {return GobLog.dealTermPatronage(proposer, evaluator);}
 	}
 	protected abstract class ThreatTerm extends DealTerm {
 		protected abstract int wgtOfValsToLose();

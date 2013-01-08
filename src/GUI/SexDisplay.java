@@ -3,7 +3,7 @@ package GUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import AMath.Calc;
 import Defs.F_;
@@ -12,10 +12,11 @@ import Sentiens.*;
 
 public class SexDisplay {
 	static final int CSIZE = 200;
-	static final int WIDTH = CSIZE * 3;
-	static final int HEIGHT = CSIZE;
+	static final int WIDTH = CSIZE * 2;
+	static final int HEIGHT = CSIZE * 2;
 
 	final JFrame MainPane;
+	final JPanel parentPanel, childPanel;
 	final Face father, mother, spawn;
 	final Calc.MousePanel panel = new Calc.MousePanel() {
 		@Override
@@ -24,18 +25,24 @@ public class SexDisplay {
 	
 	public SexDisplay() {
 		MainPane = new JFrame("Family");
+		parentPanel = new JPanel();
+		childPanel = new JPanel();
 		father = new Face();
 		mother = new Face();
 		spawn = new Face();
 
 		MainPane.setContentPane(panel);
-		MainPane.getContentPane().setLayout(new GridLayout(1, 3));
-		MainPane.getContentPane().add(father);
-		MainPane.getContentPane().add(spawn);
-		MainPane.getContentPane().add(mother);
+		MainPane.getContentPane().setLayout(new GridLayout(2, 1));
+		parentPanel.setLayout(new GridLayout(1, 2));
+		MainPane.getContentPane().add(parentPanel);
+		parentPanel.add(father);
+		parentPanel.add(mother);
+		MainPane.getContentPane().add(childPanel);
+		childPanel.add(spawn);
 		father.setPreferredSize(new Dimension(CSIZE, CSIZE));
 		mother.setPreferredSize(new Dimension(CSIZE, CSIZE));
 		spawn.setPreferredSize(new Dimension(CSIZE, CSIZE));
+		childPanel.setPreferredSize(new Dimension(CSIZE/2, CSIZE));
 		MainPane.setSize(WIDTH,HEIGHT);
 		MainPane.setVisible(true);
 		

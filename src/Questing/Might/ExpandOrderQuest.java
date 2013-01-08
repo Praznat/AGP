@@ -22,7 +22,7 @@ public class ExpandOrderQuest extends Quest {
 
 	@Override
 	public void pursue() {
-		if (targetShire == null) {
+		if (targetShire == null || Me == targetShire.getGovernor()) {
 			chooseTargetShire();
 			return;
 		}
@@ -72,11 +72,17 @@ public class ExpandOrderQuest extends Quest {
 	public void considerOptions(Object[] shireOptions, int[] goodnesses, int num) {
 		double bestProfit = Double.MIN_VALUE;
 		for (int i = 0; i < num; i++) {
-			double cost = 0; // TODO estimate cost of attacking shire
+			Shire shire = (Shire) shireOptions[i];
+			if (shire.getGovernor() == Me) continue;
+			int distance = shire.distanceFrom(Me.myShire());
+			double goodness = goodnesses[i];
+			// profit = goodness - cost = goodness/distance - distance
+			// cost = goodness - goodness/distance + distance
+			double cost = distance + goodness - goodness / distance; // TODO estimate cost of attacking shire
 			// TODO cost should take into account distance of shire! you should probably have to fight everyone on the way
-			double profit = goodnesses[i] - cost;
+			double profit = goodness - cost;
 			if (profit > bestProfit) {
-				bestProfit = profit; targetShire = (Shire) shireOptions[i];
+				bestProfit = profit; targetShire = shire;
 			}
 		}
 	}

@@ -92,7 +92,7 @@ public class Values {
 			result -= 2 * Math.abs(7 - clan.FB.getFac(F_.MOUTHJW));
 			result -= Math.abs(25 - clan.getAge()); // age
 			result += Math.abs(clan.FB.getBeh(M_.OCD) - clan.FB.getFac(F_.HAIRL));
-			result += Math.min(15, clan.getAssets(Defs.jewelry)); // no need for more than 15 jewelry
+			result += Math.min(15, clan.getAssets(Misc.jewelry)); // no need for more than 15 jewelry
 			result += 10 * clan.getSplendor();
 			return result;
 		}

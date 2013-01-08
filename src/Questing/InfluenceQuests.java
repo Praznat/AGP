@@ -42,6 +42,8 @@ public class InfluenceQuests {
 				protected void onFailure() {
 					failure(StressorFactory.createShireStressor(Me.myShire(), Values.INFLUENCE));
 				}
+				@Override
+				protected String searchDesc() {return "new minion";}
 			};
 		}
 		@Override

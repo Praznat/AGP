@@ -112,6 +112,8 @@ public class MightQuests {
 				}
 				@Override
 				protected int triesPerTurn() {return 1;} //expensive calc
+				@Override
+				protected String searchDesc() {return "someone to challenge";}
 			};
 		}
 		private void setDemandFromValue(Value v) {

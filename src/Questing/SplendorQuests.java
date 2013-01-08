@@ -32,13 +32,16 @@ public class SplendorQuests {
 			else if (numConstrs == NOCONSTRBIDS) {
 				numConstrs = 0;
 				milletRecord = Me.getMillet();
-				Me.myMkt(Defs.constr).liftOffer(Me);
+				Me.myMkt(Misc.constr).liftOffer(Me);
 			}
 			else if (turnsLeft > 0) { turnsLeft --;}
 			else { failure(Me.myShire()); }
 		}
 		
-		public void alterG(MktO origin, int n) {if(origin.getGood() == Defs.constr) {numConstrs += n;}}
+		public boolean alterG(MktO origin, int n) {
+			if(origin.getGood() == Misc.constr) {numConstrs += n; return true;}
+			else return false;
+		}
 		
 		private boolean buildForPatron() {
 			if (numConstrs <= 0) {return false;}
@@ -48,7 +51,6 @@ public class SplendorQuests {
 			ExpertiseQuests.practiceSkill(Me, P_.ARTISTRY);
 			final int max = 1 + Me.FB.getPrs(P_.ARTISTRY);
 			final int producedSplendor = Calc.randBetween(max / 2, max);
-			System.out.println(Me.getNomen() + " of " + Me.myShire() + " produced splendor!!");
 			if (Me != patron) {Me.addReport(GobLog.build(patron, producedSplendor, true));}
 			patron.addReport(GobLog.build(Me, producedSplendor, false));
 			patron.chgSplendor(producedSplendor);

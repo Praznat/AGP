@@ -11,7 +11,7 @@ import Sentiens.Clan;
 import Sentiens.Stress.Blameable;
 import Shirage.Shire;
 
-public class Job implements Defs, Blameable {
+public class Job implements Misc, Blameable {
 	protected Act[] acts;
 	protected String desc;
 	

@@ -1,12 +1,12 @@
 package Sentiens;
 
 
-import Defs.Defs;
+import Defs.Misc;
 import Questing.QStack;
 import Questing.Quest;
 
 
-public class Memory implements Defs {
+public class Memory implements Misc {
 	private static final int QMEMORY = 10;
 	public QStack QuestStack;
 

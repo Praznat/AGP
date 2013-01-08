@@ -1,6 +1,6 @@
 package Game;
 
-import Defs.Defs;
+import Defs.Misc;
 import Questing.*;
 import Questing.Wealth.LaborQuest;
 import Sentiens.Clan;
@@ -8,8 +8,8 @@ import Sentiens.Clan;
 public abstract class Logic {
 	protected static final int BUY = 0;
 	protected static final int SELL = 1;
-	protected static final int E = Defs.E;
-	protected static final int[] tmpInventory = new int[Defs.numGoods];
+	protected static final int E = Misc.E;
+	protected static final int[] tmpInventory = new int[Misc.numGoods];
 	
 	
 	protected Logic[] subLogics;
@@ -22,8 +22,13 @@ public abstract class Logic {
 		return result;
 	}
 	
-	public boolean sufficient(Clan doer) {return false;} //dont ask from here, use workmemo
+	protected boolean sufficient(Clan doer) {return false;} //dont ask from here, use workmemo
 	
+	/** returns array of best value/cost in place [0] and each good in every subsequent place,
+	 * with repeats for plural goods, ending with E */
+	public int[] getBestGs(Clan doer, int type) {
+		return getBest(doer, type);
+	}
 	public int[] getTheBest(Clan doer, int type) {
 		if (type == BUY) {setupTempInventory(doer);}
 		return getBest(doer, type);
@@ -82,7 +87,7 @@ class And extends Logic {
 	public And(Logic... subs) {subLogics = subs;}
 	public And(int... subs) {subLogics = L(subs);}
 	
-	public boolean sufficient(Clan doer) { //WRONG! must maintain global count
+	protected boolean sufficient(Clan doer) { //WRONG! must maintain global count
 		for (int i = 0; i < subLogics.length; i++) {
 			if(subLogics[i].sufficient(doer) == false) {return false;}
 		}   return true;
@@ -106,7 +111,7 @@ class Or extends Logic {
 	public Or(Logic... subs) {subLogics = subs;}
 	public Or(int... subs) {subLogics = L(subs);}
 	
-	public boolean sufficient(Clan doer) { //WRONG! must maintain global count
+	protected boolean sufficient(Clan doer) { //TODO WRONG! must maintain global count
 		for (int i = 0; i < subLogics.length; i++) {
 			if(subLogics[i].sufficient(doer) == true) {return true;}
 		}   return false;

@@ -4,7 +4,7 @@ import Defs.*;
 
 
 
-public class Mem implements Defs {
+public class Mem implements Misc {
 	public static final Mem[] Defs = MemDefs(); //use instead of AGPmain.TheRealm.getMemDefs...?
 	protected P_ prestige;
 	protected String name;

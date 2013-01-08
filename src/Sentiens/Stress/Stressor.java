@@ -32,7 +32,7 @@ public class Stressor {
 		case INSULT: return doer.FB.getBeh(M_.VANITY) / 2;
 		case LIFE_THREAT: return 3 + doer.FB.getBeh(M_.MIERTE);
 		case HATRED: return 16; //must be higher than others to avoid getting relieved
-		case EXTREME_TRAUMA: return 50;
+		case EXTREME_TRAUMA: return 50; //pretty much never disappears
 		case PROMISE_BROKEN: return doer.FB.getBeh(M_.STRICTNESS) / 3;
 		default: return 0;
 		}

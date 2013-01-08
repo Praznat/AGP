@@ -1,6 +1,6 @@
 package Descriptions;
 
-import Defs.Defs;
+import Defs.Misc;
 import Game.*;
 import Sentiens.Clan;
 
@@ -18,7 +18,7 @@ public class MinisterNames {
 	
 	public static final String getMinistryName(Ministry m, Clan c) {
 		if (m == Job.JUDGE) {
-			return isGovt(c) ? "Judge" : ("Priest" + (c.getGender() == Defs.FEMALE ? "ess" : ""));
+			return isGovt(c) ? "Judge" : ("Priest" + (c.getGender() == Misc.FEMALE ? "ess" : ""));
 		}
 		else if (m == Job.NOBLE) {
 			return isGovt(c) ? "Noble" : "Minion";
@@ -33,7 +33,7 @@ public class MinisterNames {
 			return isGovt(c) ? "Grand tutor" : "Tutor";
 		}
 		else if (m == Job.SORCEROR) {
-			return isGovt(c) ? "Sorcer" + (c.getGender() == Defs.FEMALE ? "ess" : "or") : "Shaman";
+			return isGovt(c) ? "Sorcer" + (c.getGender() == Misc.FEMALE ? "ess" : "or") : "Shaman";
 		}
 		else if (m == Job.VIZIER) {
 			return isGovt(c) ? "Vizier" : "Bureaucrat";

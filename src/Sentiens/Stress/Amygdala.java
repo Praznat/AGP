@@ -13,6 +13,7 @@ public class Amygdala {
 		parent = P;
 		stressors = new ArrayList<Stressor>();
 	}
+	
 	public void add(Stressor S) { // TODO what if add two of exactly same Stressor?
 		if(getStressLevel() > 1) {
 			enoughIsEnough(S);

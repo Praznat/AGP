@@ -41,7 +41,7 @@ public class DiscScroll extends Papyrus {
 		write(g, "Avg Profit:" + Calc.roundy(clan.getAvgIncome()), r++);
 		write(g, "NAV:" + clan.getNetAssetValue(null), r++);
 		write(g, "ASSETS:", r++);
-		for (int i = 0; i < Defs.numAssets; i++) {
+		for (int i = 0; i < Misc.numAssets; i++) {
 			int n = clan.getAssets(i);
 			if (n != 0) {write(g, n + " " + Naming.goodName(i, (n != 1), false), r++);}
 		}

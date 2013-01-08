@@ -12,12 +12,12 @@ import Government.Order;
 import Markets.*;
 import Questing.Quest;
 import Questing.Might.FormArmyQuest;
-import Questing.Wealth.LaborQuest;
+import Questing.Wealth.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Stress.*;
 import Shirage.Shire;
 
-public class Clan implements Defs, Blameable {
+public class Clan implements Misc, Blameable {
 	public static int DMC = 3; //daily millet consumption
 	public static final int MIN_DMC_RESERVE = 15;
 	protected static final int MUTATION_PCT = 2;
@@ -121,7 +121,7 @@ public class Clan implements Defs, Blameable {
 	public void setHomeShire(Shire s) {homeShire = s;}
 	public Shire currentShire() {return currentShire;}
 	public void setCurrentShire(Shire s) {
-		goblog.addReport(GobLog.moveCurrentShire(currentShire, s));
+		if (currentShire != s) goblog.addReport(GobLog.moveCurrentShire(currentShire, s));
 		currentShire = s;
 	}
 	public void moveTowards(Shire target) {
@@ -170,12 +170,13 @@ public class Clan implements Defs, Blameable {
 		age++;
 		final boolean starve = !eat();
 		if (starve) {
-			if (numSpawns > 0) {numSpawns--;} else {die();}
+			if (numSpawns > 0) {numSpawns--; addReport(GobLog.lostChild());} else {die(); addReport(GobLog.died());}
 		}
 		if (isHungry()) {
+			addReport(GobLog.hungry());
 			Quest currQ = !MB.QuestStack.isEmpty() ? MB.QuestStack.peek() : null;
 			if (currQ != null) {
-				if (currQ instanceof LaborQuest) return; //currentlyHustling
+				if (currQ instanceof IntelligentLaborQuest) return; //currentlyHustling
 				if (currQ instanceof FormArmyQuest) { // should be just having patron? belonging to order?
 					Order o = myOrder();
 					if (o != null) { // army of one...
@@ -183,7 +184,7 @@ public class Clan implements Defs, Blameable {
 					}
 				}
 			}
-			MB.newQ(new LaborQuest(this, Job.HUNTERGATHERER));
+			MB.newQ(new IntelligentLaborQuest(this, Job.GatherMillet));
 		}
 	}
 	public boolean isHungry() {
@@ -376,19 +377,19 @@ public class Clan implements Defs, Blameable {
 		return false;
 	}
 	public long getNetAssetValue(Clan POV) {
-		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
-			int px = g != Defs.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.myMkt(g).bestBid()) : 1;
+		int sum = 0;   for (int g = 1; g < Misc.numAssets; g++) {
+			int px = g != Misc.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.myMkt(g).bestBid()) : 1;
 			if (px != MktO.NOASK && px != MktO.NOBID) sum += getAssets(g) * px;
 		}	return sum;
 	}
 	public int[] getAssets() {return assets;}
 	public int getAssets(int g) {return assets[g];}
 	public void incAssets(int g, int x) {if (x < 0) {System.out.println("error incAssets x is negative");}
-		if (g == Defs.millet) throw new IllegalStateException("use alterMillet");
+		if (g == Misc.millet) throw new IllegalStateException("use alterMillet");
 		assets[g] += x;
 	}
 	public void decAssets(int g, int x) {
-		if (g == Defs.millet) throw new IllegalStateException("use alterMillet");
+		if (g == Misc.millet) throw new IllegalStateException("use alterMillet");
 		if (assets[g] - x < 0) {
 			System.out.println(Naming.goodName(g, false, false) + " error negative assets in decAssets for " + getNomen());
 		}
@@ -434,17 +435,17 @@ public class Clan implements Defs, Blameable {
 
 
     public boolean eat() {
-    	assets[Defs.millet] -= DMC;
-    	if (assets[Defs.millet] < 0) {
-    		assets[Defs.millet] = 0; // just for now
+    	assets[Misc.millet] -= DMC;
+    	if (assets[Misc.millet] < 0) {
+    		assets[Misc.millet] = 0; // just for now
     		return false;
     		//TODOstarvation!
     	}	return true;
     }
     public boolean eatMeat() {
-    	assets[Defs.meat]--;
-    	if (assets[Defs.meat] < 0) {
-    		assets[Defs.meat] = 0;
+    	assets[Misc.meat]--;
+    	if (assets[Misc.meat] < 0) {
+    		assets[Misc.meat] = 0;
     		return false;
     	}
     	Commandments.INSTANCE.Carnivory.getFor(this).commit();

@@ -3,7 +3,7 @@ package Game;
 import Defs.*;
 import Sentiens.Clan;
 
-public class Const implements Defs {
+public class Const implements Misc {
 	private static int[] defaultT = {11,0,1,6,8,10};
 	private static int[] mod = {8,4,2,1};
 	private static int Ssize = 2;

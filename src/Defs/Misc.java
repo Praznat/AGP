@@ -1,6 +1,6 @@
 package Defs;
 
-public interface Defs {
+public interface Misc {
 	public static final String RET = System.getProperty("line.separator");
 	public static final int E = Integer.MIN_VALUE;
 	

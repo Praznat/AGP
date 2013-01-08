@@ -90,6 +90,10 @@ public class AvatarConsole extends APanel implements ActionListener {
 			SubjectiveType sct, Calc.Listener listener, Calc.Transformer transformer) {
 		showChoices(prompt, POV, choices.toArray(), sct, listener, transformer);
 	}
+	public void showQuery(String prompt, String defaultContent, Calc.Listener listener) {
+		AGPmain.pause();
+		APopupQuery.set(this, prompt, defaultContent, listener);
+	}
 	
 	private JButton setButton(String S, int KE) {
 		JButton B = new JButton();
