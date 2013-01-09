@@ -124,9 +124,13 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 		if (this == getBoss()) {return this;}
 		else {return getBoss().getTopBoss();}
 	}
+	public boolean isDirectBossOf(Clan him) {
+		final Clan hisBoss = him.getBoss();
+		return hisBoss != him && this == hisBoss;
+	}
 	public boolean isSomeBossOf(Clan him) {return isSomeBossOf(him, this);}  //false if self!
 	private boolean isSomeBossOf(Clan him, Clan orig) {
-		Clan hisBoss = him.getBoss();
+		final Clan hisBoss = him.getBoss();
 		if (hisBoss == orig) {return true;}
 		else if (hisBoss == null) {Calc.p(""+1/0); return false;}
 		else if (hisBoss == him) {return false;}

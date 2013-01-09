@@ -56,21 +56,27 @@ public class AvatarConsole extends APanel implements ActionListener {
 	public int getDesWid() {return DESWID;}
 	public int getDesHgt() {return DESHGT;}
 	
-	public void showChoices(Clan POV, Object[] choices,
-			SubjectivelyComparable.Type sct, Calc.Listener listener) {
+
+	public void showChoices(Clan POV, Object[] choices, SubjectivelyComparable.Type sct,
+			Calc.Listener listener, Calc.Transformer transformer) {
 		this.choices.clear();
 		this.getComparator().setPOV(POV);
 		switch (sct) {
 		case ACT_PROFIT_ORDER: comparator.setComparator(comparator.ACT_PROFIT_ORDER); break;
 		case RESPECT_ORDER: comparator.setComparator(comparator.RESPECT_ORDER); break;
 		case VALUE_ORDER: comparator.setComparator(comparator.VALUE_ORDER); break;
+		case QUEST_ORDER: comparator.setComparator(comparator.QUEST_ORDER);
 		}
 		for (Object choice : choices) {this.choices.add((SubjectivelyComparable)choice);}
-		new APopupMenu(this, this.choices, listener);
+		new APopupMenu(this, this.choices, listener, transformer);
+	}
+	public void showChoices(Clan POV, Object[] choices,
+			SubjectivelyComparable.Type sct, Calc.Listener listener) {
+		showChoices(POV, choices, sct, listener, null);
 	}
 	public void showChoices(Clan POV, Collection<? extends SubjectivelyComparable> choices,
-			SubjectivelyComparable.Type sct, Calc.Listener listener) {
-		showChoices(POV, choices.toArray(), sct, listener);
+			SubjectivelyComparable.Type sct, Calc.Listener listener, Calc.Transformer transformer) {
+		showChoices(POV, choices.toArray(), sct, listener, transformer);
 	}
 	
 	private void setButton(String S, int KE) {
@@ -92,19 +98,22 @@ public class AvatarConsole extends APanel implements ActionListener {
 			public void call(Object arg) {
 				avatar.MB.newQ(Quest.QtoQuest(avatar, ((Value) arg).pursuit(avatar)));
 			}
+		}, new Calc.Transformer<Value, String>() {
+			@Override
+			public String transform(Value v) {
+				return Quest.QtoQuest(avatar, v.pursuit(avatar)).description();
+			}
 		});
-//		choices.clear();
-//		getComparator().setPOV(avatar);
-//		getComparator().setComparator(comparator.VALUE_ORDER);
-//		for (Value V : Values.All) {
-//			ClanAlone action = V.doPursuit(avatar);
-//			action.setup(avatar);
-//			if (!choices.containsValue(action)) {choices.put(V, action);}
-//		}
-//		new APopupMenu(this, choices.values());
 	}
 	
-
+	public void avatarPursue() {
+		if (avatar.MB.QuestStack.empty()) {this.newQuest();}
+		else {
+			avatar.MB.QuestStack.peek().avatarPursue();
+			avatar.setActive(false);
+		}
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (AVATAR.equals(e.getActionCommand())) {
@@ -120,11 +129,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 			this.newQuest();
 		}
 		else if (PURSUEQUEST.equals(e.getActionCommand()) && avatar.isActive()) {
-			if (avatar.MB.QuestStack.empty()) {this.newQuest();}
-			else {
-				avatar.MB.QuestStack.peek().avatarPursue();
-				avatar.setActive(false);
-			}
+			avatarPursue();
 		}
 		else if (STEPONCE.equals(e.getActionCommand())) {
 			AGPmain.TheRealm.goOnce();
@@ -138,6 +143,5 @@ public class AvatarConsole extends APanel implements ActionListener {
 		AGPmain.mainGUI.GM.setState();
 		AGPmain.mainGUI.SM.setState();
 	}
-	
 
 }

@@ -2,8 +2,8 @@ package Avatar;
 
 import java.util.Comparator;
 
-import Game.*;
-import Game.Do.ClanOnClan;
+import Game.Act;
+import Questing.Quest.GradedQuest;
 import Sentiens.*;
 import Sentiens.Values.Value;
 
@@ -34,6 +34,13 @@ public class SubjectiveComparator<T extends SubjectivelyComparable> implements C
 		@Override
 		public int compare(Value o1, Value o2) {
 			return POV.FB.compareValues(o1, o2);
+		}
+	};
+	public final Comparator<GradedQuest> QUEST_ORDER = new Comparator<GradedQuest>() {
+		@Override
+		public int compare(GradedQuest o1, GradedQuest o2) {
+			int x = (int) Math.signum(o2.getRating() - o1.getRating());
+			return x == 0 ? 1 : x;
 		}
 	};
 	@Override

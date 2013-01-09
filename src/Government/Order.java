@@ -38,7 +38,7 @@ public class Order {
 	public void selfDestruct() {members.clear();}
 	
 	public void moveTo(Clan clan, Order newOrder) {
-		Set<Clan> movers = Ledger.getFollowers(clan, true);
+		Set<Clan> movers = Ledger.getFollowers(clan, true, true);
 		for (Clan mover : movers) {mover.setOrder(newOrder);}
 		newOrder.addMembers(movers);
 		this.members.removeAll(movers);
@@ -47,8 +47,8 @@ public class Order {
 	public Clan getRuler() {return ruler;}
 	public int size() {return members.size();}
 	
-	public Set<Clan> getFollowers(Clan leader, boolean includeMe) {return Ledger.getFollowers(leader, includeMe);}
-	public Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe) {return Ledger.getFollowers(leader, place, includeMe);}
+	public Set<Clan> getFollowers(Clan leader, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, includeMe, includeSubs);}
+	public Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, place, includeMe, includeSubs);}
 	
 	public void getQuest(Clan requester) {
 		requester.MB.newQ(new PersecuteInfidel(requester));
@@ -93,21 +93,23 @@ public class Order {
 	private static class Ledger {
 		private static Set<Clan> pop = new HashSet<Clan>();
 
-		public static Set<Clan> getFollowers(Clan leader, boolean includeMe) {
+		public static Set<Clan> getFollowers(Clan leader, boolean includeMe, boolean includeSubs) {
 			pop.clear();
 			int N = leader.getMinionTotal() + (includeMe ? 1 : 0);
 			for (Clan m : leader.myOrder().getMembers()) {
 				if (N <= 0) {break;}
-				if ((leader == m && includeMe) || leader.isSomeBossOf(m)) {N--; pop.add(m);}
+				if ((leader == m && includeMe) ||
+						(includeSubs ? leader.isSomeBossOf(m) : leader.isDirectBossOf(m))) {N--; pop.add(m);}
 			}
 			return pop;
 		}
-		public static Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe) {
+		public static Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe, boolean includeSubs) {
 			pop.clear();
 			int N = leader.getMinionTotal() + (includeMe ? 1 : 0);
 			for (Clan m : leader.myOrder().getMembers()) {
 				if (N <= 0) {break;}
-				if (m.myShire() == place && ((leader == m && includeMe) || leader.isSomeBossOf(m))) {N--; pop.add(m);}
+				if (m.myShire() == place && ((leader == m && includeMe) ||
+						(includeSubs ? leader.isSomeBossOf(m) : leader.isDirectBossOf(m)))) {N--; pop.add(m);}
 			}
 			return pop;
 		}

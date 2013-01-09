@@ -7,8 +7,8 @@ import Avatar.SubjectivelyComparable;
 import Defs.M_;
 import Game.*;
 import Government.Order;
-import Questing.Quest.*;
-import Sentiens.Clan;
+import Questing.Quest.QuestFactory;
+import Sentiens.*;
 
 public class AllegianceQuests {
 	public static QuestFactory getFactory() {return new QuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
@@ -56,7 +56,7 @@ public class AllegianceQuests {
 		@Override
 		public void avatarPursue() {
 			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
-			avatarConsole.showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Clan clan = (Clan) arg;
@@ -68,8 +68,13 @@ public class AllegianceQuests {
 		
 		@Override
 		public void pursue() {
-			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
-			if (--attemptsLeft >= 0) {
+			final Clan currBoss = Me.getBoss();
+			if (currBoss != Me) {
+				success(currBoss);
+				Me.addReport(GobLog.findSomeone(currBoss, "same old master"));
+				return;
+			}
+			if (attemptsLeft-- > 0) {
 				Clan[] pop = Me.myShire().getCensus();
 				Clan candidate = pop[AGPmain.rand.nextInt(pop.length)];
 				double resp = Me.conversation(candidate);
@@ -85,13 +90,17 @@ public class AllegianceQuests {
 					double d = respectMemo.get(c);
 					if (d > max) {max = d; bestClan = c;}
 				}
-				if (max > 0) {Me.join(bestClan);   success(bestClan);}
+				if (max > 0) {
+					Me.join(bestClan);
+					success(bestClan);
+					Me.addReport(GobLog.findSomeone(bestClan, "new master"));
+				}
 				else {
-					if (Me.myOrder() == null) {Order.createBy(Me); success(Me);}
-					else {success();}
+					if (Me.myOrder() == null) {Order.createBy(Me); success(Me); Me.addReport(GobLog.createOrder(false));}
+					else {success(); Me.addReport(GobLog.createOrder(true));}
 				}
 			}
 		}
-		
 	}
+
 }

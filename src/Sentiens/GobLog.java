@@ -25,6 +25,12 @@ public class GobLog {
 		public Book() {for(int i = 0; i < book.length; i++) {book[i] = blank();}}
 		public void addReport(Reportable R) {for (int i = 0; i < book.length-1; i++) {book[i] = book[i+1];} book[book.length-1] = R;}
 		public Reportable[] getBook() {return book;}
+		@Override
+		public String toString() {
+			String out = "";
+			for (Reportable r : book) {out += r.out() + ", ";}
+			return out;
+		}
 	}
 
 	private static final String date() {
@@ -91,6 +97,17 @@ public class GobLog {
 		};
 	}
 
+	public static Reportable createOrder(final boolean preexisting) {
+		return new Reportable() {
+			public String out() {return preexisting ? "Decided not to follow anyone." : "Decided to start own Order";}
+		};
+	}
+	
+	public static Reportable assignMinistry(final Ministry m, final Clan c, final Clan replaced) {
+		return new Reportable() {
+			public String out() {return "Assigned " + c.getNomen() + " to " + m.getDesc(c) + (replaced != null ? ", replacing " + replaced.getNomen() : "");}
+		};
+	}
 
 	public static Reportable converted(final Clan target, final boolean success) {
 		return new Reportable() {

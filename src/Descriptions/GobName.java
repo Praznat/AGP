@@ -184,7 +184,7 @@ public class GobName {
 			else {return fullName(goblin, N, i+1);}
 		}
 		if (V == Values.HEALTH) {return N + " the Glutton";}
-		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc();}
+		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc(goblin);}
 		
 		return fullName(goblin, N, i+1);
 	}

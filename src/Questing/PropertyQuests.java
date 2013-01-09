@@ -1,30 +1,36 @@
 package Questing;
 
-import java.util.ArrayList;
-
 import AMath.Calc;
 import Avatar.SubjectivelyComparable;
 import Defs.P_;
 import Descriptions.XWeapon;
-import GUI.APopupMenu;
 import Game.*;
-import Game.Do.ClanAlone;
 import Markets.*;
-import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.Quest.QuestFactory;
-import Sentiens.Clan;
-import Sentiens.GobLog;
+import Sentiens.*;
 
 public class PropertyQuests {
 	public static QuestFactory getFactory() {return new QuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
 	
 	public static class BuildWealthQuest extends Quest {
-		private long goal;
-		public BuildWealthQuest(Clan P) {super(P); goal = 2 * P.getNetAssetValue(P);} //default is to double NAV
+		private long start, goal;
+		public BuildWealthQuest(Clan clan) {
+			super(clan);
+			start = clan.getNetAssetValue(clan);
+			goal = 2 * start;
+		} //default is to double NAV
 		@Override
 		public void pursue() {
 			if (Me.getNetAssetValue(Me) >= goal) {success();} // TODO attribute to me or shire or what?
-			else {Me.MB.newQ(new LaborQuest(Me));}
+			else {
+				final Job j = Me.getJob();
+				if (j instanceof Ministry) {
+					// ministry job
+					((Ministry) j).getService().doit(Me);
+				}
+				else {Me.MB.newQ(new LaborQuest(Me));}
+				
+			}
 		}
 		public String description() {return "Build Wealth";}
 	}
@@ -46,6 +52,7 @@ public class PropertyQuests {
 
 		@Override
 		public void avatarPursue() {
+			if (Me.getJob() instanceof Ministry) {Me.MB.finishQ(); return;}
 			switch (stage) {
 			case 0: avatarChooseAct(); break; //avatarDoInputs called by avatarChooseAct
 			case 1: avatarDoInputs(); break;
@@ -57,6 +64,7 @@ public class PropertyQuests {
 		
 		@Override
 		public void pursue() {
+			if (Me.getJob() instanceof Ministry) {Me.MB.finishQ(); return;}
 			switch (stage) {
 			case 0: chooseAct();
 			case 1: doInputs(); break;
@@ -120,17 +128,7 @@ public class PropertyQuests {
 			return bestAct;
 		}
 		private void avatarChooseAct() {
-//			avatarConsole.choices.clear();
-//			avatarConsole.getComparator().setPOV(Me);
-//			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().ACT_PROFIT_ORDER);
-//			ClanAlone action;
-//			for(Act act : Me.getJobActs()) {
-//				action = Do.setChosenAct((Labor) act);
-//				action.setup(Me);
-//				avatarConsole.choices.put(act, action);
-//			}
-//			new APopupMenu(avatarConsole, avatarConsole.choices.values());
-			avatarConsole.showChoices(Me, Me.getJobActs(), SubjectivelyComparable.Type.ACT_PROFIT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.getJobActs(), SubjectivelyComparable.Type.ACT_PROFIT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Quest q = Me.MB.QuestStack.peek();

@@ -89,16 +89,20 @@ public class Job implements Defs, Stressor.Causable {
 	
 	public static final Ministry JUDGE = new Ministry(CreedQuests.getFactory());
 	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getFactory());
-	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getFactory());
-	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getFactory());//TODO
+	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getFactory());//TODO
 	public static final Ministry GUILDMASTER = new Ministry(PropertyQuests.getFactory());
-	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getFactory());//TODO
 	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getFactory());
 	public static final Ministry GENERAL = new Ministry(MightQuests.getFactory());
 	public static final Ministry TREASURER = new Ministry(PropertyQuests.getFactory());
 	public static final Ministry COURTESAN = new Ministry(RomanceQuests.getFactory());
-	public static final Ministry APOTHECARY = new Ministry(Quest.DefaultQuest.getFactory());
-	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getFactory());
+	public static final Ministry APOTHECARY = new Ministry(Quest.DefaultQuest.getFactory());//TODO
+	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getFactory());//TODO
+	
+	public static final Ministry[] ALL_MINISTRIES = {
+		JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, GUILDMASTER, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT
+	};
 	
 		
 

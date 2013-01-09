@@ -17,8 +17,8 @@ public class BattleField {
 	
 	public static void setupNewBattleField(Clan attacker, Clan defender, Shire location) {
 		INSTANCE.defenseArmy.clear();   INSTANCE.offenseArmy.clear();
-		INSTANCE.defenseArmy = createArmyFrom(defender.myOrder().getFollowers(defender, location, false));
-		INSTANCE.offenseArmy = createArmyFrom(attacker.myOrder().getFollowers(attacker, location, false));
+		INSTANCE.defenseArmy = createArmyFrom(defender.myOrder().getFollowers(defender, location, false, true));
+		INSTANCE.offenseArmy = createArmyFrom(attacker.myOrder().getFollowers(attacker, location, false, true));
 		determineFormation(defender, INSTANCE.defenseArmy);
 		determineFormation(attacker, INSTANCE.offenseArmy);
 		

@@ -31,8 +31,8 @@ public abstract class Quest {
 	@Override
 	public String toString() {return description();}
 	
-	protected AvatarConsole avatarConsole = AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;
-	public Clan avatar() {return avatarConsole.getAvatar();}
+	protected static AvatarConsole avatarConsole() {return AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;}
+	public Clan avatar() {return avatarConsole().getAvatar();}
 		
 	public static class DefaultQuest extends Quest {
 		public static QuestFactory getFactory() {return new QuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
@@ -71,27 +71,13 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole.showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					FindTargetAbstract.this.setTarget((Clan) arg);
 					Me.MB.finishQ();
 				}
 			});
-//			Clan[] pop = Me.myShire().getCensus();
-//			avatarConsole.choices.clear();
-//			avatarConsole.getComparator().setPOV(Me);
-//			avatarConsole.getComparator().setComparator(avatarConsole.getComparator().RESPECT_ORDER);
-//			ClanOnClan action;
-//			for (Clan c : pop) {
-//				if(meetsReq(Me, c)) {
-//					action = Do.chooseTarget(c);
-//					action.setup(Me, c, 0);
-//					if (avatarConsole.choices.containsValue(action)) {continue;}
-//					avatarConsole.choices.put(c, action);
-//				}
-//			}
-//			new APopupMenu(avatarConsole, avatarConsole.choices.values());
 		}
 	}
 
@@ -103,7 +89,10 @@ public abstract class Quest {
 	}
 	
 	protected static void replaceAndDoNewQuest(Clan c, Quest newQuest) {
-		c.MB.finishQ(); c.MB.newQ(newQuest); c.pursue();
+		c.MB.finishQ();
+		c.MB.newQ(newQuest);
+		if (c == avatarConsole().getAvatar()) {avatarConsole().avatarPursue();}
+		else {c.pursue();}
 	}
 	
 	public static Quest QtoQuest(Clan clan, Q_ q) {
@@ -113,6 +102,7 @@ public abstract class Quest {
 		case BREED: quest = new BreedQuest(clan); break;
 		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
 		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
+		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
 		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
@@ -120,5 +110,15 @@ public abstract class Quest {
 		default: quest = new DefaultQuest(clan); break;
 		}
 		return quest;
+	}
+	
+	public static class GradedQuest implements SubjectivelyComparable {
+		private final Quest quest;
+		private final double rating;
+		public GradedQuest(Quest quest, double rating) {this.quest = quest; this.rating = rating;}
+		public Quest getQuest() {return quest;}
+		public double getRating() {return rating;}
+		@Override
+		public String toString() {return quest.description();}
 	}
 }

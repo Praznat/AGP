@@ -374,6 +374,9 @@ public class Calc {
     		pop[i] = tmp;
     	}
     }
+    public static <T> T oneOf(T[] objs) {
+    	return objs[AGPmain.rand.nextInt(objs.length)];
+    }
 	public static int[] combineArrays(int[] v1, int[] v2) {
 		int[] v3 = new int[v1.length + v2.length];
 		System.arraycopy(v1, 0, v3, 0, v1.length);
@@ -427,6 +430,10 @@ public class Calc {
 	
 	public static interface Listener {
 		public void call(Object arg);
+	}
+	
+	public static interface Transformer<T, U> {
+		public U transform(T t);
 	}
 	
 }
