@@ -87,18 +87,18 @@ public class Job implements Defs, Stressor.Causable {
 	public final static Act HuntSloth = Labor.newReapC("Hunt Sloth",				N(),						I(meat),		P_.MARKSMANSHIP,Shire.WILDERNESS,	HERDER,		1000);
 	public static final Job HUNTERGATHERER = new Job("Savage", GatherMillet, HuntSloth);
 	
-	public static final Ministry JUDGE = new Ministry(CreedQuests.getFactory());
-	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getFactory());
-	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getFactory());//TODO
-	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getFactory());//TODO
-	public static final Ministry GUILDMASTER = new Ministry(PropertyQuests.getFactory());
-	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getFactory());//TODO
-	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getFactory());
-	public static final Ministry GENERAL = new Ministry(MightQuests.getFactory());
-	public static final Ministry TREASURER = new Ministry(PropertyQuests.getFactory());
-	public static final Ministry COURTESAN = new Ministry(RomanceQuests.getFactory());
-	public static final Ministry APOTHECARY = new Ministry(Quest.DefaultQuest.getFactory());//TODO
-	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getFactory());//TODO
+	public static final Ministry JUDGE = new Ministry(CreedQuests.getMinistryFactory());
+	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getMinistryFactory());
+	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
+	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
+	public static final Ministry GUILDMASTER = new Ministry(PropertyQuests.getMinistryFactory());
+	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
+	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getMinistryFactory());
+	public static final Ministry GENERAL = new Ministry(MightQuests.getMinistryFactory());
+	public static final Ministry TREASURER = new Ministry(PropertyQuests.getMinistryFactory());
+	public static final Ministry COURTESAN = new Ministry(RomanceQuests.getMinistryFactory());
+	public static final Ministry APOTHECARY = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
+	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
 	
 	public static final Ministry[] ALL_MINISTRIES = {
 		JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, GUILDMASTER, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT

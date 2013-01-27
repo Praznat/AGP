@@ -9,9 +9,14 @@ public class Law {
 		public boolean isActive() {return active;}
 		public void setActive(boolean active) {this.active = active;}
 		public String desc() {return "THOU SHALT NOT " + verb;}
+		public String getVerb() {return verb;}
 		public int getTransgressions() {return transgressions;}
 		public void setTransgressions(int transgressions) {this.transgressions = transgressions;}
 		public void commit() {this.transgressions++;}
+		@Override
+		public String toString() {
+			return (active ? desc() : (verb + " OK")) + ": " + transgressions + " transgressions";
+		}
 	}
 	public static class Commandments {
 		public Commandment Murder = Murder();

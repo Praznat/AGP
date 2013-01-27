@@ -3,7 +3,7 @@ package Questing;
 import java.util.HashMap;
 
 import AMath.Calc;
-import Avatar.SubjectivelyComparable;
+import Avatar.SubjectiveType;
 import Defs.M_;
 import Game.*;
 import Government.Order;
@@ -11,7 +11,7 @@ import Questing.Quest.QuestFactory;
 import Sentiens.*;
 
 public class AllegianceQuests {
-	public static QuestFactory getFactory() {return new QuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
+	public static QuestFactory getMinistryFactory() {return new QuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
 	
 	public static class AllegianceQuest extends Quest {
 		public AllegianceQuest(Clan P) {super(P);}
@@ -56,7 +56,7 @@ public class AllegianceQuests {
 		@Override
 		public void avatarPursue() {
 			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
-			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Clan clan = (Clan) arg;

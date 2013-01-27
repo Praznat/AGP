@@ -31,7 +31,7 @@ public class Values implements Defs {
 	public static interface Preachable {
 		public void preach(Clan preacher, Clan student, Clan benefactor);
 	}
-	public static interface Value extends Stressor.Causable, Avatar.SubjectivelyComparable {
+	public static interface Value extends Stressor.Causable {
 		/** no longer used */
 		public M_ getWeightMeme(Clan POV);
 		/** no longer used */
@@ -147,7 +147,7 @@ public class Values implements Defs {
 
 	//TODO VIRTUE "Honor - Virtue"
 
-	public static final Value CREED = new ValuatableValue(null, "Honor - Creed", null, Job.JUDGE) {
+	public static final Value CREED = new ValuatableValue(null, "Honor - Creed", Q_.CREEDQUEST, Job.JUDGE) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			int sins = 0;
@@ -156,7 +156,7 @@ public class Values implements Defs {
 			for (int i = 0; i < myCommandments.length; i++) {
 				if (myCommandments[i].isActive()) {sins += hisCommandments[i].getTransgressions();}
 			}
-			return sins;
+			return -sins;
 		}
 	};
 	

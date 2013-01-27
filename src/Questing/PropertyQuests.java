@@ -1,7 +1,7 @@
 package Questing;
 
 import AMath.Calc;
-import Avatar.SubjectivelyComparable;
+import Avatar.SubjectiveType;
 import Defs.P_;
 import Descriptions.XWeapon;
 import Game.*;
@@ -10,7 +10,7 @@ import Questing.Quest.QuestFactory;
 import Sentiens.*;
 
 public class PropertyQuests {
-	public static QuestFactory getFactory() {return new QuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
+	public static QuestFactory getMinistryFactory() {return new QuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
 	
 	public static class BuildWealthQuest extends Quest {
 		private long start, goal;
@@ -128,7 +128,7 @@ public class PropertyQuests {
 			return bestAct;
 		}
 		private void avatarChooseAct() {
-			avatarConsole().showChoices(Me, Me.getJobActs(), SubjectivelyComparable.Type.ACT_PROFIT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.getJobActs(), SubjectiveType.ACT_PROFIT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Quest q = Me.MB.QuestStack.peek();

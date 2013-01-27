@@ -3,7 +3,7 @@ package Questing;
 import java.util.*;
 
 import AMath.Calc;
-import Avatar.SubjectivelyComparable;
+import Avatar.*;
 import Defs.M_;
 import Game.*;
 import Government.Order;
@@ -12,7 +12,7 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class InfluenceQuests {
-	public static QuestFactory getFactory() {return new QuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c) {return new InfluenceQuest(c);}};}
+	public static QuestFactory getMinistryFactory() {return new QuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c) {return new InfluenceQuest(c, c.getBoss());}};}
 	
 	public static class PropagandaQuest extends Quest {
 		public PropagandaQuest(Clan P) {super(P);}
@@ -38,7 +38,7 @@ public class InfluenceQuests {
 			commonPursuit();
 			final GradedQuest[] options = {new GradedQuest(new PersecutionQuests.PersecuteInfidel(Me), rivalFollowers - numFollowers),
 					new GradedQuest(new OrganizeMinistries(Me), numFollowers - rivalFollowers)};
-			avatarConsole().showChoices(Me, options, SubjectivelyComparable.Type.QUEST_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, options, SubjectiveType.QUEST_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					replaceAndDoNewQuest(Me, ((GradedQuest) arg).getQuest());
@@ -91,11 +91,11 @@ public class InfluenceQuests {
 					return c.getNomen() + " : " + c.getJob().getDesc(c);
 				}
 			};
-			avatarConsole().showChoices(Me, followers, SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, followers, SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					final Clan clan = (Clan)arg;
-					avatarConsole().showChoices(Me, Values.All, SubjectivelyComparable.Type.VALUE_ORDER, new Calc.Listener() {
+					avatarConsole().showChoices(Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 						@Override
 						public void call(Object arg) {
 							clan.setJob(((Value)arg).getMinistry());

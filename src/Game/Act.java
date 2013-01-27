@@ -1,9 +1,8 @@
 package Game;
 
 import Sentiens.Clan;
-import Avatar.SubjectivelyComparable;
 
-public interface Act extends SubjectivelyComparable{
+public interface Act {
 	public void doit(Clan doer);
 
 	public double estimateProfit(Clan pOV);

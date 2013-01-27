@@ -8,12 +8,13 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 
 
-public class SubjectiveComparator<T extends SubjectivelyComparable> implements Comparator<SubjectivelyComparable> {
+@SuppressWarnings("rawtypes")
+public class SubjectiveComparator implements Comparator {
 	private Clan POV;
 	public void setPOV(Clan pov) {POV = pov;}
-	private Comparator<SubjectivelyComparable> comparator;
+	private Comparator<Object> comparator;
 	@SuppressWarnings("unchecked")
-	public void setComparator(Comparator<? extends SubjectivelyComparable> c) {comparator = (Comparator<SubjectivelyComparable>) c;}
+	public void setComparator(Comparator c) {comparator = (Comparator) c;}
 	
 
 	
@@ -43,8 +44,14 @@ public class SubjectiveComparator<T extends SubjectivelyComparable> implements C
 			return x == 0 ? 1 : x;
 		}
 	};
+	public final Comparator<Object> NO_ORDER = new Comparator<Object>() {
+		@Override
+		public int compare(Object o1, Object o2) {
+			return 1;
+		}
+	};
 	@Override
-	public int compare(SubjectivelyComparable o1, SubjectivelyComparable o2) {
+	public int compare(Object o1, Object o2) {
 		return comparator.compare(o1, o2);
 	}
 

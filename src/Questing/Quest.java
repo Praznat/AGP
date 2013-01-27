@@ -3,16 +3,14 @@ package Questing;
 import AMath.Calc;
 import Avatar.*;
 import Defs.Q_;
-import GUI.APopupMenu;
-import Game.*;
-import Game.Do.ClanOnClan;
+import Game.AGPmain;
 import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.PersecutionQuests.PersecuteForeigner;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.PowerStartingQuests.IndPowerQuest;
+import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.RomanceQuests.BreedQuest;
-import Questing.PropertyQuests.*;
 import Sentiens.*;
 
 public abstract class Quest {
@@ -35,7 +33,7 @@ public abstract class Quest {
 	public Clan avatar() {return avatarConsole().getAvatar();}
 		
 	public static class DefaultQuest extends Quest {
-		public static QuestFactory getFactory() {return new QuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
+		public static QuestFactory getMinistryFactory() {return new QuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
 		
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
@@ -71,7 +69,7 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectivelyComparable.Type.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					FindTargetAbstract.this.setTarget((Clan) arg);
@@ -101,6 +99,7 @@ public abstract class Quest {
 		switch(q) {
 		case BREED: quest = new BreedQuest(clan); break;
 		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
+		case CREEDQUEST: quest = new CreedQuests.PriestQuest(clan); break;
 		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
@@ -112,7 +111,7 @@ public abstract class Quest {
 		return quest;
 	}
 	
-	public static class GradedQuest implements SubjectivelyComparable {
+	public static class GradedQuest {
 		private final Quest quest;
 		private final double rating;
 		public GradedQuest(Quest quest, double rating) {this.quest = quest; this.rating = rating;}

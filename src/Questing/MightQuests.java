@@ -4,7 +4,7 @@ import Questing.Quest.QuestFactory;
 import Sentiens.Clan;
 
 public class MightQuests {
-	public static QuestFactory getFactory() {return new QuestFactory(MightQuest.class) {public Quest createFor(Clan c) {return new MightQuest(c);}};}
+	public static QuestFactory getMinistryFactory() {return new QuestFactory(MightQuest.class) {public Quest createFor(Clan c) {return new MightQuest(c);}};}
 	
 	public static class MightQuest extends Quest {
 		public MightQuest(Clan P) {super(P);}

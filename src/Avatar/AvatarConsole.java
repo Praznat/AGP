@@ -6,15 +6,13 @@ import java.util.*;
 import javax.swing.JButton;
 
 import AMath.Calc;
-import Defs.Q_;
 import GUI.*;
-import Game.*;
-import Game.Do.ClanAction;
-import Game.Do.ClanAlone;
+import Game.AGPmain;
 import Questing.Quest;
 import Sentiens.*;
 import Sentiens.Values.Value;
 
+@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 public class AvatarConsole extends APanel implements ActionListener {
 	private Clan avatar;
 	private final int DESWID = 200;
@@ -33,13 +31,13 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final String STEPONCE = "Step Once";
 	private final String STEP100 = "100 Turns";
 	
-	private final SubjectiveComparator<SubjectivelyComparable> comparator;
-	public final TreeSet<SubjectivelyComparable> choices;
+	private final SubjectiveComparator comparator;
+	public final TreeSet choices;
 
 	private AvatarConsole(GUImain P) {
 		super(P);
-		comparator = new SubjectiveComparator<SubjectivelyComparable>();
-		choices = new TreeSet<SubjectivelyComparable>(comparator);
+		comparator = new SubjectiveComparator();
+		choices = new TreeSet(comparator);
 		setLayout(null);
 		setButton(EDITAVATAR, -1);
 		setButton(POSSESS, -1);
@@ -57,7 +55,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 	public int getDesHgt() {return DESHGT;}
 	
 
-	public void showChoices(Clan POV, Object[] choices, SubjectivelyComparable.Type sct,
+	public void showChoices(Clan POV, Object[] choices, SubjectiveType sct,
 			Calc.Listener listener, Calc.Transformer transformer) {
 		this.choices.clear();
 		this.getComparator().setPOV(POV);
@@ -65,17 +63,18 @@ public class AvatarConsole extends APanel implements ActionListener {
 		case ACT_PROFIT_ORDER: comparator.setComparator(comparator.ACT_PROFIT_ORDER); break;
 		case RESPECT_ORDER: comparator.setComparator(comparator.RESPECT_ORDER); break;
 		case VALUE_ORDER: comparator.setComparator(comparator.VALUE_ORDER); break;
-		case QUEST_ORDER: comparator.setComparator(comparator.QUEST_ORDER);
+		case QUEST_ORDER: comparator.setComparator(comparator.QUEST_ORDER); break;
+		case NO_ORDER: comparator.setComparator(comparator.NO_ORDER); break;
 		}
-		for (Object choice : choices) {this.choices.add((SubjectivelyComparable)choice);}
+		for (Object choice : choices) {this.choices.add(choice);}
 		new APopupMenu(this, this.choices, listener, transformer);
 	}
 	public void showChoices(Clan POV, Object[] choices,
-			SubjectivelyComparable.Type sct, Calc.Listener listener) {
+			SubjectiveType sct, Calc.Listener listener) {
 		showChoices(POV, choices, sct, listener, null);
 	}
-	public void showChoices(Clan POV, Collection<? extends SubjectivelyComparable> choices,
-			SubjectivelyComparable.Type sct, Calc.Listener listener, Calc.Transformer transformer) {
+	public void showChoices(Clan POV, Collection choices,
+			SubjectiveType sct, Calc.Listener listener, Calc.Transformer transformer) {
 		showChoices(POV, choices.toArray(), sct, listener, transformer);
 	}
 	
@@ -89,11 +88,10 @@ public class AvatarConsole extends APanel implements ActionListener {
 		B.setBounds(BUFFX, BUFFY + numButtons * (BUTTH + BUFFY), BUTTW, BUTTH);
 		numButtons++;
 	}
-	@SuppressWarnings("unchecked")
-	public SubjectiveComparator<SubjectivelyComparable> getComparator() {return ((SubjectiveComparator<SubjectivelyComparable>)choices.comparator());}
+	public SubjectiveComparator getComparator() {return ((SubjectiveComparator)choices.comparator());}
 
 	private void newQuest() {
-		this.showChoices(avatar, Values.All, SubjectivelyComparable.Type.VALUE_ORDER, new Calc.Listener() {
+		this.showChoices(avatar, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 			@Override
 			public void call(Object arg) {
 				avatar.MB.newQ(Quest.QtoQuest(avatar, ((Value) arg).pursuit(avatar)));

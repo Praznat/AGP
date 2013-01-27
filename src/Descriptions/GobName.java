@@ -12,143 +12,187 @@ import Sentiens.Values;
 import Sentiens.Values.Value;
 
 public class GobName {
+	
+	private static final String[] SYL1 = {
+		"A",
+		"Aha",
+		"Ba",
+		"Bee",
+		"Bla",
+		"Blee",
+		"Blo",
+		"Blou",
+		"Bloo",
+		"Blu",
+		"Bo",
+		"Booba",
+		"Bu",
+		"Bwa",
+		"Bwee",
+		"Cha",
+		"Chee",
+		"Cho",
+		"Da",
+		"Dee",
+		"Doo",
+		"Du",
+		"Dwa",
+		"Dwee",
+		"Er",
+		"Ehe",
+		"Fla",
+		"Flee",
+		"Flo",
+		"Flou",
+		"Fna",
+		"Fnee",
+		"Fnoo",
+		"Fwa",
+		"Fwee",
+		"Gla",
+		"Glee",
+		"Glo",
+		"Glu",
+		"Ghee",
+		"Gho",
+		"Gree",
+		"Gwa",
+		"Gwee",
+		"Hi",
+		"Ho",
+		"Ja",
+		"Jo",
+		"Kli",
+		"Kra",
+		"Kree",
+		"Ma",
+		"Mee",
+		"Mo",
+		"Na",
+		"Nee",
+		"No",
+		"O",
+		"Oho",
+		"Pra",
+		"Proo",
+		"Pee",
+		"Poko",
+		"Poo",
+		"Plee",
+		"Ploo",
+		"Qua",
+		"Quee",
+		"Ree",
+		"Roo",
+		"Ru",
+		"Sa",
+		"Shee",
+		"Soo",
+		"Sma",
+		"Smee",
+		"Smo",
+		"Spa",
+		"Thar",
+		"Tho",
+		"Too",
+		"Twa",
+		"Twee",
+		"Vee",
+		"Wa",
+		"Wee",
+		"Ya",
+		"Yee",
+		"Yo",
+		"Zar",
+		"Zaza",
+		"Zna",
+		"Znee",
+		"Zno"
+	};
+
+	private static final BiName[] SYL2 = {
+		new BiName("bar"),
+		new BiName("bax"),
+		new BiName("ber"),
+		new BiName("ble"),
+		new BiName("bo"),
+		new BiName("bonk"),
+		new BiName("bor"),
+		new BiName("bod"),
+		new BiName("cka"),
+		new BiName("ckle"),
+		new BiName("kn", "ckoo"),
+		new BiName("cky"),
+		new BiName("dle"),
+		new BiName("dd"),
+		new BiName("do"),
+		new BiName("dor"),
+		new BiName("duh"),
+		new BiName("dwan"),
+		new BiName("ga"),
+		new BiName("gar"),
+		new BiName("gle"),
+		new BiName("gump"),
+		new BiName("ham"),
+		new BiName("ho"),
+		new BiName("honk"),
+		new BiName("ja"),
+		new BiName("jack"),
+		new BiName("kan"),
+		new BiName("ll"),
+		new BiName("lm"),
+		new BiName("mm"),
+		new BiName("mak"),
+		new BiName("mnak"),
+		new BiName("mo"),
+		new BiName("mok"),
+		new BiName("mor"),
+		new BiName("mple"),
+		new BiName("nn"),
+		new BiName("nad"),
+		new BiName("nax"),
+		new BiName("njarm"),
+		new BiName("nk"),
+		new BiName("pan"),
+		new BiName("pat"),
+		new BiName("per"),
+		new BiName("ppy"),
+		new BiName("qu", "quod"),
+		new BiName("snax"),
+		new BiName("spat"),
+		new BiName("th"),
+		new BiName("tmo"),
+		new BiName("ton"),
+		new BiName("twax"),
+		new BiName("twod"),
+		new BiName("ty"),
+		new BiName("nt"),
+		new BiName("vap"),
+		new BiName("x"),
+		new BiName("xum"),
+		new BiName("xy"),
+		new BiName("zle"),
+		new BiName("znax"),
+		new BiName("zz"),
+		new BiName("r", "re"),
+		new BiName("t", "tch"),
+		new BiName("the", "theus"),
+		new BiName("li" , "dlus"),
+		new BiName("f" , "fus"),
+		new BiName("ck" , "cus"),
+		new BiName("rc" , "rcus"),
+		new BiName("xi" , "xus"),
+		new BiName("n" , "nus"),
+		new BiName("m" ,"mus"),
+		new BiName("lb" , "lbus"),
+		new BiName("t" , "tus")
+	};
+	
 	public static String firstName(byte fn, byte ln, boolean gender) {
-		int numFN = 63; int numLN = 65;
-		int[] N = {Calc.squeezeByte(fn, 0, numFN),Calc.squeezeByte(ln, 0, numLN)};
-		String[] FN = new String[numFN];
-		String[] LN = new String[numLN];
+		int[] N = {Calc.squeezeByte(fn, 0, SYL1.length),Calc.squeezeByte(ln, 0, SYL2.length)};
 
-
-		FN[0] = "A";
-		FN[1] = "Aha";
-		FN[2] = "Ba";
-		FN[3] = "Bee";
-		FN[4] = "Bla";
-		FN[5] = "Blee";
-		FN[6] = "Blo";
-		FN[7] = "Blou";
-		FN[8] = "Bloo";
-		FN[9] = "Blu";
-		FN[10] = "Bo";
-		FN[11] = "Booba";
-		FN[12] = "Bu";
-		FN[13] = "Cha";
-		FN[14] = "Chee";
-		FN[15] = "Da";
-		FN[16] = "Dee";
-		FN[17] = "Doo";
-		FN[18] = "Du";
-		FN[19] = "Dwa";
-		FN[20] = "E";
-		FN[21] = "Ehe";
-		FN[22] = "Flee";
-		FN[23] = "Flo";
-		FN[24] = "Flou";
-		FN[25] = "Fna";
-		FN[26] = "Fnee";
-		FN[27] = "Fnoo";
-		FN[28] = "Glee";
-		FN[29] = "Glo";
-		FN[30] = "Glu";
-		FN[31] = "Ghee";
-		FN[32] = "Gho";
-		FN[33] = "Gree";
-		FN[34] = "Ho";
-		FN[35] = "Ja";
-		FN[36] = "Kra";
-		FN[37] = "Kree";
-		FN[38] = "Ma";
-		FN[39] = "Mee";
-		FN[40] = "Na";
-		FN[41] = "O";
-		FN[42] = "Oho";
-		FN[43] = "Pra";
-		FN[44] = "Proo";
-		FN[45] = "Pee";
-		FN[46] = "Poko";
-		FN[47] = "Poo";
-		FN[48] = "Plee";
-		FN[49] = "Ploo";
-		FN[50] = "Qua";
-		FN[51] = "Quee";
-		FN[52] = "Roo";
-		FN[53] = "Ru";
-		FN[54] = "Smee";
-		FN[55] = "Spa";
-		FN[56] = "Twa";
-		FN[57] = "Twee";
-		FN[58] = "Vee";
-		FN[59] = "Wee";
-		FN[60] = "Zaza";
-		FN[61] = "Zna";
-		FN[62] = "Znee";
-
-		LN[0] = "bar";
-		LN[1] = "bax";
-		LN[2] = "ber";
-		LN[3] = "ble";
-		LN[4] = "bo";
-		LN[5] = "bonk";
-		LN[6] = "bor";
-		LN[7] = "bod";
-		LN[8] = "cka";
-		LN[9] = "ckle";
-		LN[10] = "cky";
-		LN[11] = "dle";
-		LN[12] = "dd";
-		LN[13] = "do";
-		LN[14] = "dor";
-		LN[15] = "duh";
-		LN[16] = "dwan";
-		LN[17] = "ga";
-		LN[18] = "gar";
-		LN[19] = "gle";
-		LN[20] = "gump";
-		LN[21] = "ham";
-		LN[22] = "ho";
-		LN[23] = "honk";
-		LN[24] = "ja";
-		LN[25] = "kan";
-		LN[26] = "ll";
-		LN[27] = "lm";
-		LN[28] = "mm";
-		LN[29] = "mak";
-		LN[30] = "mnak";
-		LN[31] = "mo";
-		LN[32] = "mok";
-		LN[33] = "mor";
-		LN[34] = "mple";
-		LN[35] = "nad";
-		LN[36] = "nax";
-		LN[37] = "njarm";
-		LN[38] = "nk";
-		LN[39] = "pan";
-		LN[40] = "pat";
-		LN[41] = "per";
-		LN[42] = "ppy";
-		LN[43] = "quod";
-		LN[44] = "snax";
-		LN[45] = "spat";
-		LN[46] = "tmo";
-		LN[47] = "ton";
-		LN[48] = "twax";
-		LN[49] = "twod";
-		LN[50] = "ty";
-		LN[51] = "nt";
-		LN[52] = "vap";
-		LN[53] = "x";
-		LN[54] = "xum";
-		LN[55] = "xy";
-		LN[56] = "zle";
-		LN[57] = "znax";
-		LN[58] = "jack";
-		LN[59] = (gender == Defs.FEMALE ? "rc" : "rcus");
-		LN[60] = (gender == Defs.FEMALE ? "x" : "xus");
-		LN[61] = (gender == Defs.FEMALE ? "n" : "nus");
-		LN[62] = (gender == Defs.FEMALE ? "m" : "mus");
-		LN[63] = (gender == Defs.FEMALE ? "lb" : "lbus");
-		LN[64] = (gender == Defs.FEMALE ? "t" : "tus");
-
+		String p1 = SYL1[N[0]], p2 = SYL2[N[1]].get(gender);
+		
 		String suffix = "";
 		if (gender == Defs.FEMALE) {
 			switch ((fn * ln) % 3) {
@@ -161,8 +205,16 @@ public class GobName {
 			}
 		}
 		
-		return FN[N[0]]+LN[N[1]]+suffix;
+		return p1 + p2 + suffix;
 	}
+	
+	private static class BiName {
+		private final String n1, n2;
+		BiName(String s) {n1=s; n2=s;}
+		BiName(String s1, String s2) {n1=s1; n2=s2;}
+		protected String get(boolean gender) {return gender == Defs.FEMALE ? n1 : n2;}
+	}
+	
 	public static String fullName(Clan goblin) {return fullName(goblin, goblin.getFirstName(), 0);}
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}

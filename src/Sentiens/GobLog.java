@@ -7,6 +7,7 @@ import Defs.P_;
 import Descriptions.Naming;
 import Descriptions.XWeapon;
 import Game.*;
+import Sentiens.Law.Commandment;
 
 public class GobLog {
 	
@@ -108,7 +109,11 @@ public class GobLog {
 			public String out() {return "Assigned " + c.getNomen() + " to " + m.getDesc(c) + (replaced != null ? ", replacing " + replaced.getNomen() : "");}
 		};
 	}
-
+	public static Reportable decidedMoral(final Commandment c, final boolean enabled) {
+		return new Reportable() {
+			public String out() {return "Decided that to " + c.getVerb() + " is " + (enabled ? "" : "not ") + "a sin";}
+		};
+	}
 	public static Reportable converted(final Clan target, final boolean success) {
 		return new Reportable() {
 			public String out() {return (success ? "Converted " : "Failed to convert ") + target.getNomen();}

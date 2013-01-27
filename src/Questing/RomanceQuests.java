@@ -10,7 +10,7 @@ import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.Quest.*;
 
 public class RomanceQuests {
-	public static QuestFactory getFactory() {return new QuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
+	public static QuestFactory getMinistryFactory() {return new QuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
 
 	public static class BreedWithBossQuest extends BreedQuest {
 		public BreedWithBossQuest(Clan P) {super(P); Clan boss = P.getBoss(); target = boss != Me ? boss : null;}

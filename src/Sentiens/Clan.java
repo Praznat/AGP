@@ -1,5 +1,7 @@
 package Sentiens;
 
+import java.util.*;
+
 import AMath.Calc;
 import Defs.*;
 import Descriptions.*;
@@ -11,7 +13,7 @@ import Sentiens.GobLog.Book;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 
-public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyComparable {
+public class Clan implements Defs, Stressor.Causable {
 	protected static final int DMC = 10; //daily millet consumption
 	//protected static final int MEMORY = 8;
 	//bio
@@ -53,6 +55,7 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 	public Memory MB;
 	protected int lastBeh, lastBehN;
 	protected Book goblog = new Book();
+	protected Collection<DeathListener> deathListeners = new ArrayList<DeathListener>();
 	
 	public Clan() {}
 	public Clan(Shire place, int id) {
@@ -91,6 +94,12 @@ public class Clan implements Defs, Stressor.Causable, Avatar.SubjectivelyCompara
 			MB.QuestStack.peek().pursue();
 		}
 		setActive(true);
+	}
+	
+	public void die() {
+		// stuff happens
+		for (DeathListener dl : deathListeners) {dl.onDeathOf(this);}
+		// remove from populations
 	}
 	
 	public int getID() {return ID;}
