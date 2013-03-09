@@ -319,8 +319,8 @@ public class Questy implements Defs {
 			Me.addReport(GobLog.demandRespect(victim, respected));
 			if (respected) {Me.FB.upPrest(P_.TYRRP);  success(victim); break;}   else {Me.FB.downPrest(P_.RSPCP);}
 			Report += "You attempt to best " + victim.getNomen() + " in combat." + System.getProperty("line.separator");
-			Report += "Your " + Me.FB.getPrs(P_.MARTIALP) + " vs " + Naming.possessive(victim) + " " + victim.FB.getPrs(P_.MARTIALP) + System.getProperty("line.separator");
-			final boolean won = betterValueThan(Me, victim, P_.MARTIALP.ordinal());
+			Report += "Your " + Me.FB.getPrs(P_.COMBAT) + " vs " + Naming.possessive(victim) + " " + victim.FB.getPrs(P_.COMBAT) + System.getProperty("line.separator");
+			final boolean won = betterValueThan(Me, victim, P_.COMBAT.ordinal());
 			Me.addReport(GobLog.handToHand(victim, won));
 			if(won) {Me.FB.upPrest(P_.TYRRP);   success(victim); break;}
 			Me.FB.downPrest(P_.TYRRP);   failure(victim); break;

@@ -166,7 +166,7 @@ public class TestMarkets extends Testing {
 	private static Clan setupClanForWork(Shire s, Clan clan, Act act) {
 		clan.setJob(new Job(act.getDesc() + " Pro", act));
 		clan.MB.newQ(new LaborQuest(clan));
-		setClanMemMax(clan, P_.ARITHMETICP);
+		setClanMemMax(clan, P_.ARITHMETIC);
 		setClanMemMin(clan, M_.MADNESS);
 		return clan;
 	}

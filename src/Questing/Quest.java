@@ -5,7 +5,6 @@ import Avatar.*;
 import Defs.Q_;
 import Game.AGPmain;
 import Questing.AllegianceQuests.AllegianceQuest;
-import Questing.PersecutionQuests.PersecuteForeigner;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.PowerStartingQuests.IndPowerQuest;
@@ -103,9 +102,9 @@ public abstract class Quest {
 		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
+		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
 		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
-		case PERSECUTEFOREIGNER: quest = new PersecuteForeigner(clan); break;
 		default: quest = new DefaultQuest(clan); break;
 		}
 		return quest;

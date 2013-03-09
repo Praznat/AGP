@@ -10,43 +10,47 @@ public class MinisterNames {
 	
 //	JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, GUILDMASTER, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT
 
+	private static boolean isGovt(Clan clan) {
+		final Clan boss = clan.getBoss();
+		return boss.myShire().getGovernor() == boss;
+	}
 	
 	public static final String getMinistryName(Ministry m, Clan c) {
 		if (m == Job.JUDGE) {
-			return c.getMinionTotal() > 20 ? "Judge" : ("Priest" + (c.getGender() == Defs.FEMALE ? "ess" : ""));
+			return isGovt(c) ? "Judge" : ("Priest" + (c.getGender() == Defs.FEMALE ? "ess" : ""));
 		}
 		else if (m == Job.NOBLE) {
-			return c.getMinionTotal() > 20 ? "Noble" : "Minion";
+			return isGovt(c) ? "Noble" : "Minion";
 		}
 		else if (m == Job.HISTORIAN) {
-			return c.getMinionTotal() > 20 ? "Historian" : "Bard";
+			return isGovt(c) ? "Historian" : "Bard";
 		}
 		else if (m == Job.PHILOSOPHER) {
-			return c.getMinionTotal() > 20 ? "Philosopher" : "Scribe";
+			return isGovt(c) ? "Wiseman" : "Scribe";
 		}
-		else if (m == Job.GUILDMASTER) {
-			return c.getMinionTotal() > 20 ? "Guildmaster" : "Specialist";
+		else if (m == Job.TUTOR) {
+			return isGovt(c) ? "Grand tutor" : "Tutor";
 		}
 		else if (m == Job.SORCEROR) {
-			return c.getMinionTotal() > 20 ? "Sorcer" + (c.getGender() == Defs.FEMALE ? "ess" : "or") : "Shaman";
+			return isGovt(c) ? "Sorcer" + (c.getGender() == Defs.FEMALE ? "ess" : "or") : "Shaman";
 		}
 		else if (m == Job.VIZIER) {
-			return c.getMinionTotal() > 20 ? "Vizier" : "Bureaucrat";
+			return isGovt(c) ? "Vizier" : "Bureaucrat";
 		}
 		else if (m == Job.GENERAL) {
-			return c.getMinionTotal() > 20 ? "General" : "Soldier";
+			return isGovt(c) ? "General" : "Soldier";
 		}
 		else if (m == Job.TREASURER) {
-			return c.getMinionTotal() > 20 ? "Treasurer" : "Accountant";
+			return isGovt(c) ? "Treasurer" : "Accountant";
 		}
 		else if (m == Job.COURTESAN) {
-			return c.getMinionTotal() > 20 ? "Courtesan" : "Consort";
+			return isGovt(c) ? "Courtesan" : "Consort";
 		}
 		else if (m == Job.APOTHECARY) {
-			return c.getMinionTotal() > 20 ? "Apothecary" : "Healer";
+			return isGovt(c) ? "Apothecary" : "Healer";
 		}
 		else if (m == Job.ARCHITECT) {
-			return c.getMinionTotal() > 20 ? "Architect" : "Builder";
+			return isGovt(c) ? "Architect" : "Builder";
 		}
 		else {return "Servant";}
 	}

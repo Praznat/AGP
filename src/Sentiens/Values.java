@@ -101,7 +101,7 @@ public class Values implements Defs {
 			return compare(value(POV, A), value(POV, B));
 		}
 		public double compare(double A, double B) {return logComp(A, B);}
-		public double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {return content + curval;}
+		protected double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {return content + curval;}
 		@Override
 		public final double evaluate(Clan evaluator, Clan proposer, int content) {
 			double curVal = value(evaluator, evaluator);
@@ -147,7 +147,7 @@ public class Values implements Defs {
 	
 	public static final Value ALLEGIANCE = new ValuatableValue(M_.S_LOYALTY, "", Q_.LOYALTYQUEST, Job.NOBLE, new P_[] {}) {
 		@Override
-		public String description(Clan POV) {return "Honor - Allegiance" + (POV != null && POV != POV.FB.getBoss() ? " to " + POV.FB.getDiscName(Defs.BOSS) : "");}
+		public String description(Clan POV) {return "Honor - Allegiance" + (POV != null && POV != POV.getBoss() ? " to " + POV.getBoss() : "");}
 		@Override
 		public double compare(double A, double B) {return logComp(1 / A, 1 / B);}
 		@Override
@@ -155,8 +155,8 @@ public class Values implements Defs {
 			return (clan.myOrder() == POV.myOrder() ? clan.distanceFromTopBoss() : Integer.MAX_VALUE);
 		}
 		@Override
-		public double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {
-			return content + (proposer.FB.getBoss() == evaluator.FB.getBoss() ? curval : 0);
+		protected double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {
+			return value(evaluator, proposer);
 		}
 	};
 	

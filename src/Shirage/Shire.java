@@ -42,6 +42,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	private Clan[] census;
 	private int popk;
 	private Plot linkedPlot;
+	private Clan governor;
 	
 	private byte[] lastvars = new byte[numVars];
 	private byte[] vars = new byte[numVars];
@@ -161,7 +162,8 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	
 	public int getX() {return xcoor;}
 	public int getY() {return ycoor;}
-	public int getID() {return xcoor + ycoor * AGPmain.getShiresX();}
+	private static int getID(int x, int y) {return x + y * AGPmain.getShiresX();}
+	public int getID() {return getID(xcoor, ycoor);}
 	public int distanceFrom(Shire S) {
 		if (S == this) {return 0;}
 		//should ideally count how many steps to get to S, but for now...
@@ -191,6 +193,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		}
 		popsize = sum;
 	}
+	public static String getName(int x, int y) {return Naming.randShireName(getID(x, y));}
 	public String getName() {return Naming.randShireName(getID());}
 	public MktAbstract getMarket(int g) {return markets[g];}
 	public int getResource(int r) {
@@ -233,6 +236,10 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 
 
 	public Plot getLinkedPlot() {return linkedPlot;}
+
+	public Clan getGovernor() {return governor;}
+
+	public void setGovernor(Clan clan) {this.governor = clan;}
 	
 	
 }

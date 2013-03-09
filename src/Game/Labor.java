@@ -2,6 +2,7 @@ package Game;
 
 import AMath.Calc;
 import Defs.*;
+import Questing.*;
 import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;
 
@@ -133,7 +134,7 @@ public class Labor implements Act, Defs {
 		if (Calc.pMem(doer.useBeh(M_.MADNESS))) {
 			ponder(doer);
 		} else {
-			learnSkill(doer);
+			ExpertiseQuests.practiceSkill(doer, skill);
 		}
 	}
 
@@ -148,42 +149,6 @@ public class Labor implements Act, Defs {
 			doer.addReport(GobLog.discovery(J));
 			doer.setAspiration(J);
 		}
-	}
-
-	private void learnSkill(Clan doer) {
-		final int meatModifier = (doer.eatMeat() ? 2 : 1);
-		final int pctStrDown = 5 / meatModifier;
-		final int pctStrUp = 15 * meatModifier;
-		boolean success = false;
-		if (skill == null) {
-			if (Calc.pPercent(pctStrDown)) {
-				doer.FB.downPrest(P_.STRENGTH);
-			}
-			return; // strength down
-		}
-		switch (skill) {
-		case STRENGTH:
-			if (Calc.pPercent(pctStrUp)) {
-				success = true; doer.FB.upPrest(P_.STRENGTH);
-			}
-			break; // strength up
-		case ARTISTRY:
-		case LOBOTOMY:
-			if (Calc.pPercent(pctStrDown)) {
-				doer.FB.downPrest(P_.STRENGTH);
-			} // strength down
-		case MARKSMANSHIP:
-		case MASONRY:
-		case CARPENTRY:
-		case SMITHING:
-			if (Calc.pPercent(16 - doer.FB.getPrs(skill))) {
-				success = true; doer.FB.upPrest(skill);
-			}
-			break; // strength unchanged
-		default:
-			break;
-		}
-		if (success) {doer.addReport(GobLog.practice(skill));}
 	}
 
 	public P_ skill() {

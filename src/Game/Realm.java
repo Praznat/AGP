@@ -47,6 +47,7 @@ public class Realm {
 		MktVarGetters = VarGetter.mktVGs();
 	}
 	public void goOnce() {
+		day++;
 		int[] order = Calc.randomOrder(popSize());
 		for (int i = 0; i < 1; i++) {
 			for (int p : order) {

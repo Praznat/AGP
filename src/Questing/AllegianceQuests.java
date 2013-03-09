@@ -18,11 +18,11 @@ public class AllegianceQuests {
 		@Override
 		public void pursue() {
 			if (Me.getBoss() == Me) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
-			// test if respect still strong
-			double resp = Me.conversation(Me.getBoss());
-			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {
-				// desert ?
-			}
+			// test if respect still strong (THIS STUFF SHOULD BE DONE BY WISEMAN)
+//			double resp = Me.conversation(Me.getBoss());
+//			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {
+//				// desert ?
+//			}
 			Ministry proposedMinistry = getMinistryProposal(Me);
 			Service proposedService = proposedMinistry.getService();
 			// first inquire if proposedMinistry can pay more than current job

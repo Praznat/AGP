@@ -199,14 +199,6 @@ public interface Defs {
 //	public static final int numMems = HAIRS+1;
 	
 	
-	
-	//DISCS
-	public static final int CREED = 0;
-	public static final int LORD = 1;
-	public static final int HOMELAND = 2;
-	
-	
-	
 	//Quests
 	public static final int BREED = 0;
 	public static final int FINDMATE = 1;

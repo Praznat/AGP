@@ -1,14 +1,9 @@
 package Game;
 
-import Defs.M_;
-import Defs.Q_;
-import Game.Do.*;
-import Sentiens.Clan;
-import Sentiens.Stressor;
-import Sentiens.Values;
+import Defs.*;
+import Game.Do.ClanAction;
+import Sentiens.*;
 import Sentiens.Values.Assessable;
-import Sentiens.Values.Value;
-import Shirage.Shire;
 
 
 //I WILL: (proposer)   proposer initiates from Quest pursue() method
@@ -58,7 +53,6 @@ public class Contract {   // AND/OR combination of Terms
 	 * TODO: probably needs a special term for violating Heresy law
 	 */
 	public void setDemandConversion() {setDemand((Assessable)Values.CREED, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
-	public void setDemandExile() {setDemand(EXILE, 0, Do.NATURALIZE_HERE); Do.NATURALIZE_HERE.setup(evaluator, 0);}
 	public void setDemandQuest(Q_ q) {setDemand(NEWQUEST, q.ordinal(), null);}
 	
 	private int renegotiationTimes() {return Math.min(evaluator.useBeh(M_.PATIENCE), proposer.useBeh(M_.PATIENCE)) / 3;}

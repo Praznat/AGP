@@ -3,8 +3,7 @@ package Game;
 import Defs.P_;
 import Descriptions.Naming;
 import Markets.MktO;
-import Sentiens.Clan;
-import Sentiens.Values;
+import Sentiens.*;
 import Shirage.Shire;
 
 public class VarGetter implements Defs {
@@ -39,6 +38,8 @@ public class VarGetter implements Defs {
 	private static final int SHIRENAME = 3;
 	private static final int CLANORDER = 4;
 	private static final int CLANASPIRATION = 5;
+	private static final int CLANBOSS = 6;
+	private static final int CLANCREED = 7;
 	
 	
 	private String varName;
@@ -48,16 +49,15 @@ public class VarGetter implements Defs {
 		varName = n; type = t; var = v;
 	}
 	public static VarGetter[] popVGs() {
-		VarGetter[] all = new VarGetter[14 + Values.All.length + P_.values().length - 1];
+		VarGetter[] all = new VarGetter[13 + Values.All.length + P_.values().length - 1];
 		int k = 0;
 		all[k++] = new VarGetter("Name", CLANBASIC, CLANNAME);
 		all[k++] = new VarGetter("Job", CLANBASIC, CLANJOB);
 		all[k++] = new VarGetter("Quest", CLANBASIC, CLANQUEST);
 		all[k++] = new VarGetter("Location", CLANBASIC, SHIRENAME);
 		all[k++] = new VarGetter("Order", CLANBASIC, CLANORDER);
-		all[k++] = new VarGetter("Creed", CLANDISCS, CREED);
-		all[k++] = new VarGetter("Ruler", CLANDISCS, LORD);
-		all[k++] = new VarGetter("Homeland", CLANDISCS, HOMELAND);
+		all[k++] = new VarGetter("Creed", CLANBASIC, CLANCREED);
+		all[k++] = new VarGetter("Ruler", CLANBASIC, CLANBOSS);
 		all[k++] = new VarGetter("Aspiration", CLANBASIC, CLANASPIRATION);
 		all[k++] = new VarGetter("1stValue", CLANRANKSANCS, 0);
 		all[k++] = new VarGetter("2ndValue", CLANRANKSANCS, 1);
@@ -108,7 +108,6 @@ public class VarGetter implements Defs {
 			case CLANNAME: dude.getID();
 			case SHIRENAME: dude.myShire().getID();
 			}
-		case CLANDISCS: return dude.FB.getDisc(var);
 		case CLANSANCPCTS: return dude.FB.getSancPct(Values.All[var]);
 		case CLANPRESTS: return dude.FB.getPrs(var);
 		case CLANBEHS: return dude.FB.getBeh(var);
@@ -133,12 +132,13 @@ public class VarGetter implements Defs {
 			switch(var) {
 			case CLANNAME: return dude.getNomen();
 			case CLANJOB: return dude.getJob().getDesc(dude);
+			case CLANBOSS: return dude.getBoss().getNomen();
+			case CLANCREED: return dude.FB.getDeusName();
 			case CLANASPIRATION: return dude.getAspiration().getDesc();
 			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "None" : dude.MB.QuestStack.peek().shortName());
 			case CLANORDER: return (dude.myOrder() == null ? "None" : dude.myOrder().getFollowerName());
 			case SHIRENAME: return dude.myShire().getName();
 			}
-		case CLANDISCS: return dude.FB.getDiscName(var);
 		case CLANRANKSANCS: return dude.FB.valueInPriority(var).toString();
 		case CLANSANCPCTS: return getVarInt(dude) + "%";
 		case CLANPRESTS: case CLANBEHS: return (int) Math.round((double)getVarInt(dude) / 16) + "%";

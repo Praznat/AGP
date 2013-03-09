@@ -31,7 +31,7 @@ public class Clan implements Defs, Stressor.Causable {
 	protected int[] inventory; //OBSOLETE
 	private short specialweapon;
 	protected int expIncome;
-	//protected Clan Boss;
+	protected Clan boss;
 	protected Order order;
 	protected int myB;
 	protected int minionB;
@@ -60,7 +60,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public Clan(Shire place, int id) {
 		currentShire = place;
 		ID = id;
-//		Boss = this;
+		boss = this;
 		suitor = ID;
 		assets = new int[numAssets];
 		assets[millet] = 1000;
@@ -124,7 +124,7 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public void breed(Clan mate) {numSpawns++;}
 	
-	public Clan getBoss() {return FB.getBoss();}
+	public Clan getBoss() {return boss;}
 	public Clan getTopBoss() { //i think broken
 		if (getBoss() == null) {Calc.p(""+1/0); return this;}
 		if (this == getBoss()) {return this;}
@@ -164,7 +164,7 @@ public class Clan implements Defs, Stressor.Causable {
 		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
 		Clan oldBoss = this.getBoss();
 		if (oldBoss != this) {oldBoss.removeMinion(this);}
-		this.FB.setDisc(BOSS, newBoss.getID());
+		this.boss = newBoss;
 		if (newBoss != this) {newBoss.addMinion(this);}
 		if(newBoss.myOrder() == null) {Order.createBy(newBoss);}
 		joinOrder(newBoss.myOrder());

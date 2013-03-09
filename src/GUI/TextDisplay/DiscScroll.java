@@ -1,13 +1,10 @@
 package GUI.TextDisplay;
 
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 
-import Descriptions.Naming;
-import Descriptions.XWeapon;
+import Descriptions.*;
 import GUI.PopupAbstract;
-import Game.*;
+import Game.Defs;
 import Sentiens.Clan;
 
 public class DiscScroll extends Papyrus {
@@ -25,16 +22,15 @@ public class DiscScroll extends Papyrus {
 		g.drawString(" the " + clan.getJob().getDesc(clan), 2, 15+15*r++);
 		addToClickStrings(clan.myShire(), 20, 15+15*r, g);
 		g.drawString(" of ", 2, 15+15*r++);
-		if (clan.FB.getDisc(Defs.HOMELAND) != clan.myShire().getID()) {
-			g.drawString(" resident of " + clan.myShire().getName(), 2, 15+15*r++);
+		if(clan.getBoss() != clan) {
+			g.drawString(" follower of " + clan.getBoss().getNomen(), 2, 15+15*r++);
 		}
-		if(clan.FB.getDisc(Defs.LORD) != clan.getID()) {
-			g.drawString(" follower of " + clan.FB.getDiscName(Defs.LORD), 2, 15+15*r++);
-		}
-		g.drawString(" believer in the " + clan.FB.getDiscName(Defs.CREED), 2, 15+15*r++);
+		g.drawString(" believer in the " + clan.FB.getDeusName(), 2, 15+15*r++);
 
 		g.drawString("Age: " + clan.getAge(), 2, 15+15*r++);
 		r++;r++;
+		write(g, "Avg Profit:" + clan.getProfitEMA(), r++);
+		write(g, "NAV:" + clan.getNetAssetValue(clan), r++);
 		write(g, "ASSETS:", r++);
 		for (int i = 0; i < Defs.numAssets; i++) {
 			int n = clan.getAssets(i);

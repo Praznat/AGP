@@ -1,14 +1,9 @@
 package Descriptions;
 
 import AMath.Calc;
-import Defs.M_;
-import Defs.P_;
-import Game.AGPmain;
-import Game.Defs;
-import Game.Job;
-import Sentiens.Clan;
-import Sentiens.Ideology;
-import Sentiens.Values;
+import Defs.*;
+import Game.*;
+import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class GobName {
@@ -219,7 +214,7 @@ public class GobName {
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
 		Value V = goblin.FB.getValue(i);
-		if (V == Values.ALLEGIANCE || V == Values.PROPERTY || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.MIGHT || V == Values.SPLENDOR) {
+		if (V == Values.ALLEGIANCE || V == Values.PROPERTY || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.SPLENDOR) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {
 				N = title + " " + N;
@@ -235,7 +230,7 @@ public class GobName {
 			}
 			else {return fullName(goblin, N, i+1);}
 		}
-		if (V == Values.HEALTH) {return N + " the Glutton";}
+		if (V == Values.HEALTH && goblin.getAssets(Defs.meat) > 0) {return N + " the Glutton";}
 		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc(goblin);}
 		
 		return fullName(goblin, N, i+1);

@@ -1,15 +1,11 @@
 package Questing;
 
-import AMath.Calc;
 import Defs.M_;
-import Game.Contract;
-import Game.Defs;
+import Game.*;
 import Questing.Quest.FindTarget;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.TargetQuest;
-import Sentiens.Clan;
-import Sentiens.GobLog;
-import Sentiens.Stressor;
+import Sentiens.*;
 
 public class PersecutionQuests {
 
@@ -63,13 +59,6 @@ public class PersecutionQuests {
 		@Override
 		public String description() {return "Persecute " + (target == null ? "Infidel" : target.getNomen());}
 	}
-	public static class PersecuteForeigner extends PersecuteAbstract {
-		public PersecuteForeigner(Clan P) {super(P); findWhat = new FindForeigner(Me);}
-		@Override
-		protected void setContractDemand() {Contract.getInstance().setDemandExile();}
-		@Override
-		public String description() {return "Persecute " + (target == null ? "Foreigner" : target.getNomen());}
-	}
 
 	public static class FindHeretic extends FindTargetAbstract {
 		public FindHeretic(Clan P) {super(P);}
@@ -97,17 +86,4 @@ public class PersecutionQuests {
 		@Override
 		protected void failure(Stressor.Causable blamee) {failure();}
 	}	
-	public static class FindForeigner extends FindTargetAbstract {
-		public FindForeigner(Clan P) {super(P);}
-		@Override
-		public boolean meetsReq(Clan POV, Clan target) {
-			boolean success = target.FB.getHomeland() != POV.FB.getHomeland();
-			Me.addReport(GobLog.findSomeone((success ? target : null),"foreigner"));
-			return success;
-		}
-		@Override
-		public String description() {return "Find Foreigner";}
-		@Override
-		protected void failure(Stressor.Causable blamee) {failure();}
-	}
 }

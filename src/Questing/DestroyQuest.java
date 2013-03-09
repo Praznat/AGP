@@ -15,7 +15,7 @@ public class DestroyQuest extends TargetQuest {
 	public void pursue() {
 		// TODO Auto-generated method stub
 		if (target == null || victoryCondition.meetsReq(Me, target)) {success();}
-		boolean winorlose = Me.FB.getPrs(P_.MARTIALP) > target.FB.getPrs(P_.MARTIALP);
+		boolean winorlose = Me.FB.getPrs(P_.COMBAT) > target.FB.getPrs(P_.COMBAT);
 		Me.addReport(GobLog.handToHand(target, winorlose));
 		((PersecuteAbstract) upQuest()).failDestroy(); 
 		if (winorlose) {target.AB.add(new Stressor(Stressor.INSULT, Me)); Me.FB.upPrest(P_.TYRRP); success();}

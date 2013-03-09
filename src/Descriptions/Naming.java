@@ -454,10 +454,10 @@ public class Naming implements Defs {
 			case LOBOTOMY : return "Lobotomy";
 			case TRADEP : return "Trading";
 			case INVESTP : return "Investing";
-			case ARITHMETICP : return "Arithmetic";
+			case ARITHMETIC : return "Arithmetic";
 			case STRATEGYP : return "Strategy";
 			case TACTICSP : return "Tactics";
-			case MARTIALP : return "Martial Prowess";
+			case COMBAT : return "Martial Prowess";
 			case ARMORYP : return "Arms Lore";
 			case WPREDICTION : return "Divination";
 			case MPREDICTION : return "Sorcery";

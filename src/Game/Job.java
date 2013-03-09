@@ -91,7 +91,7 @@ public class Job implements Defs, Stressor.Causable {
 	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getMinistryFactory());
 	public static final Ministry HISTORIAN = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
 	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
-	public static final Ministry GUILDMASTER = new Ministry(PropertyQuests.getMinistryFactory());
+	public static final Ministry TUTOR = new Ministry(ExpertiseQuests.getMinistryFactory());
 	public static final Ministry SORCEROR = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
 	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getMinistryFactory());
 	public static final Ministry GENERAL = new Ministry(MightQuests.getMinistryFactory());
@@ -101,7 +101,7 @@ public class Job implements Defs, Stressor.Causable {
 	public static final Ministry ARCHITECT = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
 	
 	public static final Ministry[] ALL_MINISTRIES = {
-		JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, GUILDMASTER, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT
+		JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, TUTOR, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT
 	};
 	
 		

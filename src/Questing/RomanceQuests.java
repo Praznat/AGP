@@ -1,13 +1,12 @@
 package Questing;
 
-import Sentiens.Clan;
-import Sentiens.GobLog;
-import Sentiens.Values;
 import Defs.M_;
-import Game.AGPmain;
 import Game.Defs;
-import Questing.AllegianceQuests.AllegianceQuest;
-import Questing.Quest.*;
+import Questing.Quest.FindTarget;
+import Questing.Quest.FindTargetAbstract;
+import Questing.Quest.QuestFactory;
+import Questing.Quest.TargetQuest;
+import Sentiens.*;
 
 public class RomanceQuests {
 	public static QuestFactory getMinistryFactory() {return new QuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}

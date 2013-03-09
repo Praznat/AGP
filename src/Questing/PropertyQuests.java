@@ -49,7 +49,7 @@ public class PropertyQuests {
 		}
 		@Override
 		public String description() {return chosenAct + " stage " + stage;}
-
+		
 		@Override
 		public void avatarPursue() {
 			if (Me.getJob() instanceof Ministry) {Me.MB.finishQ(); return;}

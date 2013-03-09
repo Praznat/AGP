@@ -1,11 +1,9 @@
 package Sentiens;
 
 import java.util.Date;
-import java.util.Timer;
 
 import Defs.P_;
-import Descriptions.Naming;
-import Descriptions.XWeapon;
+import Descriptions.*;
 import Game.*;
 import Sentiens.Law.Commandment;
 
@@ -146,9 +144,9 @@ public class GobLog {
 			public String out() {return "Dreamt of being a " + job.getDesc();}
 		};
 	}
-	public static Reportable practice(final P_ skill) {
+	public static Reportable practice(final P_ skill, final boolean success) {
 		return new Reportable() {
-			public String out() {return Naming.prestName(skill) + "level up!";}
+			public String out() {return Naming.prestName(skill) + (success ? " level up!" : " practiced");}
 		};
 	}
 	

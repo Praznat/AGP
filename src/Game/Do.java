@@ -159,18 +159,12 @@ public class Do {
 		@Override
 		protected boolean tryExecute() {doer.join(doee);   return true;}
 		@Override
-		public String description() {return doer.getNomen() + " switches allegiance from " + doer.FB.getDiscName(Defs.LORD) + " to " + doee.getNomen();}
+		public String description() {return doer.getNomen() + " switches allegiance from " + doer.getBoss().getNomen() + " to " + doee.getNomen();}
 	};
 	public static final ClanOnClan CONVERT_TO_CREED = new ClanOnClan() {
 		@Override
-		protected boolean tryExecute() {doer.FB.setDisc(Defs.CREED, doee.FB.getDeusInt());   return true;}
+		protected boolean tryExecute() {doer.FB.setCreed(doee.FB.getDeusInt());   return true;}
 		@Override
-		public String description() {return doer.getNomen() + " becomes a follower of the " + doee.FB.getDiscName(Defs.CREED);}
-	};
-	public static final ClanAlone NATURALIZE_HERE = new ClanAlone() {
-		@Override
-		protected boolean tryExecute() {doer.FB.setDisc(Defs.HOMELAND, doer.myShire().getID());   return true;}
-		@Override
-		public String description() {return doer.getNomen() + " becomes native of " + doer.myShire().getName();}
+		public String description() {return doer.getNomen() + " becomes a follower of the " + doee.FB.getDeusName();}
 	};
 }

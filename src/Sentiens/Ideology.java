@@ -6,7 +6,6 @@ import Descriptions.Naming;
 import Game.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Values.Value;
-import Shirage.Shire;
 
 public class Ideology implements Defs {
 
@@ -20,14 +19,13 @@ public class Ideology implements Defs {
 	private byte[] condensed;
 	private Value[] sancs;
 	private int[] sancranks;
-	private int[] discs;
-	private int[] discpts;
+	private int creed;
 	private Clan Me;
 	public Commandments commandments;
 	public Clan getEu() {return Me;}
 
 	public Ideology(Clan i) {   
-		Me = i;   initialize(defaultVars());   this.setPrs(P_.MARTIALP.ordinal(), AGPmain.rand.nextInt(15));
+		Me = i;   initialize(defaultVars());   this.setPrs(P_.COMBAT.ordinal(), AGPmain.rand.nextInt(15));
 		commandments = new Commandments();
 	}
 	
@@ -39,11 +37,7 @@ public class Ideology implements Defs {
 		sancs = new Value[NUMVALS]; //list of sancs ordered from highest to lowest
 		sancranks = new int[NUMVALS]; //rank of sancs in default sanc order
 		defaultSancs();
-		discs = new int[4];
-		discpts = new int[4];
-		discs[CREED] = AGPmain.rand.nextInt();
-		discs[LORD] = getEu().getID();
-		discs[HOMELAND] = Me.getShireID();
+		setCreed(AGPmain.rand.nextInt());
 		
 		//testing - delete later:
 //		for (M_ m : M_.SMems()) {setBeh(m, 0);}
@@ -68,13 +62,6 @@ public class Ideology implements Defs {
 	}
 	public int[] getSancRanks() {return sancranks;}
 	
-	public int getDisc(int plc) {
-		if (plc == CREED) {
-			return discs[plc] & 4095;}
-		else {return discs[plc];}
-	}
-	public void setDisc(int plc, int val) {discs[plc] = val;}
-
 	public int getFac(F_ f) {return getVar(F(f));}
 	public int getBeh(M_ m) {return getVar(B(m));}
 	public int getBeh(int plc) {return getVar(B(plc));}
@@ -295,33 +282,27 @@ public class Ideology implements Defs {
 		return c;
 	}
 
-	
-	public int getDiscPts(int d) {return discpts[d];}
-	public String getDiscName(int d) {
-		switch(d) {
-		case CREED: return getDeusName();
-		case LORD: return (Me != getRex() ? getRex().getNomen() : "Self");
-		case HOMELAND: return getHomeland().getName();
-		default: return "";
-		}
-	}
-	public Clan getRex() {return AGPmain.TheRealm.getClan(getDisc(LORD));}
-	public Shire getHomeland() {return AGPmain.TheRealm.getShire(getDisc(HOMELAND));}
 	public String getDeusName() {
 		int [] deus = getDeusV();
 		return Naming.randGoblinSanctityName(deus);
 	}
 	public int[] getDeusV() {
 		int [] deus = new int[3];
-		int detname = getDisc(CREED);
-		deus[2] = (byte) (detname & 63);
-		deus[1] = (byte) ((detname % 63) & 63);
+		deus[2] = (byte) (creed & 63);
+		deus[1] = (byte) ((creed % 63) & 63);
 		deus[0] = 0;
 		return deus;
 	}
 	public int getDeusInt() {
-		int detname = getDisc(CREED);
-		return ((detname % 63) & 63) * 100 + (detname & 63);
+		return ((creed % 63) & 63) * 100 + (creed & 63);
+	}
+
+	public int getCreed() {
+		return creed;
+	}
+
+	public void setCreed(int creed) {
+		this.creed = creed;
 	}
 	
 	

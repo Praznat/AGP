@@ -20,7 +20,7 @@ public class Discoveries {
 	private static final int STAGE14 = STAGE13 + 20;
 	
 	private void display(String S) {
-		System.out.println(S);
+		System.out.println(S); //goblog
 	}
 	
 	public void discover(int progress) {

@@ -32,7 +32,7 @@ public class Warrior extends SoldierType {
 	}
 	private Rectangle areaOccupied() {return areaOccupied;}
 	
-	public int getProwess() {return getRefClan().FB.getPrs(P_.MARTIALP);}
+	public int getProwess() {return getRefClan().FB.getPrs(P_.COMBAT);}
 	public int getStrength() {return getRefClan().FB.getPrs(P_.STRENGTH);}
 	public int getMarksmanship() {return getRefClan().FB.getPrs(P_.MARKSMANSHIP);}
 	public Clan getRefClan() {return refClan;}

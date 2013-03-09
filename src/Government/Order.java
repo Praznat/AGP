@@ -54,12 +54,15 @@ public class Order {
 		requester.MB.newQ(new PersecuteInfidel(requester));
 	}
 	
-	private String getName() {
-		String S = GobName.firstName(founderName[0], founderName[1], founderGender);
-		if (S.endsWith("a")) {}
+	public static String getName(byte founderName1, byte founderName2, boolean founderGender) {
+		String S = GobName.firstName(founderName1, founderName2, founderGender);
+		if (S.endsWith("a") || S.endsWith("n") || S.endsWith("m")) {}
 		else if (S.endsWith("us")) {S = S.substring(0, S.length()-2) + "a";}
 		else {S += "a";}
 		return S;
+	}
+	private String getName() {
+		return getName(founderName[0], founderName[1], founderGender);
 	}
 	public String getFollowerName() {
 		String S = getName();
