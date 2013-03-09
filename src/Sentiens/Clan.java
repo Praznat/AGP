@@ -48,7 +48,6 @@ public class Clan implements Defs, Stressor.Causable {
 	protected boolean lastSuccess;
 	//protected int act;
 	protected int profitEMA;
-	protected int[][] expTerms; //expected terms (for job)
 	public Ideology FB;
 	public Questy QB;
 	public Amygdala AB;
@@ -122,12 +121,10 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setJob(Job j) {backupJob = job; job = j;}
 	public Job getAspiration() {return aspiration;}
 	public void setAspiration(Job j) {aspiration = j;}
-	public int[][] getExpTerms() {return expTerms;}
-	public void setExpTerms(int[][] ET) {expTerms = ET;}
 	
 	public void breed(Clan mate) {numSpawns++;}
 	
-	public Clan getBoss() {return FB.getRex();}
+	public Clan getBoss() {return FB.getBoss();}
 	public Clan getTopBoss() { //i think broken
 		if (getBoss() == null) {Calc.p(""+1/0); return this;}
 		if (this == getBoss()) {return this;}
@@ -145,6 +142,12 @@ public class Clan implements Defs, Stressor.Causable {
 		else if (hisBoss == him) {return false;}
 		else {return isSomeBossOf(hisBoss, orig);}
 	}
+	public int distanceFromTopBoss() {
+		Clan boss = this; int k = 1;
+		while (boss != boss.getBoss()) {
+			boss = boss.getBoss(); k++;
+		}	return k;
+	}
 	public int getMinionTotal() {return minionN + subminionN;}
 	public int getMinionN() {return minionN;}
 	public int getSubminionN() {return subminionN;}
@@ -161,7 +164,7 @@ public class Clan implements Defs, Stressor.Causable {
 		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
 		Clan oldBoss = this.getBoss();
 		if (oldBoss != this) {oldBoss.removeMinion(this);}
-		this.FB.setDisc(LORD, newBoss.getID());
+		this.FB.setDisc(BOSS, newBoss.getID());
 		if (newBoss != this) {newBoss.addMinion(this);}
 		if(newBoss.myOrder() == null) {Order.createBy(newBoss);}
 		joinOrder(newBoss.myOrder());
@@ -241,15 +244,15 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setActive(boolean a) {active = a;}
 	public boolean isHungry() {return true;}
 	public int getProfitEMA() {return profitEMA;}
-	public void alterProfitEMA(int m) {
-		int p = 50; // =myCreed().continuouses[ADAPTSPEED];
-		profitEMA = (p * m + (100 - p) * profitEMA) / 100;
+	public void alterProfitEMA(double newProfit) {	//should do weekly recalc of change in NAV or something, not handle through work quest (cuz working just puts out offers)
+		double speed = ((double)FB.getBeh(M_.LTMOMENTUM) + FB.getBeh(M_.STMOMENTUM) + 1) / 32; //
+		profitEMA = (int) Math.round(speed * newProfit + (1 - speed) * profitEMA);
 	}
 	
 
 	public long getNetAssetValue(Clan POV) {
-		int sum = 0;   for (int g = 0; g < Defs.numAssets; g++) {
-			int px = POV.myMkt(g).sellablePX(POV);
+		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
+			int px = g != Defs.millet ? POV.myMkt(g).sellablePX(POV) : 1;
 			sum += getAssets(g) * px;
 		}	return sum;
 	}
@@ -329,7 +332,7 @@ public class Clan implements Defs, Stressor.Causable {
     }
     public double confuse(double in) {
     	//returns number between 50%-150% of original number at min arithmetic + max madness
-    	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETICP) + useBeh(M_.MADNESS)) * in / 64);
+    	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETIC) + useBeh(M_.MADNESS)) * in / 64);
     	return in + (x == 0 ? 0 : - x + AGPmain.rand.nextDouble()*x*2);
     }
 	public boolean iHigherMem(int m, Clan other) {
