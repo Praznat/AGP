@@ -4,6 +4,7 @@ import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.*;
 import Game.AGPmain;
+import Questing.Quest.PatronedQuest;
 import Questing.Quest.QuestFactory;
 import Sentiens.*;
 
@@ -15,10 +16,8 @@ public class ExpertiseQuests {
 		P_.ARITHMETIC};
 	
 
-	public static class TeachQuest extends Quest {
-		private final Clan patron;
-		public TeachQuest(Clan P) {this(P, P);}
-		public TeachQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
+	public static class TeachQuest extends PatronedQuest {
+		public TeachQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public String description() {return "Teach Skill";}
 		@Override
@@ -102,7 +101,7 @@ public class ExpertiseQuests {
 			return false; // strength down
 		}
 		final int currPrs = doer.FB.getPrs(skill);
-		final int teacherMod = teacher == null ? 0 : Math.min(0, teacher.FB.getPrs(skill) - currPrs);
+		int pSuccess = 16 - currPrs + (teacher == null ? 0 : Math.min(0, teacher.FB.getPrs(skill) - currPrs));
 		boolean success = false;
 		switch (skill) {
 		case STRENGTH:
@@ -111,6 +110,7 @@ public class ExpertiseQuests {
 			}
 			break; // strength up
 		case ARTISTRY:
+		case PROSE:
 		case LOBOTOMY:
 			if (Calc.pPercent(pctStrDown)) {
 				doer.FB.downPrest(P_.STRENGTH);
@@ -120,8 +120,9 @@ public class ExpertiseQuests {
 		case MASONRY:
 		case CARPENTRY:
 		case SMITHING:
+		case DANCE:
 		case COMBAT:
-			if (Calc.pPercent(16 - currPrs + teacherMod)) {
+			if (Calc.pPercent(pSuccess)) {
 				success = true; doer.FB.upPrest(skill);
 			}
 			break; // strength unchanged

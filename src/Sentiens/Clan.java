@@ -22,6 +22,8 @@ public class Clan implements Defs, Stressor.Causable {
 	private int age;
 
 	protected int numSpawns;
+	private int splendor;
+	private int holiness;
 	protected int suitor; //ID of suitor
 	
 	protected int ID;
@@ -39,7 +41,6 @@ public class Clan implements Defs, Stressor.Causable {
 	protected int minionN;
 	protected int subminionN;
 	protected int pointsBN;
-	protected int numSerfs;
 	//serfs farm, mine, cut trees, and build
 	//serfs revolt against master if not fed
 	//in case of revolt, master replaced with SERF CREED, all other serfs become family
@@ -52,6 +53,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public Questy QB;
 	public Amygdala AB;
 	public Memory MB;
+	public Legacy LB;
 	protected int lastBeh, lastBehN;
 	protected Book goblog = new Book();
 	protected Collection<DeathListener> deathListeners = new ArrayList<DeathListener>();
@@ -80,6 +82,7 @@ public class Clan implements Defs, Stressor.Causable {
 		QB = new Questy(this);
 		AB = new Amygdala(this);
 		MB = new Memory();
+		LB = new Legacy(this);
 	}
 	
 
@@ -123,6 +126,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setAspiration(Job j) {aspiration = j;}
 	
 	public void breed(Clan mate) {numSpawns++;}
+	
+	public int getFamilySize() {return 1 + numSpawns;}
 	
 	public Clan getBoss() {return boss;}
 	public Clan getTopBoss() { //i think broken
@@ -277,6 +282,10 @@ public class Clan implements Defs, Stressor.Causable {
 		return INV;
 	}
 
+	public int getSplendor() {return splendor;}
+	public void chgSplendor(int i) {this.splendor += i;}
+	public int getHoliness() {return holiness;}
+	public void chgHoliness(int i) {this.holiness += i;}
 	public boolean maybeEmigrate() {
 		emigrate();
 		return true;

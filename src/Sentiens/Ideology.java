@@ -16,9 +16,11 @@ public class Ideology implements Defs {
 	private static final Value[] VALUEWOF = new Value[NUMVALS * 15];
 	private static final int[] VALUECUMI = new int[NUMVALS];
 	
+	private static final Value[] tmpGarbage = new Value[NUMVALS];
+	
 	private byte[] condensed;
-	private Value[] sancs;
-	private int[] sancranks;
+	private Value[] sancs = new Value[NUMVALS]; //list of sancs ordered from highest to lowest
+	private int[] sancranks = new int[NUMVALS]; //rank of sancs in default sanc order
 	private int creed;
 	private Clan Me;
 	public Commandments commandments;
@@ -34,8 +36,6 @@ public class Ideology implements Defs {
 		for (int i = 0; i < in.length; i++) {
 			setVar(i, in[i]);
 		}
-		sancs = new Value[NUMVALS]; //list of sancs ordered from highest to lowest
-		sancranks = new int[NUMVALS]; //rank of sancs in default sanc order
 		defaultSancs();
 		setCreed(AGPmain.rand.nextInt());
 		
@@ -182,6 +182,15 @@ public class Ideology implements Defs {
 	public Value randomValueInPriority() {
 		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
 		return sancs[v];
+	}
+	public Value randomValueInPriorityOtherThan(Value not) {
+		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
+		boolean hitNot = false;
+		for (int i = 0; i < sancs.length - 1; i++) {
+			if (sancs[i] == not) {hitNot = true;}
+			tmpGarbage[i] = sancs[i + (hitNot ? 1 : 0)];
+		}
+		return tmpGarbage[v];
 	}
 	public Value getValue(int i) {return sancs[i];}
 	public int weightOfValue(Value V) {

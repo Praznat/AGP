@@ -151,9 +151,9 @@ public class PropertyQuests {
 
 			// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?
 			
-			//but cheap input, but then in next round of doInputs, offer on recently bought cheap input is higher
+			//buy cheap input, but then in next round of doInputs, offer on recently bought cheap input is higher
 			//than alternative, so it doesnt go in totalNeeded..
-			int[] totalNeeded = chosenAct.expIn(Me); //why is first number zero?
+			int[] totalNeeded = chosenAct.expIn(Me); //first number zero for expProfit
 			int[] stillNeeded = Calc.copyArray(totalNeeded);
 			int j;   int i = -1;   while (workmemo[++i] != Defs.E) {
 				int N = workmemoX[i];
@@ -178,12 +178,7 @@ public class PropertyQuests {
 				stage++;   //move on
 			}
 			else {i = 0; while (totalNeeded[++i] != Defs.E) {if(totalNeeded[i] >= 0) {
-				int prevAsk = Me.myMkt(totalNeeded[i]).getAskSz(); //TODO remove
 				Me.myMkt(totalNeeded[i]).liftOffer(Me);   suspendG(totalNeeded[i]);
-				if (Me.myMkt(totalNeeded[i]).getAskSz() != prevAsk - 1 && !(Me.myMkt(totalNeeded[i]) instanceof RentMarket)) {
-					System.out.print("Now " + Me + " observes poop for " + ((MktO)Me.myMkt(Defs.poop)).printOneLineStatus());
-					Calc.p(" ... should have bought instantly"); // remove
-				}
 			}}} //dont lift in case of - (see above)
 		}
 		private void doWork() {

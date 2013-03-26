@@ -38,6 +38,11 @@ public abstract class Quest {
 		@Override
 		public void pursue() {Me.addReport(GobLog.idle()); Me.MB.finishQ();}
 	}
+	public static abstract class PatronedQuest extends Quest {
+		protected Clan patron;
+		public PatronedQuest(Clan P) {this(P, P);}
+		public PatronedQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
+	}
 	public static abstract class TargetQuest extends Quest {
 		protected Clan target;
 		public TargetQuest(Clan P) {super(P);}
@@ -98,9 +103,12 @@ public abstract class Quest {
 		switch(q) {
 		case BREED: quest = new BreedQuest(clan); break;
 		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
-		case CREEDQUEST: quest = new CreedQuests.PriestQuest(clan); break;
+		case CREEDQUEST: quest = new CreedQuests.PriestQuest(clan, clan); break;
 		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
-		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan); break;
+		case SPLENDORQUEST: quest = new SplendorQuests.UpgradeDomicileQuest(clan, clan); break;
+		case FAITHQUEST: quest = new FaithQuests.ContactQuest(clan, clan); break;
+		case LEGACYQUEST: quest = new LegacyQuests.LegacyQuest(clan, clan); break;
+		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan, clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;

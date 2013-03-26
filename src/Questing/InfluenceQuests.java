@@ -7,6 +7,7 @@ import Avatar.*;
 import Defs.M_;
 import Game.*;
 import Government.Order;
+import Questing.Quest.PatronedQuest;
 import Questing.Quest.QuestFactory;
 import Sentiens.*;
 import Sentiens.Values.Value;
@@ -23,12 +24,11 @@ public class InfluenceQuests {
 		}
 	}
 	
-	public static class InfluenceQuest extends Quest {
-		private Clan patron, rival;
+	public static class InfluenceQuest extends PatronedQuest {
+		private Clan rival;
 		private Order myOrder, rivalOrder;
 		private int numFollowers, rivalFollowers;
-		public InfluenceQuest(Clan P) {this(P, P);}
-		public InfluenceQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
+		public InfluenceQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public String description() {return "Expand influence";}
 

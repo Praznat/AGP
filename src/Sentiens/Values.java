@@ -94,7 +94,7 @@ public class Values implements Defs {
 		public ClanAlone doPursuit(Clan clan) {return doPursuit;}
 	}
 
-	private static abstract class ValuatableValue extends AbstractValue implements Assessable {
+	public static abstract class ValuatableValue extends AbstractValue implements Assessable {
 		public ValuatableValue(M_ w, String d, Q_ q, Ministry j, P_[] rs) {super(w, d, q, j, rs);}
 		@Override
 		public double compare(Clan POV, Clan A, Clan B) {
@@ -122,17 +122,19 @@ public class Values implements Defs {
 			new P_[] {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.LOBOTOMY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
-			return (int) Math.min(clan.getNetAssetValue(POV), Integer.MAX_VALUE);
+			return (int) Math.min(clan.getNetAssetValue(POV), Integer.MAX_VALUE/2);
 		}
 	};
 	public static final Value INFLUENCE = new ValuatableValue(M_.S_POPULARITY, "Power - Influence", Q_.BUILDPOPULARITY, Job.VIZIER, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return clan.getMinionTotal() * clan.FB.getPrs(P_.RSPCP);}
+		protected int value(Clan POV, Clan clan) {return clan.getMinionTotal();} // * P_.RSPCT ??
 	};
 
 	//TODO VIRTUE "Honor - Virtue"
 
 	public static final Value CREED = new ValuatableValue(null, "Honor - Creed", Q_.CREEDQUEST, Job.JUDGE, new P_[] {}) {
+		@Override
+		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			int sins = 0;
@@ -149,10 +151,10 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return "Honor - Allegiance" + (POV != null && POV != POV.getBoss() ? " to " + POV.getBoss() : "");}
 		@Override
-		public double compare(double A, double B) {return logComp(1 / A, 1 / B);}
+		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
 		protected int value(Clan POV, Clan clan) { // how far from same Order boss are you
-			return (clan.myOrder() == POV.myOrder() ? clan.distanceFromTopBoss() : Integer.MAX_VALUE);
+			return -(clan.myOrder() == POV.myOrder() ? clan.distanceFromTopBoss() : Integer.MAX_VALUE/2);
 		}
 		@Override
 		protected double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {
@@ -160,7 +162,7 @@ public class Values implements Defs {
 		}
 	};
 	
-	public static final Value LEGACY = new ValuatableValue(null, "Honor - Legacy", null, Job.HISTORIAN, new P_[] {}) {
+	public static final Value LEGACY = new ValuatableValue(null, "Honor - Legacy", Q_.LEGACYQUEST, Job.HISTORIAN, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			//TODO
@@ -168,11 +170,11 @@ public class Values implements Defs {
 		}
 	};
 	
-	public static final Value SPLENDOR = new ValuatableValue(M_.S_THREAT, "Luxury - Splendor", null, Job.ARCHITECT,
+	public static final Value SPLENDOR = new ValuatableValue(M_.S_THREAT, "Luxury - Splendor", Q_.SPLENDORQUEST, Job.ARCHITECT,
 			new P_[] {P_.MASONRY, P_.ARTISTRY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
-			return clan.getAssets(Defs.land);  //should be MONUMENTS
+			return clan.getSplendor();  //should be MONUMENTS
 		}
 	};
 	public static final Value BEAUTY = new ValuatableValue(M_.S_NOSELEN, "Luxury - Beauty", Q_.BREED, Job.COURTESAN, new P_[] {}) {
@@ -209,7 +211,7 @@ public class Values implements Defs {
 			return 0;
 		}
 	};
-	public static final Value SPIRITUALITY = new ValuatableValue(M_.S_SKILL, "Mind - Spirituality", Q_.BREED, Job.SORCEROR, new P_[] {}) {
+	public static final Value FAITH = new ValuatableValue(M_.S_SKILL, "Mind - Faith", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			//TODO
@@ -226,7 +228,7 @@ public class Values implements Defs {
 
 	private static final Value[] AllValues = new Value[] {
 		PROPERTY, INFLUENCE, MIGHT, SPLENDOR, HEALTH, BEAUTY,
-		ALLEGIANCE, CREED, LEGACY, WISDOM, SPIRITUALITY, EXPERTISE
+		ALLEGIANCE, CREED, LEGACY, WISDOM, FAITH, EXPERTISE
 	};
 	private static Value[] filterTodos(Value[] varray) {
 		Set<Value> set = new HashSet<Value>();
@@ -255,6 +257,9 @@ public class Values implements Defs {
 	}
 	public static double logComp(final double a, final double b) {
 		return Math.min(Math.max(Math.log((a+1) / (b+1)), MINVAL), MAXVAL);
+	}
+	public static double logCompNeg(final double a, final double b) {
+		return Math.min(Math.max(Math.log((b-1) / (a-1)), MINVAL), MAXVAL);
 	}
 	public static double fourbitComp(int a, int b) {
 		return ((double) (a - b) * MAXVAL) / (double) 15;

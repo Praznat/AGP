@@ -19,14 +19,14 @@ public class Law {
 		}
 	}
 	public static class Commandments {
-		public Commandment Murder = Murder();
-		public Commandment Theft = Theft();
-		public Commandment Adultery = Adultery();
-		public Commandment Heresy = Heresy();
-		public Commandment Deception = Deception();
-		public Commandment Witchcraft = Witchcraft();
-		public Commandment Carnivory = Carnivory();
-		public Commandment[] list = new Commandment[] {Murder, Theft, Adultery, Heresy};
+		public final Commandment Murder = Murder();
+		public final Commandment Theft = Theft();
+		public final Commandment Adultery = Adultery();
+		public final Commandment Heresy = Heresy();
+		public final Commandment Deception = Deception();
+		public final Commandment Witchcraft = Witchcraft();
+		public final Commandment Carnivory = Carnivory();
+		public final Commandment[] list = new Commandment[] {Murder, Theft, Adultery, Heresy};
 	}
 
 	public static final Commandment Murder() {

@@ -2,6 +2,7 @@ package Questing;
 
 import AMath.Calc;
 import Avatar.SubjectiveType;
+import Questing.Quest.PatronedQuest;
 import Questing.Quest.QuestFactory;
 import Sentiens.*;
 import Sentiens.Law.Commandment;
@@ -9,9 +10,8 @@ import Sentiens.Law.Commandment;
 public class CreedQuests {
 	public static QuestFactory getMinistryFactory() {return new QuestFactory(PriestQuest.class) {public Quest createFor(Clan c) {return new PriestQuest(c, c.getBoss());}};}
 
-	public static class TweakCommandments extends Quest {
-		private final Clan patron;
-		public TweakCommandments(Clan P, Clan patron) {super(P); this.patron = patron;}
+	public static class TweakCommandments extends PatronedQuest {
+		public TweakCommandments(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public String description() {return "Moral Reflection";}
 
@@ -35,10 +35,8 @@ public class CreedQuests {
 		}
 	}
 
-	public static class PriestQuest extends Quest {
-		private final Clan patron;
-		public PriestQuest(Clan P) {this(P, P);}
-		public PriestQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
+	public static class PriestQuest extends PatronedQuest {
+		public PriestQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public String description() {return "Sacred Duty";}
 		@Override

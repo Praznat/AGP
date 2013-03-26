@@ -257,6 +257,8 @@ public interface Defs {
 	public static final int bow = 11;
 	public static final int gun = 12;
 	public static final int xweapon = 13;
+	public static final int captive = 14; //has own market type, each one points to Legacy info in case freed as regular character
+
 	//non-assets:
 	public static final int rentland = 15;
 	public static final int rentanimal = 16;
