@@ -58,7 +58,9 @@ public class RomanceQuests {
 
 		@Override
 		public void pursue() {
+			// set suitor somewhere??
 			Clan rival = target.getSuitor();
+			if (rival == null) {rival = target;}
 			if (rival == Me) {success(); return;}
 			double diff = target.FB.randomValueInPriority().compare(target, Me, rival);
 			if (rival != target) {diff -= Values.MAXVAL * (15 - target.useBeh(M_.PROMISCUITY)) / 15;} //if shes not single, ur penalized the less promiscuous she is
@@ -74,9 +76,9 @@ public class RomanceQuests {
 		@Override
 		public void failure() {((BreedQuest) upQuest()).courtFailed(); super.failure();}
 		@Override
-		public String shortName() {Clan rival = target.getSuitor(); return (rival==Me || rival==target ? "Court" : "Compete");}
+		public String shortName() {Clan rival = target.getSuitor(); return (rival==Me || rival==null ? "Court" : "Compete");}
 		@Override
-		public String description() {Clan rival = target.getSuitor(); return (rival==Me || rival==target ? "Court " + target.getNomen() : 
+		public String description() {Clan rival = target.getSuitor(); return (rival==Me || rival==null ? "Court " + target.getNomen() : 
 			"Steal " + target.getNomen() + "'s heart away from " + rival.getNomen());}
 	}
 	

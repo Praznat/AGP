@@ -31,6 +31,10 @@ public class Ideology implements Defs {
 		commandments = new Commandments();
 	}
 	
+	public Ideology() {
+		initialize(defaultVars());
+	}
+	
 	public void initialize(int[] in) {
 		condensed = new byte[(in.length+1)/2];
 		for (int i = 0; i < in.length; i++) {
@@ -39,9 +43,6 @@ public class Ideology implements Defs {
 		defaultSancs();
 		setCreed(AGPmain.rand.nextInt());
 		
-		//testing - delete later:
-//		for (M_ m : M_.SMems()) {setBeh(m, 0);}
-//		setBeh(M_.S_SILVER, 10);   setBeh(M_.S_MONEY, 5);
 	}
 	public int numVars() {return condensed.length * 2;}
 	
@@ -57,12 +58,16 @@ public class Ideology implements Defs {
 		setVar(plc, getVar(plc) + amt);
 	}
 	public int getVar(int plc) {
+		return getVar(plc, condensed);
+	}
+	public static int getVar(int plc, byte[] V) {
 		int mask = 0xf << ((plc%2==1)? 0 : 4);
-		return (condensed[plc/2] & mask) >> ((plc%2==1)? 0 : 4);
+		return (V[plc/2] & mask) >> ((plc%2==1)? 0 : 4);
 	}
 	public int[] getSancRanks() {return sancranks;}
 	
 	public int getFac(F_ f) {return getVar(F(f));}
+	public void setFac(F_ f, int val) {setVar(F(f), val);}
 	public int getBeh(M_ m) {return getVar(B(m));}
 	public int getBeh(int plc) {return getVar(B(plc));}
 	public void setBeh(M_ m, int val) {setVar(B(m), val);}
@@ -89,9 +94,16 @@ public class Ideology implements Defs {
 	public static int B(int plc) {return plc + NUMPRESTS;}
 	public static int B(M_ m) {return m.ordinal() + NUMPRESTS;}
 	public static int unP(int x) {return x;}
-	public static int F(int plc) {return plc + NUMPRESTS + NUMBEHS;}
-	public static int F(F_ f) {return f.ordinal() + NUMPRESTS + NUMBEHS;}
-	public static int unF(int x) {return x - NUMPRESTS - NUMBEHS;}
+	private static final int FSTARTPLC = NUMPRESTS + NUMBEHS;
+	public static int F(int plc) {return plc + FSTARTPLC;}
+	public static int F(F_ f) {return f.ordinal() + FSTARTPLC;}
+	public static int unF(int x) {return x - FSTARTPLC;}
+	
+	public byte[] copyFs() {
+		byte[] result = new byte[condensed.length - FSTARTPLC/2];
+		System.arraycopy(condensed, FSTARTPLC/2, result, 0, result.length);
+		return result;
+	}
 	
 
 	private void defaultSancs() {

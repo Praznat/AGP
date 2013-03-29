@@ -3,7 +3,7 @@ package Avatar;
 import java.awt.event.*;
 import java.util.*;
 
-import javax.swing.JButton;
+import javax.swing.*;
 
 import AMath.Calc;
 import GUI.*;
@@ -16,7 +16,7 @@ import Sentiens.Values.Value;
 public class AvatarConsole extends APanel implements ActionListener {
 	private Clan avatar;
 	private final int DESWID = 200;
-	private final int DESHGT = 200;
+	private final int DESHGT = 250;
 	private final int BUFFX = 5;
 	private final int BUFFY = 5;
 	private final int BUTTW = 150;
@@ -30,6 +30,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final String PURSUEQUEST = "Pursue Quest";
 	private final String STEPONCE = "Step Once";
 	private final String STEP100 = "100 Turns";
+	private final String VIEWSPAWN = "View Spawn";
 	
 	private final SubjectiveComparator comparator;
 	public final TreeSet choices;
@@ -46,7 +47,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 		setButton(PURSUEQUEST, KeyEvent.VK_P);
 		setButton(STEPONCE, KeyEvent.VK_S);
 		setButton(STEP100, -1);
-		
+		setButton(VIEWSPAWN, -1);
 	}
 	public static AvatarConsole create(GUImain P) {return new AvatarConsole(P);}
 	public void setAvatar(Clan c) {avatar = c;}
@@ -54,6 +55,10 @@ public class AvatarConsole extends APanel implements ActionListener {
 	public int getDesWid() {return DESWID;}
 	public int getDesHgt() {return DESHGT;}
 	
+	private void showSpawn() {
+		if (avatar == null) {return;}
+		AGPmain.mainGUI.initializeSexDisplay();
+	}
 
 	public void showChoices(Clan POV, Object[] choices, SubjectiveType sct,
 			Calc.Listener listener, Calc.Transformer transformer) {
@@ -118,7 +123,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 			AGPmain.mainGUI.GM.loadClan(avatar);
 		}
 		else if (EDITAVATAR.equals(e.getActionCommand())) {
-			AGPmain.mainGUI.initializeEditor();
+			AGPmain.mainGUI.initializeFaceEditor();
 		}
 		else if (POSSESS.equals(e.getActionCommand())) {
 			setAvatar(AGPmain.mainGUI.GM.getClan());
@@ -137,6 +142,9 @@ public class AvatarConsole extends APanel implements ActionListener {
 				Calc.p("Day " + i);
 				AGPmain.TheRealm.goOnce();
 			}
+		}
+		else if (VIEWSPAWN.equals(e.getActionCommand())) {
+			showSpawn();
 		}
 		AGPmain.mainGUI.GM.setState();
 		AGPmain.mainGUI.SM.setState();

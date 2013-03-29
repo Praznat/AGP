@@ -1,10 +1,6 @@
 package GUI;
 
-import javax.swing.BoxLayout;
-
-import AMath.Calc;
-import GUI.TextDisplay.*;
-import Game.AGPmain;
+import GUI.TextDisplay.Papyrus;
 import Game.VarGetter;
 
 

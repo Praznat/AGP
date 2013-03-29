@@ -47,6 +47,7 @@ public class Face extends JPanel {
 	protected Hairstyle headhair;
 	protected Hairstyle chinhair;
 	protected Clan gobCache;
+	protected Ideology fbCache;
 	protected double resize;
 	protected double blursize;
 	protected boolean female;
@@ -127,7 +128,7 @@ public class Face extends JPanel {
 	}
 	
 	public void resize(double factor) {
-		loadAttributes(gobCache.FB);
+		loadAttributes(fbCache);
 		resize = factor;
 		NOSERX.mult(factor);
 		NOSERY.mult(factor);
@@ -1435,19 +1436,27 @@ public class Face extends JPanel {
 	}
 	public void redefine(Clan gob) {
 		gobCache = gob;
-		this.loadAttributes(gobCache.FB);
+		redefine(gobCache.FB);
+	}
+	public void redefine(Ideology fb) {
+		fbCache = fb;
+		this.loadAttributes(fbCache);
 		blursize = 1;
 		redefine();
 	}
 	public void redefine(Clan gob, double rx, double bx) {
 		gobCache = gob;
+		redefine(gobCache, rx, bx);
+	}
+	public void redefine(Ideology fb, double rx, double bx) {
+		fbCache = fb;
 		resize(rx); //already loads attributes
 		blursize = bx;
 		redefine();
 	}
 	public void redefine() {
-//		if (gobCache == null) {return;}
-    	if (gobCache.getGender() == Defs.MALE) {setFemale(false);} else {setFemale(true);}
+		if (gobCache == null) {setFemale(AGPmain.rand.nextBoolean());}
+		else {setFemale(gobCache.getGender() != Defs.MALE);}
 		
 		int green = SKING.val();
 		int red = green + SKINR.val() * (241 - green)/2/99; //randInt((241 - green)/2);
@@ -1456,7 +1465,7 @@ public class Face extends JPanel {
 		dcol = scol.darker();
 		hcol = new Color(HAIRR.val(), HAIRG.val(), HAIRB.val()); 
 		hcol2 = hcol.darker();
-		final int ec = Math.max((int) Math.round(255 - gobCache.AB.getStressLevel()*255), 0);
+		final int ec = gobCache == null ? 255 : Math.max((int) Math.round(255 - gobCache.AB.getStressLevel()*255), 0);
 		eyecol = new Color(255, ec, ec);
     	headhair = new Hairstyle();
     	chinhair = new Hairstyle();

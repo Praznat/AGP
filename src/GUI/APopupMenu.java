@@ -7,7 +7,7 @@ import java.util.Collection;
 import javax.swing.*;
 
 import AMath.Calc;
-import Game.*;
+import Game.AGPmain;
 
 public class APopupMenu extends JPopupMenu {
 

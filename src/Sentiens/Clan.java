@@ -15,16 +15,19 @@ import Shirage.Shire;
 
 public class Clan implements Defs, Stressor.Causable {
 	protected static final int DMC = 10; //daily millet consumption
+	protected static final int MUTATION_PCT = 2;
 	//protected static final int MEMORY = 8;
 	//bio
 	protected byte[] name = new byte[2];
 	protected boolean gender;
 	private int age;
 
+	protected Clan suitor; //ID of suitor
+	protected byte[] firstMateTraits;
 	protected int numSpawns;
+	protected int firstSpawnAgeDiff; //age when first child was born
 	private int splendor;
 	private int holiness;
-	protected int suitor; //ID of suitor
 	
 	protected int ID;
 	protected Shire currentShire;
@@ -63,7 +66,7 @@ public class Clan implements Defs, Stressor.Causable {
 		currentShire = place;
 		ID = id;
 		boss = this;
-		suitor = ID;
+		suitor = null;
 		assets = new int[numAssets];
 		assets[millet] = 1000;
 //		inventory = recalcInv();
@@ -100,6 +103,8 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public void die() {
 		// stuff happens
+		becomeHeir();
+		
 		for (DeathListener dl : deathListeners) {dl.onDeathOf(this);}
 		// remove from populations
 	}
@@ -114,8 +119,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setGender(boolean g) {gender = g;}
 
 	public int getNumGoods() {return Goods.numGoods;}
-	public Clan getSuitor() {return AGPmain.TheRealm.getClan(suitor);}
-	public void setSuitor(Clan C) {suitor = C.getID();}
+	public Clan getSuitor() {return suitor;}
+	public void setSuitor(Clan C) {suitor = C;}
 	public byte[] getNameBytes() {return name;}
 	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
 	public String getNomen() {return GobName.fullName(this);}
@@ -125,7 +130,40 @@ public class Clan implements Defs, Stressor.Causable {
 	public Job getAspiration() {return aspiration;}
 	public void setAspiration(Job j) {aspiration = j;}
 	
-	public void breed(Clan mate) {numSpawns++;}
+	public void breed(Clan mate) {
+		// FIRST child
+		if (firstMateTraits == null) {
+			firstMateTraits = mate.FB.copyFs();
+			firstSpawnAgeDiff = this.getAge();
+		}
+		numSpawns++;
+	}
+
+	private boolean becomeHeir() {
+		if (firstMateTraits == null) {return false;} // unable to continue bloodline
+		createHeir(this.FB, null);
+		firstMateTraits = null;
+		return true;
+	}
+	public void createHeir(Ideology fb, byte[] hypotheticalMateFs) {
+		// TODO lower prs by youth...
+		// TODO mutate mems
+		// sexual reproduction for F traits
+		for (F_ f : F_.values()) {
+			int newF;
+			if (Calc.pPercent(MUTATION_PCT)) {
+				newF = AGPmain.rand.nextInt(16);
+				continue;
+			}
+			if (AGPmain.rand.nextBoolean()) {newF = FB.getFac(f);} // mine
+			else if (hypotheticalMateFs != null) {newF = getFacMate(hypotheticalMateFs, f);}
+			else {newF = getFacMate(firstMateTraits, f);} // mate's
+			fb.setFac(f, newF);
+		}
+	}
+	private int getFacMate(byte[] fs, F_ f) {
+		return Ideology.getVar(f.ordinal(), fs);
+	}
 	
 	public int getFamilySize() {return 1 + numSpawns;}
 	

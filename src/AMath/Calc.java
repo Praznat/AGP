@@ -1,6 +1,9 @@
 package AMath;
 
 import java.awt.Color;
+import java.awt.event.*;
+
+import javax.swing.JPanel;
 
 import Game.AGPmain;
 
@@ -135,6 +138,7 @@ public class Calc {
 	public static int skillpct (int s, int d) {
 		return (100*s) / (d + s);
 	}
+	/** returns true at probability num */
 	public static boolean pPercent (int num) {
 		if (AGPmain.rand.nextInt(100) < num) {return true;}
 		else {return false;}
@@ -434,6 +438,30 @@ public class Calc {
 	
 	public static interface Transformer<T, U> {
 		public U transform(T t);
+	}
+	
+	public static abstract class MousePanel extends JPanel implements MouseListener, MouseMotionListener {
+		public MousePanel() {
+			addMouseListeners();
+		}
+		protected void addMouseListeners() {
+			addMouseMotionListener(this);
+			addMouseListener(this);
+		}
+		@Override
+		public void mouseDragged(MouseEvent e) {}
+		@Override
+		public void mousePressed(MouseEvent e) {}
+		@Override
+		public void mouseExited(MouseEvent e) {}
+		@Override
+		public void mouseMoved(MouseEvent arg0) {}
+		@Override
+		public void mouseClicked(MouseEvent arg0) {}
+		@Override
+		public void mouseEntered(MouseEvent arg0) {}
+		@Override
+		public void mouseReleased(MouseEvent arg0) {}
 	}
 	
 }

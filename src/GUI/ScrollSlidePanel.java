@@ -1,7 +1,5 @@
 package GUI;
 
-import javax.swing.BoxLayout;
-
 import GUI.TextDisplay.Papyrus;
 
 public class ScrollSlidePanel extends ASlidePanel {

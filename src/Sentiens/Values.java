@@ -182,17 +182,18 @@ public class Values implements Defs {
 		protected int value(Clan POV, Clan clan) {
 			int result = clan.FB.getFac(F_.NOSELX) + clan.FB.getFac(F_.NOSERX);
 			result += clan.FB.getFac(F_.EYELW);
-			result += 15 - 2 * Math.abs(7 - clan.FB.getFac(F_.MOUTHJW));
+			result -= 2 * Math.abs(7 - clan.FB.getFac(F_.MOUTHJW));
+			result -= Math.abs(25 - clan.getAge()); // age
 			result += Math.abs(clan.FB.getBeh(M_.OCD) - clan.FB.getFac(F_.HAIRL));
-			result += Math.min(15, clan.getAssets(Defs.jewelry));
+			result += Math.min(15, clan.getAssets(Defs.jewelry)); // no need for more than 15 jewelry
 			return result;
 		}
 	};
 	public static final Value HEALTH = new ValuatableValue(M_.S_SKILL, "Luxury - Health", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
+		protected int value(Clan POV, Clan clan) {
 			//TODO
-			return 0;
+			return clan.getAge();
 		}
 	};
 	

@@ -17,6 +17,7 @@ public class GUImain extends JFrame {
 	public PopupShire SM;
 	public AvatarConsole AC;
 	public FaceEditor Editor;
+	public SexDisplay sexDisplay;
 	private static final double MW = 0.4;
 	private static final double MH = 0.85;
 	public GUImain(String title) {
@@ -63,8 +64,11 @@ public class GUImain extends JFrame {
 		AC.setBounds(50,50,AC.getDesWid(),AC.getDesHgt());
 		AC.setVisible(true);
 	}
-	public void initializeEditor() {
+	public void initializeFaceEditor() {
 		Editor = new FaceEditor();
+	}
+	public void initializeSexDisplay() {
+		sexDisplay = new SexDisplay();
 	}
 	public void movePopup(APanel P, int x, int y) {
 		P.setLocation(Calc.bound(x, 0, (int)(getContentPane().getWidth() - BUFF)), //*(1-MW))),

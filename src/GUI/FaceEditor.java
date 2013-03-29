@@ -55,7 +55,7 @@ public class FaceEditor implements ChangeListener, ActionListener {
 			for(int i = 0; i < sliders.length; i++) {
 				sliders[i] = new ASlider(0, 100);
 			}
-			reshuffleB = new JButton("Next Goblin"); reshuffleB.setActionCommand("reshuffle"); reshuffleB.addActionListener(this);
+			reshuffleB = new JButton("New Goblin"); reshuffleB.setActionCommand("reshuffle"); reshuffleB.addActionListener(this);
 			recombB = new JButton("Ruffle Hair"); recombB.setActionCommand("recomb"); recombB.addActionListener(this);
 			maleB = new JButton("Male"); maleB.setActionCommand("Male"); maleB.addActionListener(this);
 			femaleB = new JButton("Female"); femaleB.setActionCommand("Female"); femaleB.addActionListener(this);
@@ -84,6 +84,9 @@ public class FaceEditor implements ChangeListener, ActionListener {
 			panel4.add(reshuffleB, BorderLayout.WEST);
 			panel4.add(recombB, BorderLayout.EAST);
 			MainPane.setVisible(true);
+
+	    	chart1.redefine(AGPmain.mainGUI.AC.getAvatar());
+	    	resetSliders();
 		}
 		
 		public void resetSliders() {
@@ -125,8 +128,6 @@ public class FaceEditor implements ChangeListener, ActionListener {
 		
 		public void actionPerformed(ActionEvent e) {
 		    if ("reshuffle".equals(e.getActionCommand())) {
-		    	chart1.redefine(AGPmain.mainGUI.AC.getAvatar());
-		    	resetSliders();
 		    }
 		    else if ("recomb".equals(e.getActionCommand())) {
 		    	AGPmain.rand.nextBytes(chart1.rands);
