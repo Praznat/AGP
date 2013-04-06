@@ -3,6 +3,8 @@ package Defs;
 
 public enum M_ {
 	NULL,
+	
+	PRAYSTYLE,
 
 	BIDASKSPRD,  //also how far away to initially price when haggling
 	STMOMENTUM, // 0-7 reversion 8-15 momentum (also how quickly to converge when haggling)
@@ -48,7 +50,6 @@ public enum M_ {
 	DOGMA,
 	SUPERST, // add/subtract this amount to secular prestige amt if ELE sanc prest >/< EU's
 	CONFIDENCE,
-	AGGR,
 	MIERTE,
 	WORKETHIC,
 	OCD, //neatness, like short vs long hair...

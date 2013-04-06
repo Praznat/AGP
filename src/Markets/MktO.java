@@ -2,7 +2,9 @@ package Markets;
 
 
 import Questing.*;
+import Questing.FaithQuests.ContactQuest;
 import Questing.PropertyQuests.LaborQuest;
+import Questing.SplendorQuests.UpgradeDomicileQuest;
 import Sentiens.Clan;
 import Sentiens.GobLog;
 import Shirage.Shire;
@@ -165,13 +167,19 @@ public class MktO extends MktAbstract {
 		QStack qs = buyer.MB.QuestStack; int sz = qs.size();
 		if (sz > 0) {
 			Quest q = qs.peek();
-			if (q instanceof LaborQuest) {((LaborQuest) q).alterG(g, n); return;}
+			if (accountForGood(q, n)) {return;}
 			if (sz > 1) {
 				q = qs.peekUp();  //might as well check one quest up
-				if (q instanceof LaborQuest) {((LaborQuest) q).alterG(g, n); return;}
+				if (accountForGood(q, n)) {return;}
 			}
 		}
 		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not laborquest
+	}
+	private boolean accountForGood(Quest q, int n) {
+		if (q instanceof LaborQuest) {((LaborQuest) q).alterG(g, n); return true;}
+		else if (g == Defs.constr && q instanceof UpgradeDomicileQuest) {((UpgradeDomicileQuest) q).incNumConstrs(n); return true;}
+		else if (g == Defs.captive && q instanceof ContactQuest) {((ContactQuest) q).getCurrAof().affect(new Integer(n)); return true;}
+		else {return false;}
 	}
 	protected int fairPX(Clan doer, double flow) {
 		double TechPX = (STAvg + LTAvg + 2 * ((LastPX - STAvg) * doer.useBeh(M_.STMOMENTUM) + 

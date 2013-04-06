@@ -4,8 +4,8 @@ import Questing.Quest;
 import Sentiens.Clan;
 
 public class Service implements Act {
-	Quest.QuestFactory questFactory;
-	public Service(Quest.QuestFactory q) {
+	Quest.PatronedQuestFactory questFactory;
+	public Service(Quest.PatronedQuestFactory q) {
 		questFactory = q;
 	}
 

@@ -41,6 +41,8 @@ public class ClanRowScroll extends TableRowScroll {
 	
 	public void calcRealizedSize() {
 		pop = ((PopupShire)parent).getShire().getCensus();
+		if (pop == null) {System.out.println("NO DAMN POP!");}
+		if (vars() == null) {System.out.println("NO DAMN VARS!");}
 		setupTableLabels(PopupShire.POPULATION, pop.length, vars());
 		String S;
 		for (int r = 1; r < contents.length; r++) {

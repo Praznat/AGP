@@ -7,17 +7,18 @@ import Avatar.SubjectiveType;
 import Defs.M_;
 import Game.*;
 import Government.Order;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuest;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class AllegianceQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
 	
-	public static class AllegianceQuest extends Quest {
-		public AllegianceQuest(Clan P) {super(P);}
+	public static class AllegianceQuest extends PatronedQuest {
+		public AllegianceQuest(Clan P) {super(P, P.getBoss());}
 		@Override
 		public void pursue() {
-			if (Me.getBoss() == Me) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
+			if (patron == Me) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
 			// test if respect still strong (THIS STUFF SHOULD BE DONE BY WISEMAN)
 //			double resp = Me.conversation(Me.getBoss());
 //			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {

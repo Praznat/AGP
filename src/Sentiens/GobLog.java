@@ -5,6 +5,7 @@ import java.util.Date;
 import Defs.P_;
 import Descriptions.*;
 import Game.*;
+import Questing.FaithQuests.ActOfFaith;
 import Sentiens.Law.Commandment;
 
 public class GobLog {
@@ -138,6 +139,11 @@ public class GobLog {
 		};
 	}
 	
+	public static Reportable pray(final Clan prayer, final Clan prayee, final int mana, final ActOfFaith aof) {
+		return new Reportable() {
+			public String out() {return prayer.getNomen() + " generated " + mana + " mana for " + prayee + " through " + aof.desc();}
+		};
+	}
 
 	public static Reportable discovery(final Job job) {
 		return new Reportable() {

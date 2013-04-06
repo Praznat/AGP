@@ -1,63 +1,52 @@
 package Questing;
 
-import Defs.M_;
-import Game.*;
-import Questing.Quest.FindTarget;
+import Game.Contract;
 import Questing.Quest.FindTargetAbstract;
-import Questing.Quest.TargetQuest;
+import Questing.Quest.RelationCondition;
+import Questing.Quest.TransactionQuest;
 import Sentiens.*;
 
 public class PersecutionQuests {
 
-	private static final FindTarget EXILECONDITION = new FindTarget() {
+	private static final RelationCondition EXILECONDITION = new RelationCondition() {
 		@Override
 		public boolean meetsReq(Clan POV, Clan target) {
 			return POV.myShire()!=target.myShire();
 		}
 	};
 
-	public static abstract class PersecuteAbstract extends TargetQuest {
-		protected int timesLeft = Defs.E;
-		protected FindTargetAbstract findWhat;
-		public PersecuteAbstract(Clan P) {super(P); resetTime();}
-		//perfect to test contracts... make demand, e.g. money, respect, conversion, etc. in exchange for retraction of physical threat
-		@Override
-		public void pursue() {
-			if (timesLeft == 0) {success(); return;}  //"success" cuz no one to persecute
-			if (target == null) {Me.MB.newQ(findWhat); timesLeft--; return;}
-			Contract.getInstance().enter(target, Me);
-			setContractDemand();
-			Contract.getInstance().setOfferThreat();  //wait is this the only difference with "recruit"?
-			boolean accepted = Contract.getInstance().acceptable();
-			if (accepted) {
-				Me.addReport(GobLog.converted(target, accepted));
-				target.addReport(GobLog.wasConverted(Me, accepted));
-				Contract.getInstance().enact();
-				this.success(target); //relieves previous anger from target
-			}
-			else {Me.MB.newQ(new DestroyQuest(Me, target, EXILECONDITION));}
-			return;
-		}
+	public static abstract class PersecuteAbstract extends TransactionQuest {
+		public PersecuteAbstract(Clan P) {super(P);}
 		public void failDestroy() {timesLeft--;}
-		protected abstract void setContractDemand();
-		private void resetTime() {timesLeft = 1 + Me.useBeh(M_.PATIENCE);}
 		@Override
 		public String shortName() {return "Persecute";}
-		protected void addLog() {} //add ultimatum report
+		protected abstract FindTargetAbstract findWhat();
+		protected abstract void setContractDemand();
+		protected void setContractOffer() {Contract.getInstance().setOfferThreat();}
+		protected void successCase() {this.success(target);} //relieves previous anger from target
+		protected void failCase() {Me.MB.newQ(new DestroyQuest(Me, target, EXILECONDITION));}
+		protected void report(boolean success) {
+			Me.addReport(GobLog.converted(target, success));
+			target.addReport(GobLog.wasConverted(Me, success));
+		}
 	}
 	public static class PersecuteHeretic extends PersecuteAbstract {
-		public PersecuteHeretic(Clan P) {super(P); findWhat = new FindHeretic(Me);}
+		public PersecuteHeretic(Clan P) {super(P);}
 		@Override
 		protected void setContractDemand() {Contract.getInstance().setDemandConversion();}
 		@Override
 		public String description() {return "Persecute " + (target == null ? "Heretic" : target.getNomen());}
+		@Override
+		protected FindTargetAbstract findWhat() {return new FindHeretic(Me);}
 	}
 	public static class PersecuteInfidel extends PersecuteAbstract {
-		public PersecuteInfidel(Clan P) {super(P); findWhat = new FindInfidel(Me);}
+		public PersecuteInfidel(Clan P) {super(P);}
 		@Override
 		protected void setContractDemand() {Contract.getInstance().setDemandAllegiance();}
 		@Override
 		public String description() {return "Persecute " + (target == null ? "Infidel" : target.getNomen());}
+		@Override
+		protected FindTargetAbstract findWhat() {return new FindInfidel(Me);}
 	}
 
 	public static class FindHeretic extends FindTargetAbstract {

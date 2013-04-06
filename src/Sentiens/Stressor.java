@@ -48,13 +48,13 @@ public class Stressor {
 
 		}
 		else if (target instanceof Job) {
-			responder.QB.newQ(Defs.FINDNEWJOB);
+			// TODO find new job
 		}
 		return success;
 	}
 
 	public boolean sameAndLessThan(Clan doer, Stressor other) {
-		return (other.getTarget().equals(target) && getLevel(doer) <= other.getLevel(doer));
+		return (other.getTarget() == target && getLevel(doer) <= other.getLevel(doer));
 	}
 	
 	@Override

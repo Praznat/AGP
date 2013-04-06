@@ -50,10 +50,6 @@ public class Order {
 	public Set<Clan> getFollowers(Clan leader, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, includeMe, includeSubs);}
 	public Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, place, includeMe, includeSubs);}
 	
-	public void getQuest(Clan requester) {
-		requester.MB.newQ(new PersecuteInfidel(requester));
-	}
-	
 	public static String getName(byte founderName1, byte founderName2, boolean founderGender) {
 		String S = GobName.firstName(founderName1, founderName2, founderGender);
 		if (S.endsWith("a") || S.endsWith("n") || S.endsWith("m")) {}

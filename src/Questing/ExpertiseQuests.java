@@ -5,14 +5,14 @@ import Avatar.SubjectiveType;
 import Defs.*;
 import Game.AGPmain;
 import Questing.Quest.PatronedQuest;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class ExpertiseQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(LearnQuest.class) {public Quest createFor(Clan c) {return new TeachQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LearnQuest.class) {public Quest createFor(Clan c) {return new TeachQuest(c, c.getBoss());}};}
 
-	public static final P_[] ALLSKILLS = {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.LOBOTOMY,
-		P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH,
+	public static final P_[] ALLSKILLS = {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.PROSE, P_.LOBOTOMY,
+		P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH, P_.DANCE,
 		P_.ARITHMETIC};
 	
 
@@ -83,8 +83,8 @@ public class ExpertiseQuests {
 	}
 	
 	private static P_ decideSkillToPractice(Clan doer) {
-		final int k = AGPmain.rand.nextInt(doer.FB.getBeh(M_.MADNESS)/2+1);
 		final P_[] relSkills = doer.FB.randomValueInPriority().getRelevantSkills();
+		final int k = AGPmain.rand.nextInt(relSkills.length + doer.FB.getBeh(M_.MADNESS) / 3);
 		if (k < relSkills.length) {return relSkills[k];}
 		else {return ALLSKILLS[AGPmain.rand.nextInt(ALLSKILLS.length)];}
 	}

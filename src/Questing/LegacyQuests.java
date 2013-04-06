@@ -4,13 +4,13 @@ import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.P_;
 import Questing.Quest.PatronedQuest;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 import Sentiens.Values.ValuatableValue;
 import Sentiens.Values.Value;
 
 public class LegacyQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(LegacyQuest.class) {public Quest createFor(Clan c) {return new LegacyQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LegacyQuest.class) {public Quest createFor(Clan c) {return new LegacyQuest(c, c.getBoss());}};}
 
 	private static final double RATE_MULTIPLIER = 0.1;
 	

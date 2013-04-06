@@ -3,12 +3,12 @@ package Questing;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Questing.Quest.PatronedQuest;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 import Sentiens.Law.Commandment;
 
 public class CreedQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(PriestQuest.class) {public Quest createFor(Clan c) {return new PriestQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(PriestQuest.class) {public Quest createFor(Clan c) {return new PriestQuest(c, c.getBoss());}};}
 
 	public static class TweakCommandments extends PatronedQuest {
 		public TweakCommandments(Clan P, Clan patron) {super(P, patron);}

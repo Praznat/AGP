@@ -47,7 +47,6 @@ public class Mem implements Defs {
 		Defs[M_.STRICTNESS.ordinal()] = new Mem("Dogma",P_.SANCP);
 		Defs[M_.SUPERST.ordinal()] = new Mem("Superstition",P_.SANCP);
 		Defs[M_.CONFIDENCE.ordinal()] = new Mem("Optimism",P_.SANCP);
-		Defs[M_.AGGR.ordinal()] = new Mem("Aggression",P_.SANCP);
 		Defs[M_.MIERTE.ordinal()] = new Mem("Fear of Death",P_.SANCP);
 		Defs[M_.PROMISCUITY.ordinal()] = new Mem("Promiscuity",P_.SANCP);
 		Defs[M_.PARANOIA.ordinal()] = new Mem("Paranoia",P_.SANCP);

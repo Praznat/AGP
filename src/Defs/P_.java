@@ -23,6 +23,7 @@ public enum P_ {
 	PREACHP,
 	RSPCP,
 	TYRRP,
+	BATTLEP,
 	CONFP,
 	SEXP,
 	HEALP;

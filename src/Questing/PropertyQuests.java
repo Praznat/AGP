@@ -6,13 +6,15 @@ import Defs.P_;
 import Descriptions.XWeapon;
 import Game.*;
 import Markets.*;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuest;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class PropertyQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
 	
-	public static class BuildWealthQuest extends Quest {
+	//TODO make PATRONED
+	public static class BuildWealthQuest extends PatronedQuest {
 		private long start, goal;
 		public BuildWealthQuest(Clan clan) {
 			super(clan);

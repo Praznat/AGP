@@ -449,6 +449,7 @@ public class Naming implements Defs {
 			case MARKSMANSHIP : return "Marksmanship";
 			case MASONRY : return "Masonry";
 			case ARTISTRY : return "Artistry";
+			case PROSE : return "Prose";
 			case CARPENTRY: return "Carpentry";
 			case SMITHING : return "Blacksmithing";
 			case LOBOTOMY : return "Lobotomy";
@@ -458,6 +459,7 @@ public class Naming implements Defs {
 			case STRATEGYP : return "Strategy";
 			case TACTICSP : return "Tactics";
 			case COMBAT : return "Martial Prowess";
+			case DANCE : return "Ritual Dance";
 			case ARMORYP : return "Arms Lore";
 			case WPREDICTION : return "Divination";
 			case MPREDICTION : return "Sorcery";
@@ -492,6 +494,7 @@ public class Naming implements Defs {
 			case xweapon : return (abbr ? "Weapon" : "weapon" + s);
 			case bow : return (abbr ? "Crossbows" : "crossbow" + s);
 			case gun : return (abbr ? "Arquebuses" : "arquebus" + s);
+			case captive : return (abbr ? "Captives" : "captive" + s);
 			case rentland : return (abbr ? "(R)Land" : "rented plot" + s + " of land");
 			case rentanimal : return (abbr ? "(R)Animals" : "rented animal" + s);
 			case timber : return (abbr ? "Lumber" : "stack" + s + " of lumber");
@@ -506,29 +509,6 @@ public class Naming implements Defs {
 		}
 	}
 	
-	public static String QstackDes(Clan doer, int i) {
-		String out = "";
-		int Q[] = doer.QB.getQstack(i);
-		switch (Q[0]) {
-		case IDLE: out += "Being idle..."; break;
-		case BREED:
-			if(Q[TARGET] == -1) {out += "Mate with somebody.";}
-			else {out += "Mate with " + AGPmain.TheRealm.getClan(Q[TARGET]).getNomen() + " by courting " + Q[COURTSLEFT] + " times.";}
-			out += " (Attempts left: " + Q[TIMELEFT] + ")"; break;
-		case FINDMATE:   out += "Find potential mate.";   break;
-		case FINDWEAKLING:   out += "Find victim.";   break;
-		case COMPETE4MATE:
-			Clan crush = AGPmain.TheRealm.getClan(Q[POV]);
-			Clan rival = AGPmain.TheRealm.getClan(Q[TARGET]);
-			if (Q[POV] == Q[TARGET]) {out += "Seduce "+crush.getNomen();}
-			else {out += "Steal " + crush.getNomen() + "'s heart away from " + rival.getNomen() + ".";}   break;
-		case BUILDWEALTH: out += "Build wealth."; break;
-		case TERRORIZE: out += "Terrorize the weak."; break;
-		default:   break;
-		}
-		return out;
-	}
-
 	public static String possessive(Clan sub) {return (sub.getGender() == FEMALE ? "her" : "his");}
 	
 

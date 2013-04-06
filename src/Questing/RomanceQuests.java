@@ -2,22 +2,28 @@ package Questing;
 
 import Defs.M_;
 import Game.Defs;
-import Questing.Quest.FindTarget;
+import Questing.Quest.PatronedQuest;
+import Questing.Quest.RelationCondition;
 import Questing.Quest.FindTargetAbstract;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Questing.Quest.TargetQuest;
 import Sentiens.*;
 
 public class RomanceQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
 
-	public static class BreedWithBossQuest extends BreedQuest {
-		public BreedWithBossQuest(Clan P) {super(P); Clan boss = P.getBoss(); target = boss != Me ? boss : null;}
+	public static class BreedWithBossQuest extends PatronedQuest {
+		public BreedWithBossQuest(Clan P) {super(P, P.getBoss());}
+		@Override
+		public void pursue() {
+			replaceAndDoNewQuest(Me, new BreedQuest(Me));
+		}
 	}
 	public static class BreedQuest extends TargetQuest {
 		private int courtsLeft = Defs.E;
 		private int failsLeft = Defs.E;
 		public BreedQuest(Clan P) {super(P); resetFails();}
+		public BreedQuest(Clan P, Clan target) {this(P); this.target = target;}
 		@Override
 		public void pursue() {
 			if (courtsLeft == 0) {success(Me); return;}
@@ -36,7 +42,7 @@ public class RomanceQuests {
 		public String description() {return "Breed with " + (target==null ? "someone" : target.getNomen());}
 	}
 
-	public static class FindMate extends FindTargetAbstract implements FindTarget {
+	public static class FindMate extends FindTargetAbstract implements RelationCondition {
 		public FindMate(Clan P) {super(P);}
 		@Override
 		public boolean meetsReq(Clan POV, Clan target) {

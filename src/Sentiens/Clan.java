@@ -21,6 +21,7 @@ public class Clan implements Defs, Stressor.Causable {
 	protected byte[] name = new byte[2];
 	protected boolean gender;
 	private int age;
+	private int heritageLength; //number of ancestors remembered
 
 	protected Clan suitor; //ID of suitor
 	protected byte[] firstMateTraits;
@@ -28,6 +29,7 @@ public class Clan implements Defs, Stressor.Causable {
 	protected int firstSpawnAgeDiff; //age when first child was born
 	private int splendor;
 	private int holiness;
+	private int timesPrayed = 1;
 	
 	protected int ID;
 	protected Shire currentShire;
@@ -53,7 +55,6 @@ public class Clan implements Defs, Stressor.Causable {
 	//protected int act;
 	protected int profitEMA;
 	public Ideology FB;
-	public Questy QB;
 	public Amygdala AB;
 	public Memory MB;
 	public Legacy LB;
@@ -82,7 +83,6 @@ public class Clan implements Defs, Stressor.Causable {
 		name[0] = r[0]; name[1] = r[1];
 		gender = AGPmain.rand.nextBoolean();
 		FB = new Ideology(this);
-		QB = new Questy(this);
 		AB = new Amygdala(this);
 		MB = new Memory();
 		LB = new Legacy(this);
@@ -115,6 +115,12 @@ public class Clan implements Defs, Stressor.Causable {
 	public MktAbstract myMkt(int g) {return myShire().getMarket(g);}
 	public int getAge() {return age;}
 	public void setAge(int a) {age = a;}
+	public int getHeritageLength() {
+		return heritageLength;
+	}
+	public void setHeritageLength(int heritageLength) {
+		this.heritageLength = heritageLength;
+	}
 	public boolean getGender() {return gender;}
 	public void setGender(boolean g) {gender = g;}
 
@@ -140,6 +146,9 @@ public class Clan implements Defs, Stressor.Causable {
 	}
 
 	private boolean becomeHeir() {
+		//stuff that happens anyway
+		holiness = 0; timesPrayed = 1;
+		
 		if (firstMateTraits == null) {return false;} // unable to continue bloodline
 		createHeir(this.FB, null);
 		firstMateTraits = null;
@@ -324,6 +333,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public void chgSplendor(int i) {this.splendor += i;}
 	public int getHoliness() {return holiness;}
 	public void chgHoliness(int i) {this.holiness += i;}
+	public int getTimesPrayed() {return timesPrayed;}
+	public void incTimesPrayed() {timesPrayed++;}
 	public boolean maybeEmigrate() {
 		emigrate();
 		return true;
@@ -374,9 +385,6 @@ public class Clan implements Defs, Stressor.Causable {
 
     }
 
-    public double getCourage() {  // range 0-1
-    	return (useBeh(M_.CONFIDENCE) + 30 - useBeh(M_.MIERTE) - useBeh(M_.PARANOIA)) / 45;
-    }
     public double confuse(double in) {
     	//returns number between 50%-150% of original number at min arithmetic + max madness
     	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETIC) + useBeh(M_.MADNESS)) * in / 64);

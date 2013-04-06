@@ -1,7 +1,6 @@
 package Sentiens;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 import Defs.M_;
 
@@ -11,7 +10,7 @@ public class Amygdala {
 	private final Collection<Stressor> stressors;
 	public Amygdala(Clan P) {
 		parent = P;
-		stressors = new HashSet<Stressor>();
+		stressors = new ArrayList<Stressor>();
 	}
 	public void add(Stressor S) {
 		if(getStressLevel() > 1) {

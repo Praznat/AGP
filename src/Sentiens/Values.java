@@ -8,6 +8,7 @@ import AMath.ArrayUtils;
 import Defs.*;
 import Game.*;
 import Game.Do.ClanAlone;
+import Government.Order;
 import Questing.ExpertiseQuests;
 import Sentiens.Law.Commandment;
 
@@ -115,7 +116,9 @@ public class Values implements Defs {
 	public static final Value MIGHT = new ValuatableValue(M_.S_NVASSALS, "Power - Might", Q_.RECRUIT, Job.GENERAL,
 			new P_[] {P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return 0;}    // TODO this should be about shires controlled
+		protected int value(Clan POV, Clan clan) {
+			return clan.FB.getPrs(P_.BATTLEP);
+		}    // TODO this should be about empirical fight record
 	};
 
 	public static final Value PROPERTY = new ValuatableValue(M_.S_MONEY, "Power - Property", Q_.BUILDWEALTH, Job.TREASURER,
@@ -127,12 +130,15 @@ public class Values implements Defs {
 	};
 	public static final Value INFLUENCE = new ValuatableValue(M_.S_POPULARITY, "Power - Influence", Q_.BUILDPOPULARITY, Job.VIZIER, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {return clan.getMinionTotal();} // * P_.RSPCT ??
+		protected int value(Clan POV, Clan clan) {
+			//minus my minions if hes my boss.. so i can judge myself against my bosses
+			return clan.getMinionTotal() - (clan.isSomeBossOf(POV) ? POV.getMinionTotal() : 0);
+		} // * P_.RSPCT ??
 	};
 
 	//TODO VIRTUE "Honor - Virtue"
 
-	public static final Value CREED = new ValuatableValue(null, "Honor - Creed", Q_.CREEDQUEST, Job.JUDGE, new P_[] {}) {
+	public static final Value RIGHTEOUSNESS = new ValuatableValue(null, "Honor - Righteousness", Q_.CREEDQUEST, Job.JUDGE, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -164,9 +170,8 @@ public class Values implements Defs {
 	
 	public static final Value LEGACY = new ValuatableValue(null, "Honor - Legacy", Q_.LEGACYQUEST, Job.HISTORIAN, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
-			//TODO
-			return 0;
+		protected int value(Clan POV, Clan clan) {
+			return clan.LB.getLegacyFor(POV.FB.randomValueInPriority());
 		}
 	};
 	
@@ -191,9 +196,10 @@ public class Values implements Defs {
 	};
 	public static final Value HEALTH = new ValuatableValue(M_.S_SKILL, "Luxury - Health", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
+		public double compare(double A, double B) {return logCompNeg(A, B);}
+		@Override
 		protected int value(Clan POV, Clan clan) {
-			//TODO
-			return clan.getAge();
+			return (int) Math.round(clan.AB.getStressLevel() * 100);
 		}
 	};
 	
@@ -215,8 +221,7 @@ public class Values implements Defs {
 	public static final Value FAITH = new ValuatableValue(M_.S_SKILL, "Mind - Faith", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
-			//TODO
-			return 0;
+			return clan.getHoliness();
 		}
 	};
 
@@ -229,7 +234,7 @@ public class Values implements Defs {
 
 	private static final Value[] AllValues = new Value[] {
 		PROPERTY, INFLUENCE, MIGHT, SPLENDOR, HEALTH, BEAUTY,
-		ALLEGIANCE, CREED, LEGACY, WISDOM, FAITH, EXPERTISE
+		ALLEGIANCE, RIGHTEOUSNESS, LEGACY, WISDOM, FAITH, EXPERTISE
 	};
 	private static Value[] filterTodos(Value[] varray) {
 		Set<Value> set = new HashSet<Value>();

@@ -8,12 +8,12 @@ import Defs.M_;
 import Game.*;
 import Government.Order;
 import Questing.Quest.PatronedQuest;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class InfluenceQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c) {return new InfluenceQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c) {return new InfluenceQuest(c, c.getBoss());}};}
 	
 	public static class PropagandaQuest extends Quest {
 		public PropagandaQuest(Clan P) {super(P);}

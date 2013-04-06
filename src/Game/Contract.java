@@ -2,6 +2,7 @@ package Game;
 
 import Defs.*;
 import Game.Do.ClanAction;
+import Questing.MightQuests;
 import Sentiens.*;
 import Sentiens.Values.Assessable;
 
@@ -41,10 +42,10 @@ public class Contract {   // AND/OR combination of Terms
 		if (!demand.tryAction()) {proposer.AB.add(new Stressor(Stressor.PROMISE_BROKEN, evaluator));}
 	}
 	
-	public void setOfferThreat() {setOffer(THREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
+	public void setOfferThreat() {setOffer(ATTACKTHREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
 	public void setOfferPayment(int c) {setOffer((Assessable)Values.PROPERTY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
 	public void setOfferGratitude(int c) {setOffer((Assessable)Values.ALLEGIANCE, c, null);}
-	public void setOfferBlessing(int c) {setOffer((Assessable)Values.CREED, c, null);}
+	public void setOfferBlessing(int c) {setOffer((Assessable)Values.RIGHTEOUSNESS, c, null);}
 
 	public void setDemandTribute(int c) {setDemand((Assessable)Values.PROPERTY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
 	public void setDemandRespect() {setDemand((Assessable)Values.INFLUENCE, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
@@ -52,7 +53,7 @@ public class Contract {   // AND/OR combination of Terms
 	/**
 	 * TODO: probably needs a special term for violating Heresy law
 	 */
-	public void setDemandConversion() {setDemand((Assessable)Values.CREED, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
+	public void setDemandConversion() {setDemand((Assessable)Values.RIGHTEOUSNESS, 0, Do.CONVERT_TO_CREED); Do.CONVERT_TO_CREED.setup(evaluator, proposer, 0);}
 	public void setDemandQuest(Q_ q) {setDemand(NEWQUEST, q.ordinal(), null);}
 	
 	private int renegotiationTimes() {return Math.min(evaluator.useBeh(M_.PATIENCE), proposer.useBeh(M_.PATIENCE)) / 3;}
@@ -69,10 +70,10 @@ public class Contract {   // AND/OR combination of Terms
 	}
 	
 	
-	public static final Assessable THREAT = new Assessable() {
+	public static final Assessable ATTACKTHREAT = new Assessable() {
 		@Override
 		public double evaluate(Clan evaluator, Clan proposer, int content) {   //returns perceived amount of value from avoiding this threat
-			return evaluator.FB.randomValueInPriority().compare(evaluator, proposer, evaluator) * (1 - evaluator.getCourage());
+			return MightQuests.desiresFight(evaluator, proposer, true) ? 0 : Values.MAXVAL;
 		}
 	};
 	public static final Assessable NEWQUEST = new Assessable() {   //put proposer's quest "content" on top of current quest

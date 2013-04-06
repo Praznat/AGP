@@ -1,18 +1,24 @@
 package Questing;
 
 import AMath.Calc;
-import Defs.P_;
+import Defs.*;
 import Game.Defs;
 import Questing.Quest.PatronedQuest;
-import Questing.Quest.QuestFactory;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.Clan;
 
 public class SplendorQuests {
-	public static QuestFactory getMinistryFactory() {return new QuestFactory(UpgradeDomicileQuest.class) {public Quest createFor(Clan c) {return new UpgradeDomicileQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(UpgradeDomicileQuest.class) {public Quest createFor(Clan c) {return new UpgradeDomicileQuest(c, c.getBoss());}};}
 	
 	public static class UpgradeDomicileQuest extends PatronedQuest {
+		private static int NOCONSTRBIDS = -1; //must be < 0
+		private int numConstrs = NOCONSTRBIDS;
+		private int turnsLeft;
 
-		public UpgradeDomicileQuest(Clan P, Clan patron) {super(P, patron);}
+		public UpgradeDomicileQuest(Clan P, Clan patron) {
+			super(P, patron);
+			turnsLeft = patron.FB.getBeh(M_.PATIENCE) / 3 + 5;
+		}
 		
 		@Override
 		public String description() {return "Upgrade Domicile";}
@@ -22,15 +28,20 @@ public class SplendorQuests {
 			if (buildForPatron()) {
 				success();
 			}
-			else {
-				// put some bids for construction
-				Me.myMkt(Defs.constr).liftOffer(Me); // what to do at MktO.alterWMG ??
+			else if (numConstrs == NOCONSTRBIDS) {
+				// TODO put some bids for construction
+				numConstrs = 0;
+				Me.myMkt(Defs.constr).liftOffer(Me);
 			}
+			else if (turnsLeft > 0) { turnsLeft --;}
+			else { failure(Me.myShire()); }
 		}
 		
+		public void incNumConstrs(int n) {numConstrs += n;}
+		
 		private boolean buildForPatron() {
-			if (Me.getAssets(Defs.constr) == 0) {return false;}
-			Me.decAssets(Defs.constr, 1);
+			if (numConstrs <= 0) {return false;}
+			numConstrs = NOCONSTRBIDS;
 			ExpertiseQuests.practiceSkill(Me, P_.ARTISTRY);
 			final int max = 1 + Me.FB.getPrs(P_.ARTISTRY);
 			final int producedSplendor = Calc.randBetween(max / 2, max);

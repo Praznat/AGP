@@ -2,8 +2,8 @@ package Questing;
 
 import AMath.Calc;
 import Avatar.*;
-import Defs.Q_;
-import Game.AGPmain;
+import Defs.*;
+import Game.*;
 import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
@@ -11,6 +11,7 @@ import Questing.PowerStartingQuests.IndPowerQuest;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.RomanceQuests.BreedQuest;
 import Sentiens.*;
+import Sentiens.Stressor.Causable;
 
 public abstract class Quest {
 	protected Clan Me;
@@ -32,7 +33,7 @@ public abstract class Quest {
 	public Clan avatar() {return avatarConsole().getAvatar();}
 		
 	public static class DefaultQuest extends Quest {
-		public static QuestFactory getMinistryFactory() {return new QuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
+		public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
 		
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
@@ -49,21 +50,32 @@ public abstract class Quest {
 		public TargetQuest(Clan P, Clan T) {super(P); target = T;}
 		public void setTarget(Clan t) {target = t;}
 		protected Clan getTarget() {return target;}
+		public static Clan[] getReasonableCandidates(Clan pov) {
+			if (pov == pov.myShire().getGovernor()) {
+				// TODO return neighbor governors...
+			}
+			return pov.myShire().getCensus();
+		}
 	}
-	public static interface FindTarget {
+	public static interface RelationCondition {
 		public boolean meetsReq(Clan POV, Clan target);
 	}
-	public static abstract class FindTargetAbstract extends Quest implements FindTarget {
-		protected static final int TRIESPERTURN = 3; //maybe size of pub?
-		public FindTargetAbstract(Clan P) {super(P);}
+	public static abstract class FindTargetAbstract extends Quest implements RelationCondition {
+		protected final Clan[] candidates;
+		protected final Causable blameSource;
+		public FindTargetAbstract(Clan P) {this(P, TargetQuest.getReasonableCandidates(P), P.myShire());}
+		public FindTargetAbstract(Clan P, Clan[] candidates, Causable c) {
+			super(P);
+			this.candidates = candidates;
+			this.blameSource = c;
+		}
 		public void setTarget(Clan c) {
 			((TargetQuest) upQuest()).setTarget(c);  //must be called by TargetQuest
 		}
 		@Override
 		public void pursue() {
-			Clan[] pop = Me.myShire().getCensus();
-			for (int i = Math.min(TRIESPERTURN, pop.length); i > 0; i--) {
-				Clan candidate = pop[AGPmain.rand.nextInt(pop.length)];
+			for (int i = Math.min(triesPerTurn(), candidates.length); i > 0; i--) {
+				Clan candidate = candidates[AGPmain.rand.nextInt(candidates.length)];
 				if(meetsReq(Me, candidate)) {
 					setTarget(candidate);
 					success(Me.myShire()); return;
@@ -81,13 +93,41 @@ public abstract class Quest {
 				}
 			});
 		}
+		protected int triesPerTurn() {return 3;} //maybe size of pub?
 	}
 
-	public static abstract class QuestFactory {
-		private Class<? extends Quest> questType;
-		public QuestFactory(Class<? extends Quest> clasz) {questType = clasz;}
+	public static abstract class TransactionQuest extends TargetQuest {
+		protected int timesLeft;
+		public TransactionQuest(Clan P) {super(P); timesLeft = Me.useBeh(M_.PATIENCE) / 3 + 3;}
+		@Override
+		public void pursue() {
+			if (timesLeft == 0) {return;}  //no one found
+			if (target == null) {Me.MB.newQ(findWhat()); timesLeft--; return;}
+			Contract.getInstance().enter(target, Me);
+			setContractDemand();
+			setContractOffer();
+			boolean accepted = Contract.getInstance().acceptable();
+			if (accepted) {
+				Contract.getInstance().enact();
+				successCase();
+			}
+			else {failCase();}
+			report(accepted);
+			return;
+		}
+		protected abstract FindTargetAbstract findWhat();
+		protected abstract void setContractDemand();
+		protected abstract void setContractOffer();
+		protected abstract void successCase();
+		protected abstract void failCase();
+		protected abstract void report(boolean success);
+	}
+
+	public static abstract class PatronedQuestFactory {
+		private Class<? extends PatronedQuest> questType;
+		public PatronedQuestFactory(Class<? extends PatronedQuest> clasz) {questType = clasz;}
 		public abstract Quest createFor(Clan c);
-		public Class<? extends Quest> getQuestType() {return questType;}
+		public Class<? extends PatronedQuest> getQuestType() {return questType;}
 	}
 	
 	protected static void replaceAndDoNewQuest(Clan c, Quest newQuest) {

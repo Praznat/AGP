@@ -6,7 +6,7 @@ import Sentiens.Clan;
 
 public class Ministry extends Job {
 
-	public Ministry(Quest.QuestFactory questFactory) {
+	public Ministry(Quest.PatronedQuestFactory questFactory) {
 		super("Citizen", new Service(questFactory));
 	}
 	

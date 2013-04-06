@@ -8,8 +8,8 @@ import Sentiens.GobLog;
 import Sentiens.Stressor;
 
 public class DestroyQuest extends TargetQuest {
-	private FindTarget victoryCondition;
-	public DestroyQuest(Clan P, Clan T, FindTarget c) {super(P, T); victoryCondition = c;}
+	private RelationCondition victoryCondition;
+	public DestroyQuest(Clan P, Clan T, RelationCondition c) {super(P, T); victoryCondition = c;}
 
 	@Override
 	public void pursue() {

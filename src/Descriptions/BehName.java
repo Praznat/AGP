@@ -52,7 +52,6 @@ public class BehName {
 		case DOGMA: descs = new String[] {"Respects the gods of others","Philosophically curious","Prefers to follow a single creed","Staunch monotheist"}; break;
 		case SUPERST: descs = new String[] {"Skeptical and materialistic","Dismissive of superstition","Supersitious","Bows to the will of the heavens"}; break;
 		case CONFIDENCE: descs = new String[] {"No self-confidence","Humble","Confident","Overconfident"}; break;
-		case AGGR: descs = new String[] {}; break;
 		case MIERTE: descs = new String[] {"Welcomes death with open arms","Not afraid to die","Fond of living","Dreads the afterlife"}; break;
 		case WORKETHIC: descs = new String[] {}; break;
 		case OCD: descs = new String[] {"Dirty","Unwashed","Likes things to be clean and neat","Obsessive-compulsive"}; break;
