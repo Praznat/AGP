@@ -8,7 +8,6 @@ import AMath.ArrayUtils;
 import Defs.*;
 import Game.*;
 import Game.Do.ClanAlone;
-import Government.Order;
 import Questing.ExpertiseQuests;
 import Sentiens.Law.Commandment;
 
@@ -121,7 +120,7 @@ public class Values implements Defs {
 		}    // TODO this should be about empirical fight record
 	};
 
-	public static final Value PROPERTY = new ValuatableValue(M_.S_MONEY, "Power - Property", Q_.BUILDWEALTH, Job.TREASURER,
+	public static final Value WEALTH = new ValuatableValue(M_.S_MONEY, "Power - Wealth", Q_.BUILDWEALTH, Job.TREASURER,
 			new P_[] {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.LOBOTOMY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
@@ -175,7 +174,7 @@ public class Values implements Defs {
 		}
 	};
 	
-	public static final Value SPLENDOR = new ValuatableValue(M_.S_THREAT, "Luxury - Splendor", Q_.SPLENDORQUEST, Job.ARCHITECT,
+	public static final Value COMFORT = new ValuatableValue(M_.S_THREAT, "Luxury - Comfort", Q_.SPLENDORQUEST, Job.ARCHITECT,
 			new P_[] {P_.MASONRY, P_.ARTISTRY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
@@ -194,7 +193,7 @@ public class Values implements Defs {
 			return result;
 		}
 	};
-	public static final Value HEALTH = new ValuatableValue(M_.S_SKILL, "Luxury - Health", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
+	public static final Value FREEDOM = new ValuatableValue(M_.S_SKILL, "Luxury - Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -211,14 +210,14 @@ public class Values implements Defs {
 			return (int) Math.round(sum / ExpertiseQuests.ALLSKILLS.length);
 		}
 	};
-	public static final Value WISDOM = new ValuatableValue(M_.S_SKILL, "Mind - Wisdom", Q_.BREED, Job.PHILOSOPHER, new P_[] {P_.ARITHMETIC}) {
+	public static final Value KNOWLEDGE = new ValuatableValue(M_.S_SKILL, "Mind - Knowledge", Q_.KNOWLEDGEQUEST, Job.PHILOSOPHER, new P_[] {P_.ARITHMETIC}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			//TODO
 			return 0;
 		}
 	};
-	public static final Value FAITH = new ValuatableValue(M_.S_SKILL, "Mind - Faith", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
+	public static final Value SPIRITUALITY = new ValuatableValue(M_.S_SKILL, "Mind - Spirituality", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			return clan.getHoliness();
@@ -233,8 +232,8 @@ public class Values implements Defs {
 	
 
 	private static final Value[] AllValues = new Value[] {
-		PROPERTY, INFLUENCE, MIGHT, SPLENDOR, HEALTH, BEAUTY,
-		ALLEGIANCE, RIGHTEOUSNESS, LEGACY, WISDOM, FAITH, EXPERTISE
+		WEALTH, INFLUENCE, MIGHT, COMFORT, FREEDOM, BEAUTY,
+		ALLEGIANCE, RIGHTEOUSNESS, LEGACY, KNOWLEDGE, SPIRITUALITY, EXPERTISE
 	};
 	private static Value[] filterTodos(Value[] varray) {
 		Set<Value> set = new HashSet<Value>();

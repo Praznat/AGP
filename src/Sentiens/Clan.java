@@ -8,7 +8,8 @@ import Descriptions.*;
 import Game.*;
 import Government.Order;
 import Markets.MktAbstract;
-import Questing.Quest;
+import Questing.KnowledgeQuests.KnowledgeBlock;
+import Questing.*;
 import Sentiens.GobLog.Book;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
@@ -32,7 +33,7 @@ public class Clan implements Defs, Stressor.Causable {
 	private int timesPrayed = 1;
 	
 	protected int ID;
-	protected Shire currentShire;
+	protected Shire homeShire, currentShire;
 	protected Job job, aspiration, backupJob;
 	protected int[] assets;
 	protected int[] inventory; //OBSOLETE
@@ -64,7 +65,7 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public Clan() {}
 	public Clan(Shire place, int id) {
-		currentShire = place;
+		homeShire = place;
 		ID = id;
 		boss = this;
 		suitor = null;
@@ -103,7 +104,7 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public void die() {
 		// stuff happens
-		becomeHeir();
+		boolean couldBecomeHeir = becomeHeir();
 		
 		for (DeathListener dl : deathListeners) {dl.onDeathOf(this);}
 		// remove from populations
@@ -111,7 +112,9 @@ public class Clan implements Defs, Stressor.Causable {
 	
 	public int getID() {return ID;}
 	public int getShireID() {return myShire().getX() + myShire().getY() * AGPmain.getShiresX();}
-	public Shire myShire() {return currentShire;}
+	public Shire myShire() {return homeShire;}
+	public Shire currentShire() {return currentShire;}
+	public void setCurrentShire(Shire s) {currentShire = s;}
 	public MktAbstract myMkt(int g) {return myShire().getMarket(g);}
 	public int getAge() {return age;}
 	public void setAge(int a) {age = a;}
@@ -155,7 +158,9 @@ public class Clan implements Defs, Stressor.Causable {
 		return true;
 	}
 	public void createHeir(Ideology fb, byte[] hypotheticalMateFs) {
-		// TODO lower prs by youth...
+		// lower prs by youth...
+		final double prsMult = ((double)firstSpawnAgeDiff / age);
+		for (P_ p : P_.values()) {fb.setPrs(p, (int)Math.round(prsMult * fb.getPrs(p)));}
 		// TODO mutate mems
 		// sexual reproduction for F traits
 		for (F_ f : F_.values()) {
@@ -390,6 +395,12 @@ public class Clan implements Defs, Stressor.Causable {
     	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETIC) + useBeh(M_.MADNESS)) * in / 64);
     	return in + (x == 0 ? 0 : - x + AGPmain.rand.nextDouble()*x*2);
     }
+    
+    public void contributeKnowledge(KnowledgeBlock knowledge, Shire shire) {
+    	// TODO store in shire library
+    }
+    
+    
 	public boolean iHigherMem(int m, Clan other) {
 		return iHigherPrest(mem(m).getPrestige(), other);
 	}

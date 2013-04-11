@@ -2,12 +2,13 @@ package Questing;
 
 import Defs.M_;
 import Game.Defs;
-import Questing.Quest.PatronedQuest;
-import Questing.Quest.RelationCondition;
 import Questing.Quest.FindTargetAbstract;
+import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
+import Questing.Quest.RelationCondition;
 import Questing.Quest.TargetQuest;
 import Sentiens.*;
+import Sentiens.Stressor.Causable;
 
 public class RomanceQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
@@ -27,13 +28,13 @@ public class RomanceQuests {
 		@Override
 		public void pursue() {
 			if (courtsLeft == 0) {success(Me); return;}
-			if (failsLeft == 0) {failure(); return;}
+			if (failsLeft == 0) {failure(Me); return;}
 			if (target == null) {Me.MB.newQ(new FindMate(Me)); failsLeft--; return;}  //failsleft-- cuz it means findmate failed
 			resetFails();   //previous fails were for finding target
 			if (courtsLeft == Defs.E) {courtsLeft = 16 - target.useBeh(M_.PROMISCUITY);}
 			Me.MB.newQ(new Compete4MateQuest(Me, target));
 		}
-		private void resetFails() {failsLeft = 1 + Me.useBeh(M_.PATIENCE);}
+		private void resetFails() {failsLeft = Me.useBeh(M_.PATIENCE) / 3 + 1;}
 		public void courtSucceeded() {courtsLeft--;}
 		public void courtFailed() {failsLeft--;}
 		@Override
@@ -71,16 +72,16 @@ public class RomanceQuests {
 			double diff = target.FB.randomValueInPriority().compare(target, Me, rival);
 			if (rival != target) {diff -= Values.MAXVAL * (15 - target.useBeh(M_.PROMISCUITY)) / 15;} //if shes not single, ur penalized the less promiscuous she is
 			Me.addReport(GobLog.compete4Mate(target, rival, diff));
-			if (diff > 0) {success();}
-			else {failure();}  // but try other tricks such as work or preach
+			if (diff > 0) {success(target);}
+			else {failure(rival);}  // but try other tricks such as work or preach
 		}
 		private double evaluateDifficulty() {
 			return 0; //used to determine whether to continue to court or whether to work or preach etc
 		}
 		@Override
-		public void success() {((BreedQuest) upQuest()).courtSucceeded(); super.success();}
+		public void success(Causable blamee) {((BreedQuest) upQuest()).courtSucceeded(); super.success(blamee);}
 		@Override
-		public void failure() {((BreedQuest) upQuest()).courtFailed(); super.failure();}
+		public void failure(Causable blamee) {((BreedQuest) upQuest()).courtFailed(); super.failure(blamee);}
 		@Override
 		public String shortName() {Clan rival = target.getSuitor(); return (rival==Me || rival==null ? "Court" : "Compete");}
 		@Override

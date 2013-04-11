@@ -21,8 +21,8 @@ public abstract class Quest {
 	
 	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
 	protected void success(Stressor.Causable relief) {Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));   success();}
-	protected void failure() {Me.MB.finishQ();}
-	protected void failure(Stressor.Causable blamee) {Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));   failure();}
+	protected void finish() {Me.MB.finishQ();}
+	protected void failure(Stressor.Causable blamee) {Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));   finish();}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
 	public String shortName() {return description();}
 	public String description() {return "Undefined Quest";}
@@ -32,7 +32,7 @@ public abstract class Quest {
 	protected static AvatarConsole avatarConsole() {return AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;}
 	public Clan avatar() {return avatarConsole().getAvatar();}
 		
-	public static class DefaultQuest extends Quest {
+	public static class DefaultQuest extends PatronedQuest {
 		public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
 		
 		public DefaultQuest(Clan P) {super(P);}
@@ -148,6 +148,7 @@ public abstract class Quest {
 		case SPLENDORQUEST: quest = new SplendorQuests.UpgradeDomicileQuest(clan, clan); break;
 		case FAITHQUEST: quest = new FaithQuests.ContactQuest(clan, clan); break;
 		case LEGACYQUEST: quest = new LegacyQuests.LegacyQuest(clan, clan); break;
+		case KNOWLEDGEQUEST: quest = new KnowledgeQuests.KnowledgeQuest(clan, clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan, clan); break;
 		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;

@@ -10,6 +10,8 @@ import Sentiens.Law.Commandment;
 public class CreedQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(PriestQuest.class) {public Quest createFor(Clan c) {return new PriestQuest(c, c.getBoss());}};}
 
+	// NORMAL MINISTRY CLASS SHOULD BE "PREACH COMMANDMENTS"
+	
 	public static class TweakCommandments extends PatronedQuest {
 		public TweakCommandments(Clan P, Clan patron) {super(P, patron);}
 		@Override

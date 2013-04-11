@@ -20,14 +20,16 @@ public class Amygdala {
 	}
 	/** put veins in goblins eyes based on this !!*/
 	public double getStressLevel() {   //can be above 1 if failing to respond to stress
-		double sum = 0;   double denom = parent.useBeh(M_.TEMPER);
+		double sum = 0;   double denom = parent.FB.getBeh(M_.TEMPER);
 		for (Stressor stressor : stressors) {sum += stressor.getLevel(parent);}
 		return sum / denom;
 	}
 	public void enoughIsEnough(Stressor lastStress) {
 		if (lastStress.respond(parent)) {   //respond to this one
 			relieveFrom(lastStress);
-		}   else {stressors.add(lastStress);}
+		}   else {
+			stressors.add(lastStress); // if false too often this will get huge and cause stack overflow
+		}
 	}
 	public void relieveFrom(Stressor stress) {
 		Stressor[] removeStressors = new Stressor[stressors.size()];  int removeN = 0;

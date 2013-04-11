@@ -43,11 +43,11 @@ public class Contract {   // AND/OR combination of Terms
 	}
 	
 	public void setOfferThreat() {setOffer(ATTACKTHREAT, 0, Do.NOTHING); Do.NOTHING.setup(proposer, 0);}
-	public void setOfferPayment(int c) {setOffer((Assessable)Values.PROPERTY, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
+	public void setOfferPayment(int c) {setOffer((Assessable)Values.WEALTH, c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(proposer, evaluator, c);}
 	public void setOfferGratitude(int c) {setOffer((Assessable)Values.ALLEGIANCE, c, null);}
 	public void setOfferBlessing(int c) {setOffer((Assessable)Values.RIGHTEOUSNESS, c, null);}
 
-	public void setDemandTribute(int c) {setDemand((Assessable)Values.PROPERTY, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
+	public void setDemandTribute(int c) {setDemand((Assessable)Values.WEALTH, -c, Do.PAY_TRIBUTE); Do.PAY_TRIBUTE.setup(evaluator, proposer, c);}
 	public void setDemandRespect() {setDemand((Assessable)Values.INFLUENCE, -1, Do.PAY_RESPECT); Do.PAY_RESPECT.setup(evaluator, proposer, 0);}
 	public void setDemandAllegiance() {setDemand((Assessable)Values.ALLEGIANCE, 0, Do.DECLARE_ALLEGIANCE); Do.DECLARE_ALLEGIANCE.setup(evaluator, proposer, 0);}
 	/**
@@ -87,7 +87,7 @@ public class Contract {   // AND/OR combination of Terms
 		public double evaluate(Clan evaluator, Clan proposer, int content) {
 //			if (evaluator.FB.randomValueInPriority() == Values.PATRIOTISM) {return Values.MINVAL;}
 			int landval = evaluator.getAssets(Defs.land) * evaluator.myMkt(Defs.land).buyablePX(evaluator);
-			return ((Assessable)Values.PROPERTY).evaluate(evaluator, proposer, -landval);
+			return ((Assessable)Values.WEALTH).evaluate(evaluator, proposer, -landval);
 		}
 	};
 	

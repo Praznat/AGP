@@ -78,13 +78,13 @@ public class Ideology implements Defs {
 	public void setPrs(P_ p, int val) {setVar(P(p), val);}
 
 	public void upPrest(P_ plc) {
-		int p = P(plc);
-		int cur = getVar(p);
+		final int p = P(plc);
+		final int cur = getVar(p);
 		setVar(p, (int) (4.7 + 0.75 * (double)cur));
 	}
 	public void downPrest(P_ plc) {
-		int p = P(plc);
-		int cur = getVar(p);
+		final int p = P(plc);
+		final int cur = getVar(p);
 		setVar(p, (int) (0.2 + 0.75 * (double)cur));
 	}
 	
@@ -214,7 +214,15 @@ public class Ideology implements Defs {
 		}
 		return N;
 	}
-	public Value valueInPriority(int i) {return sancs[FSM[getBeh(M_.STRICTNESS)][i]];}
+	public Value[] valuesInPriority() {
+		int[] fsm = FSM[getBeh(M_.STRICTNESS)];
+		Value[] result = new Value[fsm.length];
+		for (int i = 0; i < fsm.length; i++) {result[i] = sancs[fsm[i]];}
+		return result;
+	}
+	public Value valueInPriority(int i) {
+		return sancs[FSM[getBeh(M_.STRICTNESS)][i]];
+	}
 	public Value strongerOf(Value A, Value B) {
 		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;
 	}

@@ -35,7 +35,7 @@ public class Stressor {
 		}
 	}
 	public boolean respond(Clan responder) {  //TODO
-		boolean success = false;
+		boolean success = true;
 		if (target instanceof Clan) {
 			if (type == HATRED) {}
 			if (type == PROMISE_BROKEN) {}

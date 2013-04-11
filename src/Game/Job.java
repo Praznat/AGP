@@ -90,7 +90,7 @@ public class Job implements Defs, Stressor.Causable {
 	public static final Ministry JUDGE = new Ministry(CreedQuests.getMinistryFactory());
 	public static final Ministry NOBLE = new Ministry(AllegianceQuests.getMinistryFactory());
 	public static final Ministry HISTORIAN = new Ministry(LegacyQuests.getMinistryFactory());
-	public static final Ministry PHILOSOPHER = new Ministry(Quest.DefaultQuest.getMinistryFactory());//TODO
+	public static final Ministry PHILOSOPHER = new Ministry(KnowledgeQuests.getMinistryFactory());
 	public static final Ministry TUTOR = new Ministry(ExpertiseQuests.getMinistryFactory());
 	public static final Ministry SORCEROR = new Ministry(FaithQuests.getMinistryFactory());
 	public static final Ministry VIZIER = new Ministry(InfluenceQuests.getMinistryFactory());

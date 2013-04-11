@@ -14,17 +14,18 @@ public class BattleField {
 	private Army offenseArmy;
 	private Rectangle field = new Rectangle(1000, 500);
 	private HashMap<Clan, BattleResult> results = new HashMap<Clan, BattleResult>();
-	
+
 	public static void setupNewBattleField(Clan attacker, Clan defender, Shire location) {
 		INSTANCE.defenseArmy.clear();   INSTANCE.offenseArmy.clear();
-		INSTANCE.defenseArmy = createArmyFrom(defender.myOrder().getFollowers(defender, location, false, true));
-		INSTANCE.offenseArmy = createArmyFrom(attacker.myOrder().getFollowers(attacker, location, false, true));
+		INSTANCE.defenseArmy = createArmyFrom(defender, location);
+		INSTANCE.offenseArmy = createArmyFrom(attacker, location);
 		determineFormation(defender, INSTANCE.defenseArmy);
 		determineFormation(attacker, INSTANCE.offenseArmy);
 		
 		INSTANCE.go();
 	}
-	public static Army createArmyFrom(Set<Clan> clans) {
+	public static Army createArmyFrom(Clan clan, Shire location) {
+		Set<Clan> clans = clan.myOrder().getFollowers(clan, location, false, true);
 		Army army = new Army();
 		for (Clan c : clans) {
 			Warrior w = new Warrior();

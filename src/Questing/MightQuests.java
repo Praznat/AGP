@@ -1,5 +1,7 @@
 package Questing;
 
+import java.util.*;
+
 import Defs.M_;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
@@ -8,19 +10,44 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class MightQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(MightQuest.class) {public Quest createFor(Clan c) {return new MightQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefendPatron.class) {public Quest createFor(Clan c) {return new DefendPatron(c, c.getBoss());}};}
 	
-	public static class MightQuest extends PatronedQuest {
-		public MightQuest(Clan P, Clan patron) {super(P, patron);}
+	public static class DefendPatron extends PatronedQuest {
+		public DefendPatron(Clan P, Clan patron) {super(P, patron);}
+
 		@Override
 		public void pursue() {
-			// decide between:
-				// build army (by hiring, buying weapons)
-				// military actions
-			
-			
-			replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
+			// TODO standby for FormArmy / train
 		}
+		
+	}
+	
+	public static class FormArmy extends PatronedQuest {
+		private final Set<Clan> army;
+		public FormArmy(Clan P, Clan patron) {
+			super(P, patron);
+			if (patron == P) {army = new HashSet<Clan>();}
+			else {
+				final Quest q = patron.MB.QuestStack.peek();
+				if (q instanceof FormArmy) {army = ((FormArmy)q).getArmy();}
+				else {army = null; finish(); return;}
+			}
+			army.add(Me);
+		}
+		@Override
+		public void pursue() {
+			Set<Clan> followers = Me.myOrder().getFollowers(Me, false, false);
+			for (Clan f : followers) {
+				final Quest topQuest = f.MB.QuestStack.peek();
+				if (topQuest instanceof FormArmy) {continue;}
+				// DOESNT COST TURN IF CANDIDATE'S QUEST IS ALREADY DEFENDPATRON (upside of standing army = instant formation of first tier)
+				if (topQuest instanceof DefendPatron) {f.MB.newQ(new FormArmy(f, patron));}
+//			Contract.getInstance().enter(e, p) ?
+				else {f.MB.newQ(new FormArmy(f, patron)); return;}
+			}
+			success();
+		}
+		public Set<Clan> getArmy() {return army;}
 	}
 	
 	public static boolean desiresFight(Clan pov, Clan opponent, boolean povIsDefender) {
@@ -44,9 +71,7 @@ public class MightQuests {
 	
 	public static class ChallengeMight extends TransactionQuest {
 
-		public ChallengeMight(Clan P) {
-			super(P);
-		}
+		public ChallengeMight(Clan P) {super(P);}
 
 		@Override
 		protected FindTargetAbstract findWhat() {

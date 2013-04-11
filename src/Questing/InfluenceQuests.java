@@ -26,8 +26,6 @@ public class InfluenceQuests {
 	
 	public static class InfluenceQuest extends PatronedQuest {
 		private Clan rival;
-		private Order myOrder, rivalOrder;
-		private int numFollowers, rivalFollowers;
 		public InfluenceQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public String description() {return "Expand influence";}
@@ -36,8 +34,8 @@ public class InfluenceQuests {
 		public void avatarPursue() {
 			if (!(patron == Me || patron.isSomeBossOf(Me))) {Me.MB.finishQ();   return;}
 			commonPursuit();
-			final GradedQuest[] options = {new GradedQuest(new PersecutionQuests.PersecuteInfidel(Me), rivalFollowers - numFollowers),
-					new GradedQuest(new OrganizeMinistries(Me), numFollowers - rivalFollowers)};
+			final GradedQuest[] options = {new GradedQuest(new PersecutionQuests.PersecuteInfidel(Me), rivalFollowers() - patron.getMinionTotal()),
+					new GradedQuest(new OrganizeMinistries(Me), patron.getMinionTotal() - rivalFollowers())};
 			avatarConsole().showChoices(Me, options, SubjectiveType.QUEST_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
@@ -50,7 +48,7 @@ public class InfluenceQuests {
 		public void pursue() {
 			if (!(patron == Me || patron.isSomeBossOf(Me))) {Me.MB.finishQ();   return;}
 			commonPursuit();
-			if (numFollowers <= rivalFollowers) {
+			if (patron.getMinionTotal() <= rivalFollowers()) {
 				replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
 			}
 			else {
@@ -59,12 +57,9 @@ public class InfluenceQuests {
 		}
 		private void commonPursuit() {
 			rival = Calc.oneOf(AGPmain.TheRealm.getPopulation());
-			myOrder = patron.myOrder();
-			rivalOrder = rival.myOrder();
-			if (myOrder == null) {myOrder = Order.createBy(patron); patron.addReport(GobLog.createOrder(false));}
-			numFollowers = myOrder.getFollowers(Me, false, true).size();
-			rivalFollowers = rivalOrder == null ? 0 : rivalOrder.getFollowers(rival, false, true).size();
+			if (patron.myOrder() == null) {Order.createBy(patron); patron.addReport(GobLog.createOrder(false));}
 		}
+		private int rivalFollowers() {return rival == null || rival.myOrder() == null ? 0 : rival.getMinionTotal();}
 	}
 	
 	public static class OrganizeMinistries extends Quest {
@@ -111,6 +106,14 @@ public class InfluenceQuests {
 			}, describer);
 		}
 		
+		/**
+		 * 1. determine number allotted each ministry according to value %s
+		 * 2. pick a follower C at random
+		 * 3. pick a value V at random according to priority
+		 * 4. if there is still space left at the ministry corresponding to V, assign C there
+		 * 5. if no space, pick a random minister M in the ministry corresponding to V
+		 * 6. if C is more suitable than M, replace, leaving M with Allegiance job
+		 */
 		@Override
 		public void pursue() {
 			if (Math.min(movesLeft--, followers.size()) <= 0) {
@@ -154,6 +157,7 @@ public class InfluenceQuests {
 			Me.FB.getSancPcts(sncs, pcts);
 			for (int i = 0; i < sncs.length; i++) {
 				final int n = Math.min((int) Math.round(pcts[i] * Me.getMinionN()), assignableLeft);
+				// TODO what about if highest is 10% and only 2 minions???
 				if (n <= 0) {return;}
 				numEach.put(sncs[i].getMinistry(), n);
 				assignableLeft -= n;

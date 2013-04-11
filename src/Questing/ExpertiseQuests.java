@@ -9,7 +9,7 @@ import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class ExpertiseQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LearnQuest.class) {public Quest createFor(Clan c) {return new TeachQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(TeachQuest.class) {public Quest createFor(Clan c) {return new TeachQuest(c, c.getBoss());}};}
 
 	public static final P_[] ALLSKILLS = {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.PROSE, P_.LOBOTOMY,
 		P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH, P_.DANCE,
@@ -84,7 +84,7 @@ public class ExpertiseQuests {
 	
 	private static P_ decideSkillToPractice(Clan doer) {
 		final P_[] relSkills = doer.FB.randomValueInPriority().getRelevantSkills();
-		final int k = AGPmain.rand.nextInt(relSkills.length + doer.FB.getBeh(M_.MADNESS) / 3);
+		final int k = AGPmain.rand.nextInt(1 + relSkills.length + doer.FB.getBeh(M_.MADNESS) / 3);
 		if (k < relSkills.length) {return relSkills[k];}
 		else {return ALLSKILLS[AGPmain.rand.nextInt(ALLSKILLS.length)];}
 	}
@@ -101,7 +101,7 @@ public class ExpertiseQuests {
 			return false; // strength down
 		}
 		final int currPrs = doer.FB.getPrs(skill);
-		int pSuccess = 16 - currPrs + (teacher == null ? 0 : Math.min(0, teacher.FB.getPrs(skill) - currPrs));
+		int pSuccess = 15 - currPrs + (teacher == null ? 0 : Math.min(0, teacher.FB.getPrs(skill) - currPrs));
 		boolean success = false;
 		switch (skill) {
 		case STRENGTH:

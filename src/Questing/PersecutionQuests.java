@@ -59,8 +59,6 @@ public class PersecutionQuests {
 		}
 		@Override
 		public String description() {return "Find Heretic";}
-		@Override
-		protected void failure(Stressor.Causable blamee) {failure();}
 	}	
 	public static class FindInfidel extends FindTargetAbstract {
 		public FindInfidel(Clan P) {super(P);}
@@ -72,7 +70,5 @@ public class PersecutionQuests {
 		}
 		@Override
 		public String description() {return "Find Infidel";}
-		@Override
-		protected void failure(Stressor.Causable blamee) {failure();}
 	}	
 }

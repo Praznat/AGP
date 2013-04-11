@@ -6,6 +6,7 @@ import Defs.P_;
 import Descriptions.*;
 import Game.*;
 import Questing.FaithQuests.ActOfFaith;
+import Questing.KnowledgeQuests.KnowledgeBlock;
 import Sentiens.Law.Commandment;
 
 public class GobLog {
@@ -138,10 +139,21 @@ public class GobLog {
 			}
 		};
 	}
+	@SuppressWarnings("rawtypes")
+	public static Reportable contributeKnowledge(final KnowledgeBlock kb) {
+		return new Reportable() {
+			public String out() {return "Contributed " + kb;}
+		};
+	}
+	public static Reportable observe(final Clan observee) {
+		return new Reportable() {
+			public String out() {return "Collected data on " + observee.getNomen();}
+		};
+	}
 	
 	public static Reportable pray(final Clan prayer, final Clan prayee, final int mana, final ActOfFaith aof) {
 		return new Reportable() {
-			public String out() {return prayer.getNomen() + " generated " + mana + " mana for " + prayee + " through " + aof.desc();}
+			public String out() {return prayer.getNomen() + " generated " + mana + " mana" + (prayee!=prayer?" for "+prayee:"") + " through " + aof.desc();}
 		};
 	}
 
