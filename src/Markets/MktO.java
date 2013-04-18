@@ -20,7 +20,7 @@ public class MktO extends MktAbstract {
 	protected static final int DEFAULTPX = 100;
 	protected static final int STARTSZ = 10;
 	public static final double[] RATES = {0.01,0.0125,0.015,0.02,0.03,0.05,0.075,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5};
-	public static final int NOASK = Integer.MAX_VALUE;
+	public static final int NOASK = Integer.MAX_VALUE / 2;
 	public static final int NOBID = 0;
 	public static final int NOBIDDERCANPAY = -1;
 	
@@ -41,7 +41,7 @@ public class MktO extends MktAbstract {
 		LastPX = DEFAULTPX;
 		LTAvg = DEFAULTPX;
 		STAvg = DEFAULTPX;
-		MaxPX = 0;   MinPX = Integer.MAX_VALUE;
+		MaxPX = 0;   MinPX = Integer.MAX_VALUE / 2;
 		home = h;
 	}
 	
@@ -51,7 +51,7 @@ public class MktO extends MktAbstract {
 		return result >= 0 ? result : val;
 	}
 	public static int interest(int val, Clan doer) {
-		if (val == Integer.MAX_VALUE) {return val;}
+		if (val == NOASK) {return val;}
 		return Calc.roundy((double)val * RATES[doer.useBeh(M_.RISKPREMIUM)]);
 	}
 	
@@ -191,7 +191,7 @@ public class MktO extends MktAbstract {
 		int min = Assets.FVmin(doer, g);   int max = Assets.FVmax(doer, g);
 //		addReport(doer.getNomen() + " estimates fair price for " + Naming.goodName(g) + " in following manner:");
 //		addReport(PX + " = [(Flow=" + flow + ")*" + F + " + " + "(Tech=" + TechPX + ")*" + T + "] / " + (T+F));
-//		addReport(min == 0 && max == Integer.MAX_VALUE ? "" : ", bounded between " + min + " and " + max);
+//		addReport(min == 0 && max == NOASK ? "" : ", bounded between " + min + " and " + max);
 		if (min < 0) {
 			Calc.p("what the fio");
 			min = Assets.FVmin(doer, g); 
@@ -317,7 +317,7 @@ public class MktO extends MktAbstract {
 		doer.addReport(GobLog.limitOrder(g, px, false));
 		addReport(doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px);
 		int bbp = bestBidPlc();
-		if(bidlen > 0 && bbp != NOBIDDERCANPAY && px <= Bids[bbp].px) {hitBid(doer); return Integer.MAX_VALUE;}
+		if(bidlen > 0 && bbp != NOBIDDERCANPAY && px <= Bids[bbp].px) {hitBid(doer); return NOASK;}
 		int k = findPlcInV(px, Offers, offerlen, Entry.OFFERDIR);
 		offerlenUp();
 		for(int i = offerlen; i > k; i--) {Offers[i].set(Offers[i-1]);}

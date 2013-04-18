@@ -7,7 +7,6 @@ import Game.*;
 import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.PersecutionQuests.PersecuteHeretic;
 import Questing.PersecutionQuests.PersecuteInfidel;
-import Questing.PowerStartingQuests.IndPowerQuest;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.RomanceQuests.BreedQuest;
 import Sentiens.*;
@@ -16,16 +15,24 @@ import Sentiens.Stressor.Causable;
 public abstract class Quest {
 	protected Clan Me;
 	public Quest(Clan P) {Me = P;}
+	public void pursueQuest() {
+		pursue();
+	}
+	public void avatarPursueQuest() {
+		avatarPursue();
+	}
 	public abstract void pursue();
 	public void avatarPursue() {pursue();}  //default leaves it to AI
 	
 	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
 	protected void success(Stressor.Causable relief) {Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));   success();}
+	protected void success(Stressor.Causable... reliefs) {failure(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
 	protected void finish() {Me.MB.finishQ();}
 	protected void failure(Stressor.Causable blamee) {Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));   finish();}
+	protected void failure(Stressor.Causable... blamees) {failure(blamees[AGPmain.rand.nextInt(blamees.length)]);}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
 	public String shortName() {return description();}
-	public String description() {return "Undefined Quest";}
+	public abstract String description();
 	@Override
 	public String toString() {return description();}
 	
@@ -38,11 +45,18 @@ public abstract class Quest {
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
 		public void pursue() {Me.addReport(GobLog.idle()); Me.MB.finishQ();}
+		@Override
+		public String description() {return "Default Quest";}
 	}
 	public static abstract class PatronedQuest extends Quest {
 		protected Clan patron;
 		public PatronedQuest(Clan P) {this(P, P);}
 		public PatronedQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
+		@Override
+		public void pursueQuest() {
+			// TODO get paid by patron!!!
+			super.pursueQuest();
+		}
 	}
 	public static abstract class TargetQuest extends Quest {
 		protected Clan target;
@@ -69,6 +83,8 @@ public abstract class Quest {
 			this.candidates = candidates;
 			this.blameSource = c;
 		}
+		@Override
+		public String description() {return "Find target";}
 		public void setTarget(Clan c) {
 			((TargetQuest) upQuest()).setTarget(c);  //must be called by TargetQuest
 		}
@@ -150,7 +166,6 @@ public abstract class Quest {
 		case LEGACYQUEST: quest = new LegacyQuests.LegacyQuest(clan, clan); break;
 		case KNOWLEDGEQUEST: quest = new KnowledgeQuests.KnowledgeQuest(clan, clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan, clan); break;
-		case INDPOWERQUEST: quest = new IndPowerQuest(clan); break;
 		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;
 		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
 		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
@@ -168,4 +183,5 @@ public abstract class Quest {
 		@Override
 		public String toString() {return quest.description();}
 	}
+
 }

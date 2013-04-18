@@ -13,8 +13,9 @@ public class TableSlidePanel extends ASlidePanel {
 		if (parent().initialized()) {redefineShire();}
 	}
 	public void redefineShire() {
-		if (type == PopupShire.POPULATION) {scroll = Papyrus.shirepopS(parent());}
-		if (type == PopupShire.MARKETS) {scroll = Papyrus.shiremktS(parent());}
+		if (type == PopupShire.ENVIRONMENT) {scroll = Papyrus.shiredescS(parent());}
+		else if (type == PopupShire.POPULATION) {scroll = Papyrus.shirepopS(parent());}
+		else if (type == PopupShire.MARKETS) {scroll = Papyrus.shiremktS(parent());}
 		else {scroll = Papyrus.shirepopS(parent());}
 		setScrolls();
 	}

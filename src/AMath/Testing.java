@@ -9,6 +9,7 @@ import Markets.*;
 import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;
 import Sentiens.GobLog.Reportable;
+import Sentiens.Values.Value;
 import Shirage.Shire;
 
 /**
@@ -31,6 +32,8 @@ public class Testing {
 	public static void doAllTests() {
 		System.out.println("starting tests");
 		
+		ideologyBasicFunctions();
+		
 		TestMarkets.testLogics();
 		
 		TestMarkets.normalMarketFunctions();
@@ -50,6 +53,16 @@ public class Testing {
 
 	public static void breeding() {
 		reset();
+	}
+	
+	public static void ideologyBasicFunctions() {
+		reset();
+		Clan greyjoy = testRealm.getClan(0);
+		Value gold = greyjoy.FB.getValue(0);
+		Value silver = greyjoy.FB.getValue(1);
+		greyjoy.FB.upSanc(silver);
+		affirm(greyjoy.FB.getValue(0) == silver);
+		affirm(greyjoy.FB.getValue(1) == gold);
 	}
 
 	public static void ideologyInteractions() {

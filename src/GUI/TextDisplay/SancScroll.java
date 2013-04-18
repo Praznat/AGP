@@ -1,12 +1,9 @@
 package GUI.TextDisplay;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 
 import GUI.PopupAbstract;
-import Game.AGPmain;
-import Sentiens.Clan;
-import Sentiens.Ideology;
+import Sentiens.*;
 import Sentiens.Values.Value;
 
 

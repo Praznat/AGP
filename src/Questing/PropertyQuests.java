@@ -2,7 +2,7 @@ package Questing;
 
 import AMath.Calc;
 import Avatar.SubjectiveType;
-import Defs.P_;
+import Defs.*;
 import Descriptions.XWeapon;
 import Game.*;
 import Markets.*;
@@ -15,24 +15,24 @@ public class PropertyQuests {
 	
 	//TODO make PATRONED
 	public static class BuildWealthQuest extends PatronedQuest {
-		private long start, goal;
+		private final int startCumInc, goalCumInc;
 		public BuildWealthQuest(Clan clan) {
 			super(clan);
-			start = clan.getNetAssetValue(clan);
-			goal = 2 * start;
+			startCumInc = clan.getCumulativeIncome();
+			goalCumInc = (int) Math.min(Integer.MAX_VALUE / 2, clan.getNetAssetValue(clan));
 		} //default is to double NAV
 		@Override
 		public void pursue() {
-			if (Me.getNetAssetValue(Me) >= goal) {success();} // TODO attribute to me or shire or what?
-			else {
-				final Job j = Me.getJob();
-				if (j instanceof Ministry) {
-					// ministry job
-					((Ministry) j).getService().doit(Me);
-				}
-				else {Me.MB.newQ(new LaborQuest(Me));}
-				
+			if (Me.getCumulativeIncome() - startCumInc >= goalCumInc) {success(Me.myShire(), Me.getJob()); return;}
+			if (Me.getCumulativeIncome() <= startCumInc && Calc.pPercent(AGPmain.rand.nextInt(30-Me.FB.getBeh(M_.PATIENCE)))) {
+				failure(Me.myShire(), Me.getJob()); return;
 			}
+			final Job j = Me.getJob();
+			if (j instanceof Ministry) {
+				// ministry job
+				((Ministry) j).getService().doit(Me);
+			}
+			else {Me.MB.newQ(new LaborQuest(Me));}
 		}
 		public String description() {return "Build Wealth";}
 	}
@@ -44,10 +44,12 @@ public class PropertyQuests {
 		private int[] workmemo = new int [WORKMEMORY]; //stock id
 		private int[] workmemoX = new int [WORKMEMORY];//stock count
 		private int stage = 0;
+		private int turnsLeft;
 		private Labor chosenAct;
 		
 		public LaborQuest(Clan P) {
 			super(P); setChosenAct((Labor) Job.NullAct); resetWM();
+			turnsLeft = P.FB.getBeh(M_.PATIENCE) / 3 + 5;
 		}
 		@Override
 		public String description() {return chosenAct + " stage " + stage;}
@@ -114,7 +116,7 @@ public class PropertyQuests {
 		}
 		private Labor compareTrades() {
 			final Act[] actSet = Me.getJobActs();
-			Labor curAct;   Labor bestAct = (Labor) Job.NullAct;   int bestPL = 0;
+			Labor curAct;   Labor bestAct = (Labor) Job.NullAct;   int bestPL = 0;//Integer.MIN_VALUE / 2;
 			for(int i = 0; i < actSet.length; i++) {
 				curAct = (Labor) actSet[i];
 				final double expOut = curAct.expOut(Me)[0];
@@ -149,6 +151,14 @@ public class PropertyQuests {
 			doInputs();
 		}
 		private void doInputs() {
+			if (turnsLeft <= 0) { // untested
+				int i = -1;   while (workmemo[++i] != Defs.E) { //liquidate
+					MktAbstract mkt = Me.myMkt(getAbsWM(i));
+					for (int k = workmemoX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
+				}
+				failure(Me.myShire()); return;
+			}
+			turnsLeft--;
 			//
 
 			// PROBLEM WITH MULTIPLE "OR" INPUTS (SEE BUTCHER) ?

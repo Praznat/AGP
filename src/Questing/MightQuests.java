@@ -19,6 +19,8 @@ public class MightQuests {
 		public void pursue() {
 			// TODO standby for FormArmy / train
 		}
+		@Override
+		public String description() {return "Defense";}
 		
 	}
 	
@@ -48,6 +50,8 @@ public class MightQuests {
 			success();
 		}
 		public Set<Clan> getArmy() {return army;}
+		@Override
+		public String description() {return "Form army";}
 	}
 	
 	public static boolean desiresFight(Clan pov, Clan opponent, boolean povIsDefender) {
@@ -114,6 +118,9 @@ public class MightQuests {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public String description() {return "Make challenge";}
 	
 	}
 	

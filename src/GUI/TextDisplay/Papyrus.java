@@ -71,6 +71,12 @@ public class Papyrus extends JPanel {
 		((OrderRowScroll)s[1]).calcRealizedSize();
 		return s;
 	}
+	public static Papyrus[] shiredescS(PopupAbstract P) {
+		Papyrus[] s = new Papyrus[2];
+		s[0] = new NameScroll(P,  P.INFO[0], 12);
+		s[1] = new ShireDescScroll(P);
+		return s;
+	}
 	public static Papyrus[] shirepopS(PopupAbstract P) {
 		Papyrus[] s = new Papyrus[3];
 		s[0] = new NameScroll(P,  P.INFO[1], 12);

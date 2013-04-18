@@ -2,22 +2,16 @@ WORKPLAN
 
 Stuff to do:
 
+BUG in breeding display offspring face... try using bald parent, i got instance where child was never bald
 Goblin Profile Select Previous Goblins
 Death, Sex, and Migration
-Learning, interaction, discussion, preaching
-Eating
+Eating & buildwealth on hunger
 Shire Environment
 Trader Job
-Agent Jobs
-Buildings & Art
-Rent Market
+Rent Market incomplete
 More Quests
-Test Contracts
 Refactoring Defs
 Stressor Reactions
-Order : loyalty, zeal, homeland points
-Switching allegiance or creed or homeland must clear points
-Battling
 
 VALUE QUEST & MINISTRY PRIORITIES
 property
@@ -39,7 +33,7 @@ influence
 comfort *** (easy?)
 righteousness (half-done already)
 knowledge (all the philosophy quests...)
-	sometimes study, sometimes teach
+	other triggers: BLAME shire -> find knowledge on better shires
 might
 freedom
 	self - relieve stressors

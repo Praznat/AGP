@@ -27,13 +27,15 @@ public class AllegianceQuests {
 			Ministry proposedMinistry = getMinistryProposal(Me);
 			Service proposedService = proposedMinistry.getService();
 			// first inquire if proposedMinistry can pay more than current job
-			if (Me.getJob() != Job.NOBLE && proposedService.estimateProfit(Me) > Me.getProfitEMA()) {
+			if (Me.getJob() != Job.NOBLE && proposedService.estimateProfit(Me) > Me.getAvgIncome()) {
 				Me.setJob(proposedMinistry);
 			}
 			Me.MB.finishQ();
 			if (proposedMinistry == Job.NOBLE) {return;} // TODO causes infinite loop if Allegiance is your only value. find something else for here
 			proposedService.doit(Me); // do it even if it's not your job... this is ALLEGIANCE Quest
 		}
+		@Override
+		public String description() {return "Allegiance Quest";}
 	}
 	private static Ministry getMinistryProposal(Clan clan) {
 		Ministry proposedMinistry = clan.getBoss().FB.randomValueInPriority().getMinistry();

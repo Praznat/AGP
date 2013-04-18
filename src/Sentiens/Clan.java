@@ -8,20 +8,22 @@ import Descriptions.*;
 import Game.*;
 import Government.Order;
 import Markets.MktAbstract;
-import Questing.KnowledgeQuests.KnowledgeBlock;
+import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.*;
+import Questing.PropertyQuests.LaborQuest;
 import Sentiens.GobLog.Book;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 
 public class Clan implements Defs, Stressor.Causable {
-	protected static final int DMC = 10; //daily millet consumption
+	public static int DMC = 3; //daily millet consumption
 	protected static final int MUTATION_PCT = 2;
 	//protected static final int MEMORY = 8;
 	//bio
 	protected byte[] name = new byte[2];
 	protected boolean gender;
 	private int age;
+	private int ageInherited; //at what age did it start "playing" (ancestor died)
 	private int heritageLength; //number of ancestors remembered
 
 	protected Clan suitor; //ID of suitor
@@ -31,6 +33,7 @@ public class Clan implements Defs, Stressor.Causable {
 	private int splendor;
 	private int holiness;
 	private int timesPrayed = 1;
+	private int knowledgeAttribution;
 	
 	protected int ID;
 	protected Shire homeShire, currentShire;
@@ -54,7 +57,7 @@ public class Clan implements Defs, Stressor.Causable {
 	private boolean active;
 	protected boolean lastSuccess;
 	//protected int act;
-	protected int profitEMA;
+	protected int cumIncome;
 	public Ideology FB;
 	public Amygdala AB;
 	public Memory MB;
@@ -75,8 +78,9 @@ public class Clan implements Defs, Stressor.Causable {
 //		expTerms = new int[][] {{0}, {}, {}, {}};
 		backupJob = Job.HUNTERGATHERER;
 		job = Job.FARMER;  setRandomJob();
-		profitEMA = 0;
-		setAge(AGPmain.rand.nextInt(100));
+		cumIncome = 0;
+		age = (AGPmain.rand.nextInt(100) * 365);
+		ageInherited = age;
 		specialweapon = (short) AGPmain.rand.nextInt(); //XWeapon.NULL;
 		
 		byte[] r = new byte[2];
@@ -91,23 +95,16 @@ public class Clan implements Defs, Stressor.Causable {
 	
 
 	public void pursue() {
+		daily();
 		if (isActive()) {
 			if (MB.QuestStack.empty()) {
 				Q_ q = FB.randomValueInPriority().pursuit(this);
 				Quest quest = Quest.QtoQuest(this, q);
 				MB.QuestStack.add(quest);
 			}
-			MB.QuestStack.peek().pursue();
+			MB.QuestStack.peek().pursueQuest();
 		}
 		setActive(true);
-	}
-	
-	public void die() {
-		// stuff happens
-		boolean couldBecomeHeir = becomeHeir();
-		
-		for (DeathListener dl : deathListeners) {dl.onDeathOf(this);}
-		// remove from populations
 	}
 	
 	public int getID() {return ID;}
@@ -116,8 +113,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public Shire currentShire() {return currentShire;}
 	public void setCurrentShire(Shire s) {currentShire = s;}
 	public MktAbstract myMkt(int g) {return myShire().getMarket(g);}
-	public int getAge() {return age;}
-	public void setAge(int a) {age = a;}
+	public Library getRelevantLibrary() {return homeShire.getLibrary();}
+	public int getAge() {return age / 365;}
 	public int getHeritageLength() {
 		return heritageLength;
 	}
@@ -139,15 +136,40 @@ public class Clan implements Defs, Stressor.Causable {
 	public Job getAspiration() {return aspiration;}
 	public void setAspiration(Job j) {aspiration = j;}
 	
+	public void daily() {
+		age++;
+		final boolean starve = !eat();
+		if (starve) {
+			setJob(Job.HUNTERGATHERER);
+			if (numSpawns > 0) {numSpawns--;} else {die();}
+		}
+		if (isHungry()) {
+			boolean hustleHard = true;
+			if (!MB.QuestStack.isEmpty()){
+				final Quest q = MB.QuestStack.peek();
+				hustleHard = !(q instanceof BuildWealthQuest || q instanceof LaborQuest);
+			}
+			if (hustleHard) {MB.newQ(new BuildWealthQuest(this));}
+		}
+	}
+	public boolean isHungry() {
+		return getMillet() < (15 + FB.getBeh(M_.PARANOIA)) * DMC;
+	}
 	public void breed(Clan mate) {
 		// FIRST child
 		if (firstMateTraits == null) {
 			firstMateTraits = mate.FB.copyFs();
-			firstSpawnAgeDiff = this.getAge();
+			firstSpawnAgeDiff = age;
 		}
 		numSpawns++;
 	}
-
+	public void die() {
+		// stuff happens
+		boolean couldBecomeHeir = becomeHeir();
+		
+		for (DeathListener dl : deathListeners) {dl.onDeathOf(this);}
+		// remove from populations
+	}
 	private boolean becomeHeir() {
 		//stuff that happens anyway
 		holiness = 0; timesPrayed = 1;
@@ -161,6 +183,10 @@ public class Clan implements Defs, Stressor.Causable {
 		// lower prs by youth...
 		final double prsMult = ((double)firstSpawnAgeDiff / age);
 		for (P_ p : P_.values()) {fb.setPrs(p, (int)Math.round(prsMult * fb.getPrs(p)));}
+		knowledgeAttribution *= prsMult;
+		cumIncome = 0;
+		age -= firstSpawnAgeDiff;
+		ageInherited = age;
 		// TODO mutate mems
 		// sexual reproduction for F traits
 		for (F_ f : F_.values()) {
@@ -269,18 +295,6 @@ public class Clan implements Defs, Stressor.Causable {
 //		return Winnings * pointsBN / TotalPoints;
 //	}
 
-	
-	public int getMillet() {return assets[millet];}
-	public boolean alterMillet(int c) {
-		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
-		else if (assets[millet] + c < 0) {
-			assets[millet] = 0; System.out.println("millet below zero " + getNomen() + " the " + getJob() + " $" + assets[millet] + " altered by " + c);
-			throw new IllegalStateException(); // return false;
-		}//System.out.println(1 / 0);}
-		else {assets[millet] = assets[millet] + c; return true;}
-		return false;
-	}
-	
 	private void setRandomJob() {   //just for sample purposes!
 		int n = AGPmain.rand.nextInt(12);
 		switch (n) {
@@ -289,6 +303,8 @@ public class Clan implements Defs, Stressor.Causable {
 		case 2: job = Job.HERDER; break;
 		case 3: job = Job.MINER; break;
 		case 4: job = Job.MASON; break;
+		case 5: job = Job.BUILDER; break;
+//		case 6: job = Job.TRADER; break;
 		default: job = Job.FARMER; break;
 		}
 		
@@ -299,14 +315,20 @@ public class Clan implements Defs, Stressor.Causable {
 	public boolean getLastSuccess() {return lastSuccess;}
 	public boolean isActive() {return active;}
 	public void setActive(boolean a) {active = a;}
-	public boolean isHungry() {return true;}
-	public int getProfitEMA() {return profitEMA;}
-	public void alterProfitEMA(double newProfit) {	//should do weekly recalc of change in NAV or something, not handle through work quest (cuz working just puts out offers)
-		double speed = ((double)FB.getBeh(M_.LTMOMENTUM) + FB.getBeh(M_.STMOMENTUM) + 1) / 32; //
-		profitEMA = (int) Math.round(speed * newProfit + (1 - speed) * profitEMA);
-	}
-	
+	public int getAvgIncome() {return (int) Math.round((double)cumIncome / (double)(age - ageInherited));}
+	public int getCumulativeIncome() {return cumIncome;}
+	public void alterCumIncome(int m) {cumIncome += m;}
 
+	public int getMillet() {return assets[millet];}
+	public boolean alterMillet(int c) {
+		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
+		else if (assets[millet] + c < 0) {
+			assets[millet] = 0; System.out.println("millet below zero " + getNomen() + " the " + getJob() + " $" + assets[millet] + " altered by " + c);
+//			throw new IllegalStateException(); // return false;
+		}//System.out.println(1 / 0);}
+		else {assets[millet] = assets[millet] + c; cumIncome += c; return true;}
+		return false;
+	}
 	public long getNetAssetValue(Clan POV) {
 		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
 			int px = g != Defs.millet ? POV.myMkt(g).sellablePX(POV) : 1;
@@ -340,6 +362,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public void chgHoliness(int i) {this.holiness += i;}
 	public int getTimesPrayed() {return timesPrayed;}
 	public void incTimesPrayed() {timesPrayed++;}
+	public int getKnowledgeAttribution() {return knowledgeAttribution;}
+	public void incKnowledgeAttribution() {knowledgeAttribution++;}
 	public boolean maybeEmigrate() {
 		emigrate();
 		return true;
@@ -371,7 +395,7 @@ public class Clan implements Defs, Stressor.Causable {
     public boolean eat() {
     	assets[Defs.millet] -= DMC;
     	if (assets[Defs.millet] < 0) {
-    		assets[Defs.millet] = 0;
+//    		assets[Defs.millet] = 0;
     		return false;
     		//starvation!
     	}	return true;
@@ -395,11 +419,6 @@ public class Clan implements Defs, Stressor.Causable {
     	double x = Math.abs((16 - FB.getPrs(P_.ARITHMETIC) + useBeh(M_.MADNESS)) * in / 64);
     	return in + (x == 0 ? 0 : - x + AGPmain.rand.nextDouble()*x*2);
     }
-    
-    public void contributeKnowledge(KnowledgeBlock knowledge, Shire shire) {
-    	// TODO store in shire library
-    }
-    
     
 	public boolean iHigherMem(int m, Clan other) {
 		return iHigherPrest(mem(m).getPrestige(), other);

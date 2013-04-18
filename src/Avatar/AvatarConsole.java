@@ -112,7 +112,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 	public void avatarPursue() {
 		if (avatar.MB.QuestStack.empty()) {this.newQuest();}
 		else {
-			avatar.MB.QuestStack.peek().avatarPursue();
+			avatar.MB.QuestStack.peek().avatarPursueQuest();
 			avatar.setActive(false);
 		}
 	}

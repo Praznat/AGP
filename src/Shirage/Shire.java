@@ -66,7 +66,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public static final int WEATHERVOL = 10;
 
 	private MktAbstract[] markets;
-	
+	private Library library = new Library();
 	
 	public Shire(int x, int y) {
 		super(x, y);
@@ -196,6 +196,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public static String getName(int x, int y) {return Naming.randShireName(getID(x, y));}
 	public String getName() {return Naming.randShireName(getID());}
 	public MktAbstract getMarket(int g) {return markets[g];}
+	public Library getLibrary() {return library;}
 	public int getResource(int r) {
 		if (r >= 0) {return resources[r];}
 		else {return Integer.MAX_VALUE;}

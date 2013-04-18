@@ -19,6 +19,8 @@ public class RomanceQuests {
 		public void pursue() {
 			replaceAndDoNewQuest(Me, new BreedQuest(Me));
 		}
+		@Override
+		public String description() {return "Breed with " + patron.getNomen();}
 	}
 	public static class BreedQuest extends TargetQuest {
 		private int courtsLeft = Defs.E;

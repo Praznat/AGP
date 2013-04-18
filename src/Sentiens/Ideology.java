@@ -108,12 +108,14 @@ public class Ideology implements Defs {
 
 	private void defaultSancs() {
 		//sancs = new int[] {SZ, SS, TY, WL, HS, DE, HL, NS, AG, SC, EY, SA, BM, WP, MP, RX, FH, SH, RT, JB, LH};
-		int N = NUMVALS;
-		sancs = new Value[N];
-		int s = 0;   for (Value v : Values.All) {sancs[s++] = v;}
-		s = 0;   for (Value v : Values.All) {
-			for(int j = 0; j < N; j++) {if (sancs[j] == v) {sancranks[s] = j;}}
+		sancs = new Value[NUMVALS];
+		int s = 0;   for (Value v : Values.All) {
+			sancranks[v.ordinal()] = s;
+			sancs[s++] = v;
 		}
+//		s = 0;   for (Value v : Values.All) {
+//			for(int j = 0; j < NUMVALS; j++) {if (sancs[j] == v) {sancranks[s] = j;}}
+//		}
 		Values.All = ArrayUtils.shuffle(Value.class, Values.All); //reshuffle (this line just for testing)
 	}
 	public int[] defaultVars() {
@@ -174,25 +176,29 @@ public class Ideology implements Defs {
 			}   sofar = N;
 		}   return VALUEWOF[AGPmain.rand.nextInt(N)];
 	}
-	public void upSanc(Value s) {upSanc(s.ordinal());}
-	public void upSanc(int s) {
+	public boolean upSanc(Value s) {return upSanc(s.ordinal());}
+	public boolean upSanc(int s) {
 		int plc = sancranks[s];
 		if (plc > 0) {
 			sancranks[s] = plc - 1;   sancranks[sancs[plc-1].ordinal()] = plc;
 			Value tmp = sancs[plc-1]; sancs[plc-1] = sancs[plc]; sancs[plc] = tmp;
-		}
+			return true;
+		}	else {return false;} //already top
 	}
-	public void downSanc(Value s) {downSanc(s.ordinal());}
-	public void downSanc(int s) {
+	public boolean downSanc(Value s) {return downSanc(s.ordinal());}
+	public boolean downSanc(int s) {
 		int plc = sancranks[s];
 		if (plc < NUMVALS-1) {
 			sancranks[s] = plc + 1;   sancranks[sancs[plc+1].ordinal()] = plc;
 			Value tmp = sancs[plc+1]; sancs[plc+1] = sancs[plc]; sancs[plc] = tmp;
-		}
+			return true;
+		}	else {return false;} //already bottom
 	}
 	
 	public Value randomValueInPriority() {
-		int v = FSM[getBeh(M_.STRICTNESS)][AGPmain.rand.nextInt(16)];
+		final int i = AGPmain.rand.nextInt(17);
+		if (i == 16) {return sancs[AGPmain.rand.nextInt(sancs.length)];} //rando factor
+		int v = FSM[getBeh(M_.STRICTNESS)][i];
 		return sancs[v];
 	}
 	public Value randomValueInPriorityOtherThan(Value not) {
@@ -205,6 +211,7 @@ public class Ideology implements Defs {
 		return tmpGarbage[v];
 	}
 	public Value getValue(int i) {return sancs[i];}
+	public Value[] getValues() {return sancs;}
 	public int weightOfValue(Value V) {
 		boolean hit = false; int N = 0;
 		int[] R = FSM[getBeh(M_.STRICTNESS)];
@@ -228,9 +235,6 @@ public class Ideology implements Defs {
 	}
 	public int compareValues(Value A, Value B) {
 		for (Value v : sancs) {if (v == A) return -1; else if (v == B) return 1;} return 0;
-	}
-	public Value strongerLNof(Value A, Value B) {
-		for (Value v : sancs) {if (v == A) return A; else if (v == B) return B;} return null;
 	}
 
 	public int compareSanc(Clan other) { //true if eu > ele
@@ -273,10 +277,10 @@ public class Ideology implements Defs {
 //		}
 //	}
 	public static final int[][] FSM = {
-		{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
 		{0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2},
-		{0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2},
+		{0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2},
+		{0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,3},
 		{0,0,0,0,0,0,0,1,1,1,1,2,2,2,3,3},
 		{0,0,0,0,0,0,1,1,1,1,2,2,2,3,3,4},
 		{0,0,0,0,0,1,1,1,1,2,2,2,3,3,4,4},

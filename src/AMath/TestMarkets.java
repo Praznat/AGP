@@ -34,8 +34,13 @@ public class TestMarkets extends Testing {
 		//FAAIL!!!!! on date()
 	}
 	public static void normalMarketFunctions() {
+		Clan.DMC = 0;
 		resetMarketFunctions();
+		final int aStartMillet = a.getMillet();
+		final int bStartMillet = b.getMillet();
 		normalMarketFunctions(s, a, b);
+		affirm(a.getCumulativeIncome() == a.getMillet() - aStartMillet);
+		affirm(b.getCumulativeIncome() == b.getMillet() - bStartMillet);
 		normalMarketFunctions(s, a, b);
 		s.clearMarkets();
 		normalMarketFunctions(s, a, b);
@@ -167,6 +172,7 @@ public class TestMarkets extends Testing {
 		clan.setJob(new Job(act.getDesc() + " Pro", act));
 		clan.MB.newQ(new LaborQuest(clan));
 		setClanMemMax(clan, P_.ARITHMETIC);
+		setClanMemMax(clan, M_.PATIENCE);
 		setClanMemMin(clan, M_.MADNESS);
 		return clan;
 	}

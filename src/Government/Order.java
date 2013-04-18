@@ -1,11 +1,9 @@
 package Government;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import Descriptions.GobName;
 import Game.Defs;
-import Questing.PersecutionQuests.PersecuteInfidel;
 import Sentiens.Clan;
 import Shirage.Shire;
 
@@ -46,6 +44,7 @@ public class Order {
 	
 	public Clan getRuler() {return ruler;}
 	public int size() {return members.size();}
+	public int numShiresControlled() {return 0;} // TODO
 	
 	public Set<Clan> getFollowers(Clan leader, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, includeMe, includeSubs);}
 	public Set<Clan> getFollowers(Clan leader, Shire place, boolean includeMe, boolean includeSubs) {return Ledger.getFollowers(leader, place, includeMe, includeSubs);}

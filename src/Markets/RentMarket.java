@@ -51,7 +51,7 @@ public class RentMarket extends MktO {
 		 //must recalculate "best", not sure if working
 		int k = super.placeOffer(doer, px);
 		bestplc = Math.min(bestplc, k);
-		if (k == Integer.MAX_VALUE) {bestplc++;} // hit bid case
+		if (k == NOASK) {bestplc++;} // hit bid case
 		finish();
 		return k;
 	}

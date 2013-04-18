@@ -192,7 +192,7 @@ public class Labor implements Act, Defs {
 
 	public static Labor newTrade(String n, Logic g, Job J, int denom) {
 		Labor newAct = new Labor(n, g, null, J, denom);
-		// g.addNodesToAll(newAct);
+		g.addNodesToAll(newAct);
 		return newAct;
 	}
 

@@ -20,11 +20,9 @@ public class FoodMarket extends MktAbstract {
 		}
 	} 
 	
-
-
-
 	public void gainAsset(Clan me) {} //nothing happens (called in Quest DoOutputs)
 	private void sellFood(Clan seller) {
+		seller.alterCumIncome(val);
 		Assets.gain(seller, g, val);
 	}
 	

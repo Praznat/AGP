@@ -37,7 +37,7 @@ public class Values implements Defs {
 
 	private static class ToDoValue implements Value {
 		private int ordinal;
-		public ToDoValue() {ordinal = ord++;}
+		public ToDoValue() {ordinal = ord++;System.out.println("DONT..");}
 		@Override
 		public M_ getWeightMeme(Clan POV) {return null;}
 		@Override
@@ -109,8 +109,6 @@ public class Values implements Defs {
 		}
 		protected abstract int value(Clan POV, Clan clan);
 	}
-
-	public static final Value NULL = new ToDoValue();
 
 	public static final Value MIGHT = new ValuatableValue(M_.S_NVASSALS, "Power - Might", Q_.RECRUIT, Job.GENERAL,
 			new P_[] {P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH}) {

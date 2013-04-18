@@ -8,7 +8,6 @@ import Game.Defs;
 import Sentiens.Clan;
 
 public class DiscScroll extends Papyrus {
-	private ClickableString homelandCS;
 	
 	public DiscScroll(PopupAbstract P) {
 		super(P);
@@ -29,7 +28,7 @@ public class DiscScroll extends Papyrus {
 
 		g.drawString("Age: " + clan.getAge(), 2, 15+15*r++);
 		r++;r++;
-		write(g, "Avg Profit:" + clan.getProfitEMA(), r++);
+		write(g, "Avg Profit:" + clan.getAvgIncome(), r++);
 		write(g, "NAV:" + clan.getNetAssetValue(clan), r++);
 		write(g, "ASSETS:", r++);
 		for (int i = 0; i < Defs.numAssets; i++) {

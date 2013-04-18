@@ -22,6 +22,8 @@ public class InfluenceQuests {
 			// preach?
 			replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
 		}
+		@Override
+		public String description() {return "Spread propaganda";}
 	}
 	
 	public static class InfluenceQuest extends PatronedQuest {

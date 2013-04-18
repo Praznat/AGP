@@ -1,20 +1,14 @@
 package GUI;
 
-import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JComboBox;
-
-import GUI.TextDisplay.Papyrus;
 import Game.AGPmain;
-import Game.VarGetter;
-import Markets.MktO;
 import Shirage.Shire;
 
 public class PopupShire extends PopupAbstract {
 	private Shire curShire;
 	private TableSlidePanel infoboxes[] = new TableSlidePanel[5];
-	private int[][] selectedVGs = {{0, 1, 2, 3, 4}, {0, 1, 2, 3, 4}, {}, {0, 1, 2, 3, 4}, {}};
+	private int[][] selectedVGs = {{}, {0, 1, 2, 3, 4}, {}, {0, 1, 2, 3, 4}, {}};
 	public static final int ENVIRONMENT = 0;
 	public static final int POPULATION = 1;
 	public static final int BUILDINGS = 2;
