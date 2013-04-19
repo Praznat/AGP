@@ -2,13 +2,10 @@ package Game;
 
 import java.util.*;
 
-import Sentiens.Clan;
-import Sentiens.Mem;
-import Sentiens.Values;
-import Sentiens.Values.Value;
-//import Sentiens.Sanc;
-import Shirage.*;
 import AMath.Calc;
+import Sentiens.*;
+import Sentiens.Values.Value;
+import Shirage.*;
 
 public class Realm {
 	int shiresX;
@@ -115,15 +112,6 @@ public class Realm {
 	}
 
 	public void doCensus() {
-		for (int s = shires.length - 1; s >= 0; s--) {
-			shires[s].resetPopSize();
-		}
-		for (int i = popSize() - 1; i >= 0; i--) {
-			population[i].myShire().incPopSize();
-		}
-		for (int s = shires.length - 1; s >= 0; s--) {
-			shires[s].setupCensus();
-		}
 		Clan curClan;
 		for (int i = popSize() - 1; i >= 0; i--) {
 			curClan = population[i];

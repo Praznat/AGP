@@ -1,21 +1,16 @@
 package GUI.TextDisplay;
 
-import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
-import AMath.Calc;
-import GUI.PopupAbstract;
-import GUI.PopupShire;
-import Game.AGPmain;
-import Game.VarGetter;
+import GUI.*;
+import Game.*;
 import Sentiens.Clan;
-import Shirage.Shire;
 
 
 public class ClanRowScroll extends TableRowScroll {
 	
-	private Clan[] pop;
+	private ArrayList<Clan> pop;
 	
 	public ClanRowScroll(PopupAbstract P) {
 		super(P);
@@ -30,7 +25,7 @@ public class ClanRowScroll extends TableRowScroll {
 			if (contents[0][col].equals("Name")) {
 				g.drawString("Name", x + 2, BHGT+BHGT*0);
 				for (int r = 1; r < contents.length; r++) {
-					addToClickStrings(pop[r-1], x + 2, BHGT+BHGT*r, g);
+					addToClickStrings(pop.get(r-1), x + 2, BHGT+BHGT*r, g);
 				}
 			}
 			x += widths[col];
@@ -40,14 +35,14 @@ public class ClanRowScroll extends TableRowScroll {
 
 	
 	public void calcRealizedSize() {
-		pop = ((PopupShire)parent).getShire().getCensus();
+		pop = (ArrayList<Clan>)((PopupShire)parent).getShire().getCensus();
 		if (pop == null) {System.out.println("NO DAMN POP!");}
 		if (vars() == null) {System.out.println("NO DAMN VARS!");}
-		setupTableLabels(PopupShire.POPULATION, pop.length, vars());
+		setupTableLabels(PopupShire.POPULATION, pop.size(), vars());
 		String S;
 		for (int r = 1; r < contents.length; r++) {
 			String[] R = contents[r];
-			Clan clan = pop[r-1];
+			Clan clan = pop.get(r-1);
 			for (int col = 0; col < R.length; col++) {
 				int v = ((PopupShire) parent).getVG(PopupShire.POPULATION, col);
 				S = var(v).getVarString(clan) + " ";

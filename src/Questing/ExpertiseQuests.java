@@ -71,9 +71,8 @@ public class ExpertiseQuests {
 	}
 	
 	private static Clan findTeacher(P_ s, Clan student) {
-		final Clan[] candidates = student.myShire().getCensus();
 		int bestPrs = 0; Clan bestC = null;
-		for (Clan candidate : candidates) {
+		for (Clan candidate : student.myShire().getCensus()) {
 			if (isTeachingFor(candidate, student)) {
 				final int prs = candidate.FB.getPrs(s);
 				if (prs > bestPrs) {bestPrs = prs; bestC = candidate;}

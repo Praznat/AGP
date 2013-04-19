@@ -69,7 +69,7 @@ public abstract class Quest {
 			if (pov == pov.myShire().getGovernor()) {
 				// TODO return neighbor governors...
 			}
-			return pov.myShire().getCensus();
+			return pov.myShire().getCensus().toArray(new Clan[0]);
 		}
 	}
 	public static interface RelationCondition {
@@ -102,7 +102,7 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus().toArray(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					FindTargetAbstract.this.setTarget((Clan) arg);
@@ -150,7 +150,8 @@ public abstract class Quest {
 	protected static void replaceAndDoNewQuest(Clan c, Quest newQuest) {
 		c.MB.finishQ();
 		c.MB.newQ(newQuest);
-		if (c == avatarConsole().getAvatar()) {avatarConsole().avatarPursue();}
+		final AvatarConsole ac = avatarConsole(); // for null test, for testing
+		if (ac != null && c == avatarConsole().getAvatar()) {avatarConsole().avatarPursue();}
 		else {c.pursue();}
 	}
 	

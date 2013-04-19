@@ -1,11 +1,11 @@
 package Shirage;
+import java.util.*;
+
 import AMath.Calc;
 import Descriptions.Naming;
-import Markets.MktO;
 import Game.*;
 import Markets.*;
-import Sentiens.Clan;
-import Sentiens.Stressor;
+import Sentiens.*;
 
 public class Shire extends AbstractShire implements Stressor.Causable {
 	
@@ -38,9 +38,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public static byte productivityF = 19;
 	//
 
-	private int popsize;
-	private Clan[] census;
-	private int popk;
+	private Collection<Clan> census = new ArrayList<Clan>();
 	private Plot linkedPlot;
 	private Clan governor;
 	
@@ -88,7 +86,6 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public void newMarketDay() {for (MktAbstract mkt : markets) {mkt.newDay();}}
 	
 	public void newSeason() {
-		setPop();
 		capacityF = (byte) Math.max(0, baseCapacityF + AGPmain.rand.nextInt((int) weatherVar));
 		vars[numB] += (vars[numB] * growthB) / 100;
 		
@@ -178,21 +175,12 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		if (linkedPlot == null) {return false;}
 		return !(linkedPlot.isOcean() || linkedPlot.isNull());
 	}
-	public void resetPopSize() {popsize = 0;}
-	public void incPopSize() {popsize++;}
-	public void setupCensus() {census = new Clan[popsize];   popk = 0;}
-	public void addToCensus(Clan c) {census[popk++] = c;}
-	public int getPopsize() {return popsize;}
-	public Clan[] getCensus() {return census;}
+	public void addToCensus(Clan c) {census.add(c);}
+	public int getPopsize() {return census.size();}
+	public Collection<Clan> getCensus() {return census;}
+	public Clan getCensus(int i) {return ((ArrayList<Clan>)census).get(i);}
+	public Clan getRandOfCensus() {return ((ArrayList<Clan>)census).get(AGPmain.rand.nextInt(census.size()));}
 	
-	public void setPop() { //not to be used
-		//make faster by running it from AGPmain
-		int sum = 0;
-		for (int i = 0; i < AGPmain.TheRealm.popSize(); i++) {
-			if (AGPmain.TheRealm.getClan(i).getShireID() == getID()) {sum++;}
-		}
-		popsize = sum;
-	}
 	public static String getName(int x, int y) {return Naming.randShireName(getID(x, y));}
 	public String getName() {return Naming.randShireName(getID());}
 	public MktAbstract getMarket(int g) {return markets[g];}

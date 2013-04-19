@@ -4,6 +4,7 @@ import Defs.*;
 import Game.*;
 import Markets.*;
 import Questing.PropertyQuests.LaborQuest;
+import Questing.*;
 import Sentiens.*;
 import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
@@ -50,8 +51,8 @@ public class TestMarkets extends Testing {
 	private static void resetMarketFunctions() {
 		reset();
 		s = testRealm.getClan(0).myShire();
-		a = s.getCensus()[0];
-		b = s.getCensus()[1];
+		a = s.getCensus(0);
+		b = s.getCensus(1);
 	}
 	public static void normalMarketFunctions(Shire shire, Clan a, Clan b) {
 		produceOne(setupClanForWork(shire, a, Job.Settle), 0, 0, Defs.land, 1);
@@ -119,8 +120,6 @@ public class TestMarkets extends Testing {
 				affirm(((MktO)inMarket).findNumberOf(doer, Entry.OFFERDIR) == prevMyAsksForInG);
 			}
 		}
-		if(rentInG>0)System.out.println(( (RentMarket) shire.getMarket(rentInG)).isBestPlaceCorrect());
-		if(rentOutG>0)System.out.println(( (RentMarket) shire.getMarket(rentOutG)).isBestPlaceCorrect());
 		final int prevDoerOutN = outG < Defs.numAssets ? doer.getAssets(outG) : 0;
 		doPursueUntilProduced(doer, true);
 		//food is consumed so this will definitely need to change... meat is already being consumed during learn process
@@ -183,13 +182,13 @@ public class TestMarkets extends Testing {
 		}
 	}
 	private static void doPursueUntil(Clan clan, boolean report, Calc.BooleanCheck bool) {
-		if (!(clan.MB.QuestStack.peek() instanceof LaborQuest)) {
+		if (!clan.MB.QuestStack.isEmpty() && !(clan.MB.QuestStack.peek() instanceof LaborQuest)) {
 			throw new IllegalStateException("labor initiation failure");
 		}
 		for (int i = 0; i < 50; i++) {
+			if (bool.check()) {return;}
 			if (report) {Calc.p(clan + " " + clan.MB.QuestStack);}
 			clan.pursue();
-			if (bool.check()) {return;}
 		}
 		throw new IllegalStateException("doPursueUntilComplete failed");
 	}
@@ -202,13 +201,20 @@ public class TestMarkets extends Testing {
 	private static void doPursueUntilConsumed(final Clan clan, boolean report) {
 		doPursueUntil(clan, report, new Calc.BooleanCheck() {
 			@Override
-			public boolean check() {return ((LaborQuest)clan.MB.QuestStack.peek()).getStage() == 2;}
+			public boolean check() {
+				QStack qs = clan.MB.QuestStack;
+				if (!qs.isEmpty()) {
+					Quest lq = qs.peek();
+					if (lq instanceof LaborQuest && ((LaborQuest)lq).getStage() != 2) {return false;}
+				}
+				return true; // gave up old labor quest
+			}
 		});
 	}
 	private static void doPursueUntilProduced(final Clan clan, boolean report) {
 		doPursueUntil(clan, report, new Calc.BooleanCheck() {
 			@Override
-			public boolean check() {return clan.MB.QuestStack.isEmpty();}
+			public boolean check() {return clan.MB.QuestStack.isEmpty() || !(clan.MB.QuestStack.peek() instanceof LaborQuest);}
 		});
 	}
 	private static void doPursueUntilNumGs(Clan clan, int num, int g, boolean report) {

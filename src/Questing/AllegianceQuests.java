@@ -59,7 +59,7 @@ public class AllegianceQuests {
 		@Override
 		public void avatarPursue() {
 			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
-			avatarConsole().showChoices(Me, Me.myShire().getCensus(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices(Me, Me.myShire().getCensus().toArray(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Clan clan = (Clan) arg;
@@ -78,8 +78,7 @@ public class AllegianceQuests {
 				return;
 			}
 			if (attemptsLeft-- > 0) {
-				Clan[] pop = Me.myShire().getCensus();
-				Clan candidate = pop[AGPmain.rand.nextInt(pop.length)];
+				Clan candidate = Me.myShire().getRandOfCensus();
 				double resp = Me.conversation(candidate);
 				if (Me != candidate && !Me.isSomeBossOf(candidate)) {
 					Double d = respectMemo.get(candidate);
