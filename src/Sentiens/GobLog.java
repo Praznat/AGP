@@ -156,6 +156,13 @@ public class GobLog {
 			public String out() {return prayer.getNomen() + " generated " + mana + " mana" + (prayee!=prayer?" for "+prayee:"") + " through " + aof.desc();}
 		};
 	}
+	
+	public static Reportable build(final Clan subject, final int amt, final boolean transitive) {
+		return new Reportable() {
+			public String out() {return transitive ? ("Produced " + amt + " splendor for " + subject.getNomen()) :
+				("Acquired " + amt + " splendor built by " + subject.getNomen());}
+		};
+	}
 
 	public static Reportable discovery(final Job job) {
 		return new Reportable() {

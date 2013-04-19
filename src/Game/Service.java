@@ -18,7 +18,7 @@ public class Service implements Act {
 
 	@Override
 	public double estimateProfit(Clan pOV) {
-		// TODO Auto-generated method stub
+		// TODO patronage!!!
 		return 0;
 	}
 

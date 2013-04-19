@@ -50,7 +50,7 @@ public class MinisterNames {
 			return isGovt(c) ? "Apothecary" : "Healer";
 		}
 		else if (m == Job.ARCHITECT) {
-			return isGovt(c) ? "Architect" : "Builder";
+			return isGovt(c) ? "Architect" : "Sculptor";
 		}
 		else {return "Servant";}
 	}

@@ -1,5 +1,7 @@
 package Game;
 
+import java.util.*;
+
 import Sentiens.Clan;
 import Sentiens.Mem;
 import Sentiens.Values;
@@ -14,6 +16,7 @@ public class Realm {
 	int startPop;
 	public Shire[] shires;
 	private Clan[] population;
+	private List<Clan> waitingForImmigration = new ArrayList<Clan>();
 	private int day;
 	private Mem[] MemDefs;
 	//	private Sanc[] SancDefs;
@@ -57,6 +60,7 @@ public class Realm {
 				s.newDay();
 			}
 		}
+		setNewImmigrations();
 	}
 	public void go() {
 		day = 0;
@@ -95,7 +99,6 @@ public class Realm {
 		}
 	}
 
-
 	private void generateShires(int H, int V) {
 		shires = new Shire[H*V];
 		for (int x = 0; x < H; x++) {
@@ -126,6 +129,16 @@ public class Realm {
 			curClan = population[i];
 			curClan.myShire().addToCensus(curClan);
 		}
+	}
+	
+	public void addToWaitingForImmigration(Clan c) {
+		waitingForImmigration.add(c);
+	}
+	public void setNewImmigrations() {
+		for (Clan clan : waitingForImmigration) {
+			//TODO add to shire, remove from old shire
+		}
+		waitingForImmigration.clear();
 	}
 
 //	public Clan getAvatar() {return Avatar;}

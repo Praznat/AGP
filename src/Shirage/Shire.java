@@ -82,10 +82,10 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		
 //		System.arraycopy(vars, 0, lastvars, 0, numVars);
 
-		clearMarkets();
+		newMarketDay();
 	}
 	
-	public void clearMarkets() {for (MktAbstract mkt : markets) {mkt.clearMarket();}}
+	public void newMarketDay() {for (MktAbstract mkt : markets) {mkt.newDay();}}
 	
 	public void newSeason() {
 		setPop();

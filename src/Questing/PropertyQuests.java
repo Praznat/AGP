@@ -9,6 +9,7 @@ import Markets.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
+import Shirage.Shire;
 
 public class PropertyQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
@@ -32,6 +33,7 @@ public class PropertyQuests {
 				// ministry job
 				((Ministry) j).getService().doit(Me);
 			}
+			else if (j == Job.TRADER) {Me.MB.newQ(new TradingQuest(Me));}
 			else {Me.MB.newQ(new LaborQuest(Me));}
 		}
 		public String description() {return "Build Wealth";}
@@ -39,7 +41,7 @@ public class PropertyQuests {
 	
 	
 	
-	public static class LaborQuest extends Quest {
+	public static class LaborQuest extends Quest implements GoodsAcquirable {
 		public static final int WORKMEMORY = 30;
 		private int[] workmemo = new int [WORKMEMORY]; //stock id
 		private int[] workmemoX = new int [WORKMEMORY];//stock count
@@ -144,6 +146,9 @@ public class PropertyQuests {
 		}
 		private void chooseAct() {
 			setChosenAct(compareTrades());
+			if (chosenAct == Job.NullAct) {
+				failure(Me.myShire()); //LaborQuest fails Shire, BuildWealth fails Shire and Job
+			}
 			//fill WORKMEMO with every possible g in A:
 			stage++;
 		}
@@ -153,7 +158,8 @@ public class PropertyQuests {
 		private void doInputs() {
 			if (turnsLeft <= 0) { // untested
 				int i = -1;   while (workmemo[++i] != Defs.E) { //liquidate
-					MktAbstract mkt = Me.myMkt(getAbsWM(i));
+					MktO mkt = (MktO)Me.myMkt(getAbsWM(i));
+					mkt.removeBids(Me); // TODO no idea if this works.. pls test
 					for (int k = workmemoX[i]; k > 0; k--) {mkt.sellFair(Me);} //sell leftovers
 				}
 				failure(Me.myShire()); return;
@@ -218,5 +224,40 @@ public class PropertyQuests {
 		}
 
 	};
+	
+	
+	
+	
+	
+
+	public static class TradingQuest extends Quest implements GoodsAcquirable {
+		public TradingQuest(Clan P) {super(P);}
+
+		@Override
+		public void pursue() {
+			// TODO Auto-generated method stub
+			final int expProfitBenchmark = Me.getAvgIncome(); // trade must be higher than this otherwise find random trade
+		}
+		
+		private int[] scoutShire(Shire buyShire, Trade trade) {
+			int bestG = -1; double bestTrade = 0;
+			for (int g : trade.getGoods()) {
+				final int cost = buyShire.getMarket(g).buyablePX(Me);
+				final int value = Me.myMkt(g).sellablePX(Me);
+				final double expProfit = Me.confuse((double)value - (double)cost);
+				if (expProfit >= bestTrade) {bestG = g; bestTrade = expProfit;}
+			}
+			return new int[] {(int)Math.round(bestTrade), bestG};
+		}
+
+		@Override
+		public String description() {return "Trading";}
+
+		@Override
+		public void alterG(int good, int num) {
+			// TODO Auto-generated method stub
+		}
+		
+	}
 	
 }

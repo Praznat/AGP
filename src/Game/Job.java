@@ -44,9 +44,9 @@ public class Job implements Defs, Stressor.Causable {
 	public final static Act Build = Labor.newCraft("Construct Building",			OR(wconstr, sconstr),		I(constr),		P_.STRENGTH,						null,		-1);
 	public static final Job BUILDER = new Job("Builder", Build);
 
-	public final static Act TradeA = Labor.newTrade("Trade Animals",				OR(bovad, donkey, lobodonkey, poop),											null,		-1);
-	public final static Act TradeC = Labor.newTrade("Trade Commodities",			OR(timber, stone, iron, silver, constr),										null,		-1);
-	public final static Act TradeW = Labor.newTrade("Trade Arms",					OR(sword, mace, bow, gun, armor),												null,		-1);
+	public final static Act TradeA = Trade.newTrade("Trade Animals",				bovad, donkey, lobodonkey, poop);
+	public final static Act TradeC = Trade.newTrade("Trade Commodities",			timber, stone, iron, silver, constr);
+	public final static Act TradeW = Trade.newTrade("Trade Arms",					sword, mace, bow, gun, armor);
 	public static final Job TRADER = new Job("Merchant", TradeA, TradeC, TradeW);
 	
 	public final static Act ForgeGun = Labor.newCraft("Smith Arquebus",			AND(I(iron), M(2, timber)),	I(gun),			P_.SMITHING,						null,		-1);

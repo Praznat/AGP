@@ -35,6 +35,7 @@ public abstract class Quest {
 	public abstract String description();
 	@Override
 	public String toString() {return description();}
+	public Clan getDoer() {return Me;}
 	
 	protected static AvatarConsole avatarConsole() {return AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;}
 	public Clan avatar() {return avatarConsole().getAvatar();}
@@ -182,6 +183,21 @@ public abstract class Quest {
 		public double getRating() {return rating;}
 		@Override
 		public String toString() {return quest.description();}
+	}
+	
+	public static class QuestRetrievalQuest extends Quest {
+		private final Class<? extends Quest>[] questTypes;
+		public QuestRetrievalQuest(Clan c, Class<? extends Quest>[] questTypes) {
+			super(c);
+			this.questTypes = questTypes;
+		}
+		@Override
+		public void pursue() {
+			// TODO Resurrect old quests
+			finish();
+		}
+		@Override
+		public String description() {return "Remember old quests";}
 	}
 
 }

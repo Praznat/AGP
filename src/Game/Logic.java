@@ -73,6 +73,7 @@ public abstract class Logic {
 			if (next == E) {break;}
 		}
 	}
+	public Logic[] getSubLogics() {return subLogics;}
 	
 }
 

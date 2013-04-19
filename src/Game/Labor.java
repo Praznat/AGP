@@ -14,8 +14,8 @@ public class Labor implements Act, Defs {
 	private static int[] tmpIn = new int[1 + MAXACTS];
 
 	private String desc;
-	private Logic input;
-	private Logic output;
+	protected Logic input;
+	protected Logic output;
 	private int[] allPossibleInputs = {}; // one for each logic
 	private int envc, envr, chance; // skill can point to prestige or quest!
 	private Job njob;
@@ -74,6 +74,7 @@ public class Labor implements Act, Defs {
 	}
 	
 	public double estimateProfit(Clan doer) {
+		// TODO env stuff, skill stuff
 		return doer.confuse((double)this.expOut(doer)[0] - (double)this.expIn(doer)[0]);
 	}
 
@@ -192,7 +193,6 @@ public class Labor implements Act, Defs {
 
 	public static Labor newTrade(String n, Logic g, Job J, int denom) {
 		Labor newAct = new Labor(n, g, null, J, denom);
-		g.addNodesToAll(newAct);
 		return newAct;
 	}
 

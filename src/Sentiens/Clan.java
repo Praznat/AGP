@@ -69,6 +69,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public Clan() {}
 	public Clan(Shire place, int id) {
 		homeShire = place;
+		currentShire = homeShire;
 		ID = id;
 		boss = this;
 		suitor = null;
@@ -112,7 +113,8 @@ public class Clan implements Defs, Stressor.Causable {
 	public Shire myShire() {return homeShire;}
 	public Shire currentShire() {return currentShire;}
 	public void setCurrentShire(Shire s) {currentShire = s;}
-	public MktAbstract myMkt(int g) {return myShire().getMarket(g);}
+	/** market in current shire not home shire */
+	public MktAbstract myMkt(int g) {return currentShire().getMarket(g);}
 	public Library getRelevantLibrary() {return homeShire.getLibrary();}
 	public int getAge() {return age / 365;}
 	public int getHeritageLength() {
@@ -364,13 +366,6 @@ public class Clan implements Defs, Stressor.Causable {
 	public void incTimesPrayed() {timesPrayed++;}
 	public int getKnowledgeAttribution() {return knowledgeAttribution;}
 	public void incKnowledgeAttribution() {knowledgeAttribution++;}
-	public boolean maybeEmigrate() {
-		emigrate();
-		return true;
-	}
-	private void emigrate() {}
-	
-	
 	
 	//OBSOLETE
 	public int Buy(int good, int num) {

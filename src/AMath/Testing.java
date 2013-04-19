@@ -2,15 +2,10 @@ package AMath;
 
 import Defs.*;
 import Descriptions.XWeapon;
-import Game.*;
-import Game.Do.SetupableThing;
+import Game.Realm;
 import Government.Order;
-import Markets.*;
-import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;
-import Sentiens.GobLog.Reportable;
 import Sentiens.Values.Value;
-import Shirage.Shire;
 
 /**
  *  This class should be used for testing certain game concepts to make sure they are not broken

@@ -1,6 +1,5 @@
 package Markets;
 
-import AMath.Calc;
 import Sentiens.Clan;
 
 public class Entry {

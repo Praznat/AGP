@@ -2,6 +2,9 @@ package Questing;
 
 import java.util.Stack;
 
+import Questing.Quest.QuestRetrievalQuest;
+import Sentiens.Clan;
+
 @SuppressWarnings("serial")
 public class QStack extends Stack<Quest> {
 	private int maxCapacity;
@@ -19,12 +22,21 @@ public class QStack extends Stack<Quest> {
 	}
 	@Override
 	public Quest push(Quest item) {
-		if (this.elementCount >= maxCapacity) {explode(); return null;}
-		else {return super.push(item);}
+		if (this.elementCount >= maxCapacity) {explode();}
+		return super.push(item);
 	}
 	/** look at item right before latest item */
 	public Quest peekUp() {return elementAt(size() - 2);}
 	private void explode() {
+		Clan clan = null;
+		@SuppressWarnings("unchecked")
+		Class<? extends Quest>[] oldQuests = new Class[maxCapacity];
+		int i = 0; for (Quest q : this) {
+			clan = q.getDoer();
+			oldQuests[i++] = q.getClass();
+		}
+		System.out.println(clan.getNomen() + " QUEST EXPLOSION!!!");
 		this.clear();
+		super.push(new QuestRetrievalQuest(clan, oldQuests));
 	}
 }

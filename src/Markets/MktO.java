@@ -76,12 +76,13 @@ public class MktO extends MktAbstract {
 		return NOBIDDERCANPAY;
 	}
 	
-	protected void updateAvgs(double p) {
+	protected void updateAvgs(int p) {
+		LastPX = p;
 		LTAvg = (int) Math.round(0.2 * p + 0.8 * LTAvg);
 		STAvg = (int) Math.round(0.5 * p + 0.5 * STAvg);
-		int i = (int) p; LastPX = i;
-		MaxPX = (MaxPX > i ? MaxPX : i);
-		MinPX = (MinPX < i ? MinPX : i);
+		MaxPX = (p > MaxPX ? p : MaxPX);
+		MinPX = (p < MinPX ? p : MinPX);
+		todayvol++;
 	}
 
 	public int buyablePX(Clan buyer) {
@@ -176,9 +177,7 @@ public class MktO extends MktAbstract {
 		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not laborquest
 	}
 	private boolean accountForGood(Quest q, int n) {
-		if (q instanceof LaborQuest) {((LaborQuest) q).alterG(g, n); return true;}
-		else if (g == Defs.constr && q instanceof UpgradeDomicileQuest) {((UpgradeDomicileQuest) q).incNumConstrs(n); return true;}
-		else if (g == Defs.captive && q instanceof ContactQuest) {((ContactQuest) q).getCurrAof().affect(new Integer(n)); return true;}
+		if (GoodsAcquirable.class.isAssignableFrom(q.getClass())) {((GoodsAcquirable) q).alterG(g, n); return true;}
 		else {return false;}
 	}
 	protected int fairPX(Clan doer, double flow) {
@@ -259,7 +258,9 @@ public class MktO extends MktAbstract {
 		finish();
 	}
 	public void removeOffers(int num) {
-		for(int i = 0; i < offerlen; i++) {Offers[i].set(Offers[i+num]);}
+		for(int i = 0; i < offerlen; i++) {
+			Offers[i].set(i + num < Offers.length ? Offers[i+num] : new Entry());
+		}
 		offerlenDown(num);
 		addReport(num + " offers removed");
 	}

@@ -3,7 +3,7 @@ package Sentiens;
 import Defs.M_;
 import Game.Defs;
 import Game.Job;
-import Questing.KnowledgeQuests;
+import Questing.*;
 import Sentiens.Values.Value;
 import Shirage.Shire;
 
@@ -43,7 +43,8 @@ public class Stressor {
 			else {}
 		}
 		else if (target instanceof Shire) {
-			success = responder.maybeEmigrate();
+			success = true;
+			responder.MB.newQ(new ImmigrationQuests.EmigrateQuest(responder));
 		}
 		else if (target instanceof Value) {
 

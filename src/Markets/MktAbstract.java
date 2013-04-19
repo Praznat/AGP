@@ -30,9 +30,9 @@ public abstract class MktAbstract implements Defs {
 	public abstract void chgOffer(int plc, int v);
 	public abstract void chgBid(int plc, int v);
 	protected abstract void auction();
-	public abstract void clearMarket();
+	protected abstract void clearMarket();
 	
-	protected void newDay() {
+	public void newDay() {
 		clearMarket();
 		smavol = (smavol + todayvol) / 2;
 		todayvol = 0;

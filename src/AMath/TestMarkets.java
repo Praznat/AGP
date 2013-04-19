@@ -42,7 +42,7 @@ public class TestMarkets extends Testing {
 		affirm(a.getCumulativeIncome() == a.getMillet() - aStartMillet);
 		affirm(b.getCumulativeIncome() == b.getMillet() - bStartMillet);
 		normalMarketFunctions(s, a, b);
-		s.clearMarkets();
+		s.newMarketDay();
 		normalMarketFunctions(s, a, b);
 		testPlaceBidForInputChangeQuestGetFilled(a, b);
 		testPlaceBidForInputChangeQuestGetFilled(a, a);

@@ -4,6 +4,7 @@ import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.*;
 import Game.*;
+import Markets.GoodsAcquirable;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
@@ -82,6 +83,7 @@ public class FaithQuests {
 		@Override
 		public String toString() {return desc();}
 	}
+	public static abstract class GoodsAcquirableActOfFaith extends ActOfFaith implements GoodsAcquirable {}
 	public static ActOfFaith INCANTATE = new ActOfFaith() {
 		public String desc() {return "Unholy Trance";}
 		public int conduct(Clan subject, Clan object) {
@@ -108,7 +110,7 @@ public class FaithQuests {
 			return 16 - object.FB.getBeh(M_.RESPENV); // TODO feed the statue in the temple...
 		}
 	};
-	public static ActOfFaith SACRIFICE = new ActOfFaith() {
+	public static ActOfFaith SACRIFICE = new GoodsAcquirableActOfFaith() {
 		private static final int NOBIDS4CAPTIVES = -1;
 		private int numCaptives = NOBIDS4CAPTIVES;
 		public String desc() {return "Ritual Sacrifice";}
@@ -127,6 +129,8 @@ public class FaithQuests {
 		public void affect(Object arg) {
 			numCaptives += (Integer) arg;
 		}
+		@Override
+		public void alterG(int g, int num) {if(g == Defs.captive) {affect(num);}}
 	};
 	private static final ActOfFaith[] ACTS_OF_FAITH = new ActOfFaith[] {
 		INCANTATE, RITUAL, ONEWITHNATURE, ONEWITHGOD, SACRIFICE
