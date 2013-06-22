@@ -12,7 +12,7 @@ public class Service implements Act {
 	@Override
 	public void doit(Clan doer) {
 		if (!doer.MB.QuestStack.prioritizeExistingMemberOfType(questFactory.getQuestType())) {
-			doer.MB.newQ(questFactory.createFor(doer));
+			doer.MB.newQ(questFactory.createFor(doer, doer.getBoss()));
 		} //dont actually call pursue() because usually already a good deal of work was done by doer just to get here
 	}
 

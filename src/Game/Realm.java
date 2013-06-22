@@ -7,7 +7,7 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 import Shirage.*;
 
-public class Realm {
+public class Realm extends Thread {
 	int shiresX;
 	int shiresY;
 	int startPop;
@@ -25,6 +25,7 @@ public class Realm {
 //	private Clan Avatar;
 
 	public Realm(int pX, int pY, int cN) {
+		super("TheRealm"); //name thread
 		shiresX = pX;
 		shiresY = pY;
 		startPop = cN;
@@ -47,41 +48,21 @@ public class Realm {
 		MktVarGetters = VarGetter.mktVGs();
 	}
 	public void goOnce() {
+		Calc.p("day " + day);
 		day++;
 		int[] order = Calc.randomOrder(popSize());
 		for (int i = 0; i < 1; i++) {
-			for (int p : order) {
-				population[p].pursue();
-			}
-			for (Shire s : shires) {
-				s.newDay();
-			}
+			for (int p : order) {population[p].pursue();}
+			for (Shire s : shires) {s.newDay();}
 		}
 		setNewImmigrations();
 	}
-	public void go() {
-		day = 0;
-
-		if(true) {
-			for (int t = 0; t < 1000; t++) { //roll through turns
-				System.out.println("day " + t);
-
-				for (int s = 0; s < shires.length; s++) {
-					shires[s].newDay();
-				}
-				int[] order = Calc.randomOrder(popSize());
-				//				for (int p : order) {
-				//					//population[p].chooseLaborLeisure();//includes doing act
-				//				}
-				for (int p : order) {
-					population[p].eat();
-				}
-
-				//AGPmain.refreshGUI();
-				day++;
-			}
+	@Override
+	public void run() {
+		while (true) {
+			if (!AGPmain.isGoing) {System.out.println("paused");}
+			if (AGPmain.isGoing) {goOnce();}
 		}
-
 	}
 
 	private void generatePopulation(int C) {
@@ -150,8 +131,6 @@ public class Realm {
 	public VarGetter getPopVarGetter(int i) {return PopVarGetters[i];}
 	public VarGetter[] getMktVarGetters() {return MktVarGetters;}
 	public VarGetter getMktVarGetter(int i) {return MktVarGetters[i];}
-
-
 
 
 }

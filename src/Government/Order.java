@@ -51,9 +51,8 @@ public class Order {
 	
 	public static String getName(byte founderName1, byte founderName2, boolean founderGender) {
 		String S = GobName.firstName(founderName1, founderName2, founderGender);
-		if (S.endsWith("a") || S.endsWith("n") || S.endsWith("m")) {}
+		if (S.endsWith("a") || S.endsWith("n") || S.endsWith("m") || S.endsWith("l")) {}
 		else if (S.endsWith("us")) {S = S.substring(0, S.length()-2) + "a";}
-		else {S += "a";}
 		return S;
 	}
 	private String getName() {
@@ -61,7 +60,13 @@ public class Order {
 	}
 	public String getFollowerName() {
 		String S = getName();
-		return (S.endsWith("n") || S.endsWith("m") ? S + "ese" : S + "n");
+		if (S.endsWith("n") || S.endsWith("g")) {return S + "ese";}
+		if (S.endsWith("e")) {return S + "se";}
+		if (S.endsWith("l") || S.endsWith("m")) {return S + "ite";}
+		if (S.endsWith("a")) {return S + "n";}
+		if (S.endsWith("i") || S.endsWith("o") || S.endsWith("x")) {return S + "an";}
+		if (S.endsWith("y")) {return S.substring(0, S.length()-1) + "ian";}
+		return S + "ish";
 	}
 	public String getNationName() {
 		return "Nation of " + getName();

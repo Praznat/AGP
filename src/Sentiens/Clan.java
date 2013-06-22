@@ -151,7 +151,7 @@ public class Clan implements Defs, Stressor.Causable {
 				final Quest q = MB.QuestStack.peek();
 				hustleHard = !(q instanceof BuildWealthQuest || q instanceof LaborQuest);
 			}
-			if (hustleHard) {MB.newQ(new BuildWealthQuest(this));}
+			if (hustleHard) {MB.newQ(new BuildWealthQuest(this, this));}
 		}
 	}
 	public boolean isHungry() {
@@ -322,6 +322,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public void alterCumIncome(int m) {cumIncome += m;}
 
 	public int getMillet() {return assets[millet];}
+	public void setMillet(int m) {assets[millet] = m;}
 	public boolean alterMillet(int c) {
 		if ((long) assets[millet] + c > Integer.MAX_VALUE) {assets[millet] = Integer.MAX_VALUE; System.out.println("max millet reached " + ID);}
 		else if (assets[millet] + c < 0) {

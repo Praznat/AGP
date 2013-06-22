@@ -27,6 +27,8 @@ public class Testing {
 	public static void doAllTests() {
 		System.out.println("starting tests");
 		
+		TestContracts.doAllContractTests();
+		
 		ideologyBasicFunctions();
 		
 		TestMarkets.testLogics();

@@ -2,7 +2,10 @@ package Game;
 
 import Defs.P_;
 import Questing.*;
+import Questing.Quest.PatronedQuest;
+import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
+import Sentiens.Values.Value;
 import Shirage.Shire;
 
 public class Job implements Defs, Stressor.Causable {
@@ -45,8 +48,8 @@ public class Job implements Defs, Stressor.Causable {
 	public static final Job BUILDER = new Job("Builder", Build);
 
 	public final static Act TradeA = Trade.newTrade("Trade Animals",				bovad, donkey, lobodonkey, poop);
-	public final static Act TradeC = Trade.newTrade("Trade Commodities",			timber, stone, iron, silver, constr);
 	public final static Act TradeW = Trade.newTrade("Trade Arms",					sword, mace, bow, gun, armor);
+	public final static Act TradeC = Trade.newTrade("Trade Commodities",			timber, stone, iron, silver, wconstr, sconstr);
 	public static final Job TRADER = new Job("Merchant", TradeA, TradeC, TradeW);
 	
 	public final static Act ForgeGun = Labor.newCraft("Smith Arquebus",			AND(I(iron), M(2, timber)),	I(gun),			P_.SMITHING,						null,		-1);
@@ -104,7 +107,9 @@ public class Job implements Defs, Stressor.Causable {
 		JUDGE, NOBLE, HISTORIAN, PHILOSOPHER, TUTOR, SORCEROR, VIZIER, GENERAL, TREASURER, COURTESAN, APOTHECARY, ARCHITECT
 	};
 	
-		
+	public static PatronedQuestFactory getPatronQuestFactoryForValue(Value v) {
+		return v.getMinistry().getService().questFactory;
+	}
 
 	public String getDesc() {return desc;}
 	public String getDesc(Clan c) {return desc;}

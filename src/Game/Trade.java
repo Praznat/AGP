@@ -1,6 +1,5 @@
 package Game;
 
-import Defs.P_;
 import Sentiens.Clan;
 import Shirage.Shire;
 

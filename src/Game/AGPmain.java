@@ -1,16 +1,11 @@
 package Game;
 import java.applet.Applet;
-import java.awt.Color;
 import java.util.Random;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
-import AMath.Calc;
-import AMath.Testing;
+import AMath.*;
 import GUI.GUImain;
-import Sentiens.Values;
-import Sentiens.Values.Value;
 
 public class AGPmain extends Applet {
 	private static int initpop = 10000;
@@ -28,8 +23,7 @@ public class AGPmain extends Applet {
 	 * @param args
 	 */
 	
-
-	
+	public static boolean isGoing = true;
 	
 	
 	public void init() {
@@ -73,6 +67,29 @@ public class AGPmain extends Applet {
 		
 	}
 	
+	public static void pause() {
+		if(Thread.currentThread().getName().equals(TheRealm.getName())) {
+			System.out.println("paused " + Thread.currentThread().getName());
+			try {
+				System.out.println("sleep start");
+				Thread.sleep(100000000);
+				throw new IllegalStateException("never unpaused!");
+			} catch (InterruptedException e) {
+				System.out.println("interrupted");
+				Thread.interrupted();
+			}
+		}
+		else {
+			mainGUI.AC.showPlayButton();
+			isGoing = false;
+		}
+	}
+	public static void play() {
+		if (isGoing) {TheRealm.interrupt();}
+		mainGUI.AC.showPauseButton();
+		isGoing = true;
+	}
+
 	public static int getShiresX() {return mainGUI != null ? mainGUI.MD.getTCols() / 2 : 100;}
 	public static int getShiresY() {return mainGUI.MD.getTRows() / 2;}
 

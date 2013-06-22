@@ -17,13 +17,13 @@ public class ShireDescScroll extends Papyrus {
 		if(shire==null){return;}
 		final Library library = shire.getLibrary();
 		super.paint(g);
-		int i = 0;
-		g.drawString("Knowledge", 2, 15+15*i++);
-		for (; i < library.getCapacity(); i++) {
+		int r = 0;
+		g.drawString("Knowledge", 2, 15+15*r++);
+		for (int i = 0; i < library.getCapacity(); i++) {
 			@SuppressWarnings("rawtypes")
-			final KnowledgeBlock kb = library.getKnowledge(i);
-			if (library.getKnowledge(i) == null) {break;}
-			g.drawString(kb.toString(), 2, 15+15*i);
+			final KnowledgeBlock kb = library.getKnowledge(r);
+			if (library.getKnowledge(r) == null) {break;}
+			g.drawString(kb.toString(), 2, 15+15*r);
 		}
 	}
 

@@ -6,8 +6,8 @@ public class Law {
 		private boolean active;
 		private int transgressions;
 		public Commandment(String verb) {this.verb = verb;}
-		public boolean isActive() {return active;}
-		public void setActive(boolean active) {this.active = active;}
+		public boolean isSinful() {return active;}
+		public void setSinful(boolean active) {this.active = active;}
 		public String desc() {return "THOU SHALT NOT " + verb;}
 		public String getVerb() {return verb;}
 		public int getTransgressions() {return transgressions;}
@@ -26,7 +26,9 @@ public class Law {
 		public final Commandment Deception = Deception();
 		public final Commandment Witchcraft = Witchcraft();
 		public final Commandment Carnivory = Carnivory();
-		public final Commandment[] list = new Commandment[] {Murder, Theft, Adultery, Heresy};
+		public final Commandment Xenophobia = Xenophobia();
+		public final Commandment[] list = new Commandment[] {Murder, Theft, Adultery, Heresy, Deception,
+				Witchcraft, Carnivory, Xenophobia};
 	}
 
 	public static final Commandment Murder() {
@@ -61,6 +63,14 @@ public class Law {
 	}
 	public static final Commandment Carnivory() {
 		return new Commandment("EAT MEAT") {
+			
+		};
+	}
+	/**
+	 * other sins do not count when they are against foreigners if this is inactive
+	 */
+	public static final Commandment Xenophobia() {
+		return new Commandment("TREAT HEATHENS UNEQUALLY") {
 			
 		};
 	}

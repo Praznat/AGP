@@ -10,7 +10,7 @@ import Sentiens.Values.ValuatableValue;
 import Sentiens.Values.Value;
 
 public class LegacyQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LegacyQuest.class) {public Quest createFor(Clan c) {return new LegacyQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LegacyQuest.class) {public Quest createFor(Clan c, Clan p) {return new LegacyQuest(c, p);}};}
 
 	private static final double RATE_MULTIPLIER = 0.1;
 	
@@ -31,7 +31,8 @@ public class LegacyQuests {
 		
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose value to reenforce legacy for", Me, Values.All,
+					SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					reenforceLegacy((Value)arg);

@@ -69,9 +69,10 @@ public class Face extends JPanel {
 	protected int x,y,w,h;
 	
 	protected class FRelation {
-		private int val, min, max;
+		private int orig, val, min, max;
 		public FRelation(Ideology I, F_ f, int min, int max) {
-			val = fix(I.getFac(f), min, max);
+			orig = I.getFac(f);
+			val = fix(orig, min, max);
 			this.min = min;
 			this.max = max;
 		}

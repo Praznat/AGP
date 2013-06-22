@@ -9,7 +9,7 @@ import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class ExpertiseQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(TeachQuest.class) {public Quest createFor(Clan c) {return new TeachQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(TeachQuest.class) {public Quest createFor(Clan c, Clan p) {return new TeachQuest(c, p);}};}
 
 	public static final P_[] ALLSKILLS = {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.PROSE, P_.LOBOTOMY,
 		P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH, P_.DANCE,
@@ -51,7 +51,7 @@ public class ExpertiseQuests {
 		
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, ALLSKILLS, SubjectiveType.NO_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose skill to practice", Me, ALLSKILLS, SubjectiveType.NO_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					final P_ s = ((P_) arg);

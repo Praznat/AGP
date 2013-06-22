@@ -12,13 +12,13 @@ import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class AllegianceQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c) {return new AllegianceQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c, Clan p) {return new AllegianceQuest(c, p);}};}
 	
 	public static class AllegianceQuest extends PatronedQuest {
-		public AllegianceQuest(Clan P) {super(P, P.getBoss());}
+		public AllegianceQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public void pursue() {
-			if (patron == Me) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
+			if (Me == Me.getBoss()) {replaceAndDoNewQuest(Me, new FindNewMaster(Me)); return;}
 			// test if respect still strong (THIS STUFF SHOULD BE DONE BY WISEMAN)
 //			double resp = Me.conversation(Me.getBoss());
 //			if (resp < 0 && AGPmain.rand.nextInt(17) > Me.useBeh(M_.PATIENCE)) {
@@ -59,7 +59,8 @@ public class AllegianceQuests {
 		@Override
 		public void avatarPursue() {
 			if (Me.getBoss() != Me) {throw new IllegalStateException("this quest is only for RONIN");}
-			avatarConsole().showChoices(Me, Me.myShire().getCensus().toArray(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose new master", Me, Me.myShire().getCensus().toArray(),
+					SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Clan clan = (Clan) arg;

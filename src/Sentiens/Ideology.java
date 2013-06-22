@@ -13,9 +13,6 @@ public class Ideology implements Defs {
 	private static final int NUMBEHS = M_.length();
 	private static final int NUMVALS = Values.All.length;
 	
-	private static final Value[] VALUEWOF = new Value[NUMVALS * 15];
-	private static final int[] VALUECUMI = new int[NUMVALS];
-	
 	private static final Value[] tmpGarbage = new Value[NUMVALS];
 	
 	private byte[] condensed;
@@ -94,7 +91,7 @@ public class Ideology implements Defs {
 	public static int B(int plc) {return plc + NUMPRESTS;}
 	public static int B(M_ m) {return m.ordinal() + NUMPRESTS;}
 	public static int unP(int x) {return x;}
-	private static final int FSTARTPLC = NUMPRESTS + NUMBEHS;
+	private static final int FSTARTPLC = ((NUMPRESTS + NUMBEHS) / 2 + 1) * 2;
 	public static int F(int plc) {return plc + FSTARTPLC;}
 	public static int F(F_ f) {return f.ordinal() + FSTARTPLC;}
 	public static int unF(int x) {return x - FSTARTPLC;}
@@ -138,44 +135,6 @@ public class Ideology implements Defs {
 //			sancs[i] = Values.All[s]; sancranks[s] = i; //sancvals[i] = 0;
 //		}
 //	}
-	public void upSMeme(M_ sm) {
-		int smval = getBeh(sm);
-		if (smval < 15) {setBeh(sm, smval + 1);}
-		else {
-			int oval;   for (M_ om : M_.SMems()) {
-				oval = getBeh(om);   if (oval != 0) {setBeh(om, oval - 1);}
-			}
-		}
-	}
-	public void downSMeme(M_ sm) {
-		int smval = getBeh(sm);
-		if (smval > 0) {setBeh(sm, smval - 1);}
-		else {
-			int oval;   for (M_ om : M_.SMems()) {
-				oval = getBeh(om);   if (oval != 15) {setBeh(om, oval + 1);}
-			}
-		}
-	}
-	@Deprecated
-	public Value randomValueByWeight2() {  //way slower than randomValueInPriority
-		int L = Values.All.length;   M_ m = Values.All[0].getWeightMeme(Me);   int N = 0;
-		VALUECUMI[0] = (m == null ? 0 : getBeh(m));
-		for(int i = 1; i < L; i++) {
-			m = Values.All[i].getWeightMeme(Me);
-			N = VALUECUMI[i] = (m == null ? 0 : getBeh(m)) + N;
-		}   //if(N<=0) {Calc.p("N=0"); return Values.NULL;}
-		return Values.All[Calc.findLessThan(AGPmain.rand.nextInt(N), VALUECUMI)];
-	}
-	@Deprecated
-	public Value randomValueByWeight1() {  //way slower than randomValueInPriority
-		int N = 0;   int sofar = 0;
-		for (Value V : Values.All) {
-			if(V.getWeightMeme(Me) == null) {continue;}
-			for (; N < sofar + getBeh(V.getWeightMeme(Me)); N++) {
-				VALUEWOF[N] = V;
-			}   sofar = N;
-		}   return VALUEWOF[AGPmain.rand.nextInt(N)];
-	}
 	public boolean upSanc(Value s) {return upSanc(s.ordinal());}
 	public boolean upSanc(int s) {
 		int plc = sancranks[s];
@@ -210,16 +169,18 @@ public class Ideology implements Defs {
 		}
 		return tmpGarbage[v];
 	}
+	/** get value in ith priority */
 	public Value getValue(int i) {return sancs[i];}
+	/** get values ordered by priority */
 	public Value[] getValues() {return sancs;}
+	public int sumWeightOfValues(Value... V) {
+		int w = 0;
+		int[] wgts = WGTMAP[getBeh(M_.STRICTNESS)];
+		for (Value v : V) {w += wgts[sancranks[v.ordinal()]];}
+		return w;
+	}
 	public int weightOfValue(Value V) {
-		boolean hit = false; int N = 0;
-		int[] R = FSM[getBeh(M_.STRICTNESS)];
-		for (int i : R) {
-			if (sancs[i] == V) {hit = true; N++;}
-			else if (hit) {break;}
-		}
-		return N;
+		return WGTMAP[getBeh(M_.STRICTNESS)][sancranks[V.ordinal()]];
 	}
 	public Value[] valuesInPriority() {
 		int[] fsm = FSM[getBeh(M_.STRICTNESS)];
@@ -277,29 +238,41 @@ public class Ideology implements Defs {
 //		}
 //	}
 	public static final int[][] FSM = {
-		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
-		{0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2},
-		{0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2},
-		{0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,3},
-		{0,0,0,0,0,0,0,1,1,1,1,2,2,2,3,3},
-		{0,0,0,0,0,0,1,1,1,1,2,2,2,3,3,4},
-		{0,0,0,0,0,1,1,1,1,2,2,2,3,3,4,4},
-		{0,0,0,0,1,1,1,1,2,2,2,3,3,3,4,4},
-		{0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,5},
-		{0,0,0,1,1,1,2,2,2,3,3,3,4,4,5,6},
-		{0,0,0,1,1,1,2,2,2,3,3,4,4,5,5,6},
-		{0,0,0,1,1,1,2,2,3,3,4,4,5,5,6,7},
-		{0,0,0,1,1,1,2,2,3,3,4,4,5,6,7,8},
+		{0,0,1,1,2,2,3,3,4,4,5,5,6,7,8,9},
 		{0,0,0,1,1,2,2,3,3,4,4,5,5,6,7,8},
 		{0,0,0,1,1,2,2,3,3,4,4,5,6,7,8,9},
-		{0,0,1,1,2,2,3,3,4,4,5,5,6,7,8,9},
+		{0,0,0,1,1,1,2,2,3,3,4,4,5,6,7,8},
+		{0,0,0,1,1,1,2,2,3,3,4,4,5,5,6,7},
+		{0,0,0,1,1,1,2,2,2,3,3,4,4,5,5,6},
+		{0,0,0,1,1,1,2,2,2,3,3,3,4,4,5,6},
+		{0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,5},
+		{0,0,0,0,1,1,1,1,2,2,2,3,3,3,4,4},
+		{0,0,0,0,0,1,1,1,1,2,2,2,3,3,4,4},
+		{0,0,0,0,0,0,1,1,1,1,2,2,2,3,3,4},
+		{0,0,0,0,0,0,0,1,1,1,1,2,2,2,3,3},
+		{0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,3},
+		{0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2},
+		{0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2},
+		{0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1}
 	};
-	public int getSancPct(Value sanc) {
-		int count = 0;   int L = FSM[0].length;
-		for (int i = 0; i < L; i++) {
-			if (valueInPriority(i) == sanc) {count++;}
+	public static final int[][] WGTMAP = calcWeightMap(FSM);
+	private static int[][] calcWeightMap(int[][] fsm) { // only used once at startup
+		int[][] result = new int[16][NUMVALS];
+		for (int i = 0; i < 16; i++) {
+			int[] f = fsm[i];
+			for (int j = 0; j < f.length; j++) {
+				result[i][f[j]]++;
+			}
 		}
-		return (int) Math.round(100 * (double)count / L);
+		return result;
+	}
+	public int getSancPct(Value sanc) {
+		return (int) Math.round(100.0 * weightOfValue(sanc) / FSM[0].length);
+//		int count = 0;   int L = FSM[0].length;
+//		for (int i = 0; i < L; i++) {
+//			if (valueInPriority(i) == sanc) {count++;}
+//		}
+//		return (int) Math.round(100 * (double)count / L);
 	}
 	public int getSancPcts(Value[] Sncs, double[] Pcts) {
 		int c = 1;   int n = 1;   int L = FSM[0].length;

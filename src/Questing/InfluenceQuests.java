@@ -13,17 +13,27 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class InfluenceQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c) {return new InfluenceQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c, Clan p) {return new InfluenceQuest(c, p);}};}
 	
 	public static class PropagandaQuest extends Quest {
 		public PropagandaQuest(Clan P) {super(P);}
 		@Override
 		public void pursue() {
-			// preach?
-			replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
+			// TODO preach
 		}
 		@Override
 		public String description() {return "Spread propaganda";}
+	}
+	
+	public static class RecruitmentQuest extends PatronedQuest {
+		public RecruitmentQuest(Clan P, Clan patron) {super(P, patron);}
+		@Override
+		public void pursue() {
+			// TODO recruit
+			replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
+		}
+		@Override
+		public String description() {return "Recruit followers";}
 	}
 	
 	public static class InfluenceQuest extends PatronedQuest {
@@ -36,9 +46,9 @@ public class InfluenceQuests {
 		public void avatarPursue() {
 			if (!(patron == Me || patron.isSomeBossOf(Me))) {Me.MB.finishQ();   return;}
 			commonPursuit();
-			final GradedQuest[] options = {new GradedQuest(new PersecutionQuests.PersecuteInfidel(Me), rivalFollowers() - patron.getMinionTotal()),
+			final GradedQuest[] options = {new GradedQuest(new RecruitmentQuest(Me, patron), rivalFollowers() - patron.getMinionTotal()),
 					new GradedQuest(new OrganizeMinistries(Me), patron.getMinionTotal() - rivalFollowers())};
-			avatarConsole().showChoices(Me, options, SubjectiveType.QUEST_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose quest", Me, options, SubjectiveType.QUEST_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					replaceAndDoNewQuest(Me, ((GradedQuest) arg).getQuest());
@@ -51,7 +61,7 @@ public class InfluenceQuests {
 			if (!(patron == Me || patron.isSomeBossOf(Me))) {Me.MB.finishQ();   return;}
 			commonPursuit();
 			if (patron.getMinionTotal() <= rivalFollowers()) {
-				replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
+				replaceAndDoNewQuest(Me, new RecruitmentQuest(Me, patron));
 			}
 			else {
 				replaceAndDoNewQuest(Me, new OrganizeMinistries(Me));
@@ -88,11 +98,12 @@ public class InfluenceQuests {
 					return c.getNomen() + " : " + c.getJob().getDesc(c);
 				}
 			};
-			avatarConsole().showChoices(Me, followers, SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose subordinate to reassign", Me, followers, SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					final Clan clan = (Clan)arg;
-					avatarConsole().showChoices(Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
+					avatarConsole().showChoices("Choose ministry to assign " + clan.getNomen() + " to", Me, Values.All,
+							SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 						@Override
 						public void call(Object arg) {
 							clan.setJob(((Value)arg).getMinistry());

@@ -8,7 +8,7 @@ import Sentiens.*;
 import Sentiens.Law.Commandment;
 
 public class CreedQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(PriestQuest.class) {public Quest createFor(Clan c) {return new PriestQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(PriestQuest.class) {public Quest createFor(Clan c, Clan p) {return new PriestQuest(c, p);}};}
 
 	// NORMAL MINISTRY CLASS SHOULD BE "PREACH COMMANDMENTS"
 	
@@ -24,12 +24,13 @@ public class CreedQuests {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Me.FB.commandments.list, SubjectiveType.NO_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose commandment to tweak", Me, Me.FB.commandments.list,
+					SubjectiveType.NO_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					final Commandment c = ((Commandment) arg);
-					final boolean newlyActive = !c.isActive();
-					c.setActive(newlyActive);
+					final boolean newlyActive = !c.isSinful();
+					c.setSinful(newlyActive);
 					Me.addReport(GobLog.decidedMoral(c, newlyActive));
 					Me.MB.finishQ();
 				}

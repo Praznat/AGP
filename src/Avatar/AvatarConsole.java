@@ -14,6 +14,7 @@ import Sentiens.Values.Value;
 
 @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 public class AvatarConsole extends APanel implements ActionListener {
+	
 	private Clan avatar;
 	private final int DESWID = 200;
 	private final int DESHGT = 250;
@@ -29,11 +30,12 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final String NEWQUEST = "New Quest";
 	private final String PURSUEQUEST = "Pursue Quest";
 	private final String STEPONCE = "Step Once";
-	private final String STEP100 = "100 Turns";
+	private final String PAUSEPLAY = "Play";
 	private final String VIEWSPAWN = "View Spawn";
 	
 	private final SubjectiveComparator comparator;
 	public final TreeSet choices;
+	private final JButton pausePlayButton;
 
 	private AvatarConsole(GUImain P) {
 		super(P);
@@ -46,7 +48,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 		setButton(NEWQUEST, KeyEvent.VK_Q);
 		setButton(PURSUEQUEST, KeyEvent.VK_P);
 		setButton(STEPONCE, KeyEvent.VK_S);
-		setButton(STEP100, -1);
+		pausePlayButton = setButton(PAUSEPLAY, -1);
 		setButton(VIEWSPAWN, -1);
 	}
 	public static AvatarConsole create(GUImain P) {return new AvatarConsole(P);}
@@ -60,7 +62,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 		AGPmain.mainGUI.initializeSexDisplay();
 	}
 
-	public void showChoices(Clan POV, Object[] choices, SubjectiveType sct,
+	public void showChoices(String prompt, Clan POV, Object[] choices, SubjectiveType sct,
 			Calc.Listener listener, Calc.Transformer transformer) {
 		this.choices.clear();
 		this.getComparator().setPOV(POV);
@@ -72,18 +74,19 @@ public class AvatarConsole extends APanel implements ActionListener {
 		case NO_ORDER: comparator.setComparator(comparator.NO_ORDER); break;
 		}
 		for (Object choice : choices) {this.choices.add(choice);}
-		new APopupMenu(this, this.choices, listener, transformer);
+		APopupMenu.set(this, prompt, this.choices, listener, transformer);
+		AGPmain.pause();
 	}
-	public void showChoices(Clan POV, Object[] choices,
+	public void showChoices(String prompt, Clan POV, Object[] choices,
 			SubjectiveType sct, Calc.Listener listener) {
-		showChoices(POV, choices, sct, listener, null);
+		showChoices(prompt, POV, choices, sct, listener, null);
 	}
-	public void showChoices(Clan POV, Collection choices,
+	public void showChoices(String prompt, Clan POV, Collection choices,
 			SubjectiveType sct, Calc.Listener listener, Calc.Transformer transformer) {
-		showChoices(POV, choices.toArray(), sct, listener, transformer);
+		showChoices(prompt, POV, choices.toArray(), sct, listener, transformer);
 	}
 	
-	private void setButton(String S, int KE) {
+	private JButton setButton(String S, int KE) {
 		JButton B = new JButton();
 		B.setText(S);
 		B.setActionCommand(S);
@@ -92,11 +95,12 @@ public class AvatarConsole extends APanel implements ActionListener {
 		add(B);
 		B.setBounds(BUFFX, BUFFY + numButtons * (BUTTH + BUFFY), BUTTW, BUTTH);
 		numButtons++;
+		return B;
 	}
 	public SubjectiveComparator getComparator() {return ((SubjectiveComparator)choices.comparator());}
 
 	private void newQuest() {
-		this.showChoices(avatar, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
+		this.showChoices("Choose new quest", avatar, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 			@Override
 			public void call(Object arg) {
 				avatar.MB.newQ(Quest.QtoQuest(avatar, ((Value) arg).pursuit(avatar)));
@@ -112,7 +116,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 	public void avatarPursue() {
 		if (avatar.MB.QuestStack.empty()) {this.newQuest();}
 		else {
-			avatar.MB.QuestStack.peek().avatarPursueQuest();
+			avatar.MB.QuestStack.peek().avatarPursue();
 			avatar.setActive(false);
 		}
 	}
@@ -137,11 +141,12 @@ public class AvatarConsole extends APanel implements ActionListener {
 		else if (STEPONCE.equals(e.getActionCommand())) {
 			AGPmain.TheRealm.goOnce();
 		}
-		else if (STEP100.equals(e.getActionCommand())) {
-			for (int i = 0; i < 100; i++) {
-				Calc.p("Day " + i);
-				AGPmain.TheRealm.goOnce();
-			}
+		else if ("Play".equals(e.getActionCommand())) {
+			if (AGPmain.TheRealm.getDay() == 0) {AGPmain.TheRealm.start();}
+			else {AGPmain.play();}
+		}
+		else if ("Pause".equals(e.getActionCommand())) {
+			AGPmain.pause();
 		}
 		else if (VIEWSPAWN.equals(e.getActionCommand())) {
 			showSpawn();
@@ -149,5 +154,8 @@ public class AvatarConsole extends APanel implements ActionListener {
 		AGPmain.mainGUI.GM.setState();
 		AGPmain.mainGUI.SM.setState();
 	}
+
+	public void showPlayButton() {pausePlayButton.setText("Play");pausePlayButton.setActionCommand("Play");}
+	public void showPauseButton() {pausePlayButton.setText("Pause");pausePlayButton.setActionCommand("Pause");}
 
 }

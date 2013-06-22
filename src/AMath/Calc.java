@@ -9,6 +9,10 @@ import Game.AGPmain;
 
 public class Calc {
 
+	public interface Function<X, Y> {
+		public Y apply(X x);
+	}
+
 	public static void p(String s) {System.out.println(s);}
 	public static void p(Object s) {System.out.println(s);}
 	
@@ -430,6 +434,10 @@ public class Calc {
 	
 	public static interface BooleanCheck {
 		public boolean check();
+	}
+	
+	public static interface Conditional<T, U> {
+		public boolean isTrue(T arg1, U arg2);
 	}
 	
 	public static interface Listener {

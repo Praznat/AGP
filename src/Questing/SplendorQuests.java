@@ -9,7 +9,7 @@ import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 
 public class SplendorQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(UpgradeDomicileQuest.class) {public Quest createFor(Clan c) {return new UpgradeDomicileQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(UpgradeDomicileQuest.class) {public Quest createFor(Clan c, Clan p) {return new UpgradeDomicileQuest(c, p);}};}
 	
 	public static class UpgradeDomicileQuest extends PatronedQuest implements GoodsAcquirable {
 		private static int NOCONSTRBIDS = -1; //must be < 0

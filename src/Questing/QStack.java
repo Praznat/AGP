@@ -21,6 +21,11 @@ public class QStack extends Stack<Quest> {
 		return false; //not found
 	}
 	@Override
+	public Quest peek() {
+		if (isEmpty()) {return null;}
+		else {return super.peek();}
+	}
+	@Override
 	public Quest push(Quest item) {
 		if (this.elementCount >= maxCapacity) {explode();}
 		return super.push(item);

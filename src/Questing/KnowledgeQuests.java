@@ -12,7 +12,7 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 
 public class KnowledgeQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(KnowledgeQuest.class) {public Quest createFor(Clan c) {return new KnowledgeQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(KnowledgeQuest.class) {public Quest createFor(Clan c, Clan p) {return new KnowledgeQuest(c, p);}};}
 	
 	public static class KnowledgeQuest extends PatronedQuest {
 		public KnowledgeQuest(Clan P, Clan patron) {super(P, patron);}
@@ -25,7 +25,7 @@ public class KnowledgeQuests {
 		
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose quest", Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					pursueKnowledge((Value) arg);

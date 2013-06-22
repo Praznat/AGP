@@ -2,12 +2,14 @@ package Sentiens;
 
 import java.util.Date;
 
+import AMath.Calc;
 import Defs.P_;
 import Descriptions.*;
 import Game.*;
 import Questing.FaithQuests.ActOfFaith;
 import Questing.KnowledgeQuests.KnowledgeBlock;
 import Sentiens.Law.Commandment;
+import Sentiens.Values.Value;
 
 public class GobLog {
 	
@@ -83,6 +85,39 @@ public class GobLog {
 	public static Reportable produce(final short W) {
 		return new Reportable() {
 			public String out() {return "Forged " + XWeapon.weaponName(W);}
+		};
+	}
+	
+	public static Reportable dealTermTribute(final Clan prop, final Clan eval, final int millet) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " demanded " + millet + " millet from " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermAllegiance(final Clan prop, final Clan eval) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " demanded allegiance from " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermRepentance(final Clan prop, final Clan eval) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " demanded repentance from " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermService(final Clan prop, final Clan eval, final Value val) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " demanded " + val.getMinistry().getDesc(eval) + " service from " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermThreat(final Clan prop, final Clan eval) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " threatened " + eval.getNomen();}
+		};
+	}
+	public static Reportable contractOutcome(final Clan prop, final Clan eval, final boolean accepted,
+			final double demandValue, final double offerValue) {
+		return new Reportable() {
+			public String out() {return eval.getNomen() + (accepted ? " accepted" : " rejected") + " conditions" + (accepted?"":"!") +
+					" D:"+Calc.roundy(demandValue,2) + ", O:"+Calc.roundy(offerValue,2);}
 		};
 	}
 
@@ -178,6 +213,23 @@ public class GobLog {
 	public static Reportable demandRespect(final Clan target, final boolean success) {
 		return new Reportable() {
 			public String out() {return (success ? "Paid respect by " : "Disrespected by ") + target.getNomen();}
+		};
+	}
+	
+	public static Reportable backedDown() {
+		return new Reportable() {
+			public String out() {return "Backed down from fight";}
+		};
+	}
+	public static Reportable recruitForWar(final Clan recruit) {
+		return new Reportable() {
+			public String out() {return "Mobilized " + recruit.getNomen() + " for combat";}
+		};
+	}
+	public static Reportable battleResult(final Clan winner, final Clan loser, final int numA, final int numD) {
+//		System.out.println(winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!");
+		return new Reportable() {
+			public String out() {return winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!";}
 		};
 	}
 }

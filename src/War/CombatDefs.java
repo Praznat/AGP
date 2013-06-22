@@ -107,7 +107,7 @@ public class CombatDefs {
 		int archery, charge, armor, piercing, strength;
 		
 		private static void charge(BattleStats a, BattleStats b) {
-			if (a.charge > b.charge) {
+			if (a.charge >= b.charge) {
 				a.charge -= b.charge; b.charge = 0;
 				if (a.charge > b.archery) {
 					a.charge -= b.archery; b.archery = 0;
@@ -118,7 +118,7 @@ public class CombatDefs {
 			else {charge(b, a);}
 		}
 		private static void volley(BattleStats a, BattleStats b) {
-			if (a.archery > b.archery) {
+			if (a.archery >= b.archery) {
 				a.archery -= b.archery; b.archery = 0;
 				b.strength -= a.archery; a.archery = 0;
 			}

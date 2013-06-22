@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 
 import AMath.Calc;
+import Defs.F_;
 import Game.AGPmain;
 import Sentiens.*;
 
@@ -37,6 +38,7 @@ public class SexDisplay {
 		spawn.setPreferredSize(new Dimension(CSIZE, CSIZE));
 		MainPane.setSize(WIDTH,HEIGHT);
 		MainPane.setVisible(true);
+		
 		load();
 	}
 	

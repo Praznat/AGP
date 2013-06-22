@@ -12,6 +12,7 @@ Rent Market incomplete
 More Quests
 Refactoring Defs
 Stressor Reactions
+Continuous Play/Pause
 
 VALUE QUEST & MINISTRY PRIORITIES
 property
@@ -27,14 +28,14 @@ expertise
 	self - ok
 	ministry - confirm
 influence
-	self - ok
+	self - recruit, propaganda
 	ministry - same
-	other - advertisers??
-comfort *** (easy?)
+comfort (mostly done, depends a lot on traders)
 righteousness (half-done already)
 knowledge (all the philosophy quests...)
 	other triggers: BLAME shire -> find knowledge on better shires
 might
+	FormArmy should trigger upQuest differently depending on attack or defense
 freedom
 	self - relieve stressors
 	ministry - relieve stressors for patron

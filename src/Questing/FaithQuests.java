@@ -11,7 +11,7 @@ import Sentiens.*;
 
 public class FaithQuests {
 	
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(ContactQuest.class) {public Quest createFor(Clan c) {return new ContactQuest(c, c.getBoss());}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(ContactQuest.class) {public Quest createFor(Clan c, Clan p) {return new ContactQuest(c, p);}};}
 
 	/**
 	 * bless patron : inc patron's holiness
@@ -66,7 +66,7 @@ public class FaithQuests {
 			currAoF = ACTS_OF_FAITH[a];
 		}
 		private void avatarDecidePrayStyle() {
-			avatarConsole().showChoices(Me, ACTS_OF_FAITH, SubjectiveType.NO_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose act of faith", Me, ACTS_OF_FAITH, SubjectiveType.NO_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					currAoF = (ActOfFaith) arg;

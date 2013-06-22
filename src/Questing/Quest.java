@@ -5,8 +5,6 @@ import Avatar.*;
 import Defs.*;
 import Game.*;
 import Questing.AllegianceQuests.AllegianceQuest;
-import Questing.PersecutionQuests.PersecuteHeretic;
-import Questing.PersecutionQuests.PersecuteInfidel;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.RomanceQuests.BreedQuest;
 import Sentiens.*;
@@ -16,10 +14,8 @@ public abstract class Quest {
 	protected Clan Me;
 	public Quest(Clan P) {Me = P;}
 	public void pursueQuest() {
-		pursue();
-	}
-	public void avatarPursueQuest() {
-		avatarPursue();
+		if (Me == avatar()) {avatarPursue();}
+		else {pursue();}
 	}
 	public abstract void pursue();
 	public void avatarPursue() {pursue();}  //default leaves it to AI
@@ -38,10 +34,10 @@ public abstract class Quest {
 	public Clan getDoer() {return Me;}
 	
 	protected static AvatarConsole avatarConsole() {return AGPmain.mainGUI != null ? AGPmain.mainGUI.AC : null;}
-	public Clan avatar() {return avatarConsole().getAvatar();}
+	public Clan avatar() {return avatarConsole() == null ? null : avatarConsole().getAvatar();}
 		
 	public static class DefaultQuest extends PatronedQuest {
-		public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefaultQuest.class) {public Quest createFor(Clan c) {return new DefaultQuest(c);}};}
+		public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefaultQuest.class) {public Quest createFor(Clan c, Clan p) {return new DefaultQuest(c);}};}
 		
 		public DefaultQuest(Clan P) {super(P);}
 		@Override
@@ -102,7 +98,8 @@ public abstract class Quest {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices(Me, Me.myShire().getCensus().toArray(), SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose target", Me, Me.myShire().getCensus().toArray(),
+					SubjectiveType.RESPECT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					FindTargetAbstract.this.setTarget((Clan) arg);
@@ -118,41 +115,56 @@ public abstract class Quest {
 		public TransactionQuest(Clan P) {super(P); timesLeft = Me.useBeh(M_.PATIENCE) / 3 + 3;}
 		@Override
 		public void pursue() {
-			if (timesLeft == 0) {return;}  //no one found
-			if (target == null) {Me.MB.newQ(findWhat()); timesLeft--; return;}
-			Contract.getInstance().enter(target, Me);
-			setContractDemand();
-			setContractOffer();
-			boolean accepted = Contract.getInstance().acceptable();
+			if (pursue1()) {
+				setContractDemand();
+				setContractOffer();
+				pursue2();
+			}
+		}
+		@Override
+		public void avatarPursue() {
+			if (pursue1()) {
+				avatarSetContractDemand();
+				avatarSetContractOffer();
+				pursue2();
+			}
+		}
+		private boolean pursue1() {
+			if (timesLeft == 0) {failure(Me.myShire()); return false;}  //no one found
+			if (target == null) {Me.MB.newQ(findWhat()); timesLeft--; return false;}
+			Contract.getNewContract(target, Me); return true;
+		}
+		private void pursue2() {
+			boolean accepted = contract().acceptable();
 			if (accepted) {
-				Contract.getInstance().enact();
+				contract().enact();
 				successCase();
 			}
 			else {failCase();}
 			report(accepted);
-			return;
 		}
 		protected abstract FindTargetAbstract findWhat();
 		protected abstract void setContractDemand();
 		protected abstract void setContractOffer();
+		protected void avatarSetContractDemand() {setContractDemand();}
+		protected void avatarSetContractOffer() {setContractOffer();}
 		protected abstract void successCase();
 		protected abstract void failCase();
+		protected Contract contract() {return Contract.getInstance();}
 		protected abstract void report(boolean success);
 	}
 
 	public static abstract class PatronedQuestFactory {
 		private Class<? extends PatronedQuest> questType;
 		public PatronedQuestFactory(Class<? extends PatronedQuest> clasz) {questType = clasz;}
-		public abstract Quest createFor(Clan c);
+		public abstract Quest createFor(Clan c, Clan p);
 		public Class<? extends PatronedQuest> getQuestType() {return questType;}
 	}
 	
 	protected static void replaceAndDoNewQuest(Clan c, Quest newQuest) {
 		c.MB.finishQ();
 		c.MB.newQ(newQuest);
-		final AvatarConsole ac = avatarConsole(); // for null test, for testing
-		if (ac != null && c == avatarConsole().getAvatar()) {avatarConsole().avatarPursue();}
-		else {c.pursue();}
+		newQuest.pursueQuest();
 	}
 	
 	public static Quest QtoQuest(Clan clan, Q_ q) {
@@ -160,17 +172,16 @@ public abstract class Quest {
 		Quest quest;
 		switch(q) {
 		case BREED: quest = new BreedQuest(clan); break;
-		case BUILDWEALTH: quest = new BuildWealthQuest(clan); break;
+		case BUILDWEALTH: quest = new BuildWealthQuest(clan, clan); break;
 		case CREEDQUEST: quest = new CreedQuests.PriestQuest(clan, clan); break;
-		case LOYALTYQUEST: quest = new AllegianceQuest(clan); break;
+		case LOYALTYQUEST: quest = new AllegianceQuest(clan, clan); break;
 		case SPLENDORQUEST: quest = new SplendorQuests.UpgradeDomicileQuest(clan, clan); break;
 		case FAITHQUEST: quest = new FaithQuests.ContactQuest(clan, clan); break;
 		case LEGACYQUEST: quest = new LegacyQuests.LegacyQuest(clan, clan); break;
 		case KNOWLEDGEQUEST: quest = new KnowledgeQuests.KnowledgeQuest(clan, clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan, clan); break;
 		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;
-		case PERSECUTEHERETIC: quest = new PersecuteHeretic(clan); break;
-		case PERSECUTEINFIDEL: quest = new PersecuteInfidel(clan); break;
+		case PICKFIGHT: quest = new MightQuests.ChallengeMight(clan); break;
 		default: quest = new DefaultQuest(clan); break;
 		}
 		return quest;

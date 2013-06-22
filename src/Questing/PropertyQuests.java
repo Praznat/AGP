@@ -12,13 +12,13 @@ import Sentiens.*;
 import Shirage.Shire;
 
 public class PropertyQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c) {return new BuildWealthQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BuildWealthQuest.class) {public Quest createFor(Clan c, Clan p) {return new BuildWealthQuest(c, p);}};}
 	
 	//TODO make PATRONED
 	public static class BuildWealthQuest extends PatronedQuest {
 		private final int startCumInc, goalCumInc;
-		public BuildWealthQuest(Clan clan) {
-			super(clan);
+		public BuildWealthQuest(Clan clan, Clan patron) {
+			super(clan, patron);
 			startCumInc = clan.getCumulativeIncome();
 			goalCumInc = (int) Math.min(Integer.MAX_VALUE / 2, clan.getNetAssetValue(clan));
 		} //default is to double NAV
@@ -48,7 +48,7 @@ public class PropertyQuests {
 		private int stage = 0;
 		private int turnsLeft;
 		private Labor chosenAct;
-		
+
 		public LaborQuest(Clan P) {
 			super(P); setChosenAct((Labor) Job.NullAct); resetWM();
 			turnsLeft = P.FB.getBeh(M_.PATIENCE) / 3 + 5;
@@ -109,8 +109,8 @@ public class PropertyQuests {
 		public void liquidateWM() {resetWM();}  // TODO and sell all to market
 		public void setChosenAct(Labor a) {
 			//liquidate if it's a new act
-			if (chosenAct != null && chosenAct.equals(a)) {} //do nothing if act is same
-			else {
+			//do nothing if act is same
+			if (chosenAct == null || !chosenAct.equals(a)) {
 				liquidateWM();
 				chosenAct = a;
 			} //new WORKMEMO
@@ -134,7 +134,7 @@ public class PropertyQuests {
 			return bestAct;
 		}
 		private void avatarChooseAct() {
-			avatarConsole().showChoices(Me, Me.getJobActs(), SubjectiveType.ACT_PROFIT_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose labor", Me, Me.getJobActs(), SubjectiveType.ACT_PROFIT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Quest q = Me.MB.QuestStack.peek();

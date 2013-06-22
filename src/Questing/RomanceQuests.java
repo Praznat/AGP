@@ -11,10 +11,10 @@ import Sentiens.*;
 import Sentiens.Stressor.Causable;
 
 public class RomanceQuests {
-	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c) {return new BreedWithBossQuest(c);}};}
+	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BreedWithBossQuest.class) {public Quest createFor(Clan c, Clan p) {return new BreedWithBossQuest(c, p);}};}
 
 	public static class BreedWithBossQuest extends PatronedQuest {
-		public BreedWithBossQuest(Clan P) {super(P, P.getBoss());}
+		public BreedWithBossQuest(Clan P, Clan patron) {super(P, patron);}
 		@Override
 		public void pursue() {
 			replaceAndDoNewQuest(Me, new BreedQuest(Me));
