@@ -29,13 +29,14 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final String AVATAR = "View Avatar";
 	private final String NEWQUEST = "New Quest";
 	private final String PURSUEQUEST = "Pursue Quest";
+	private final String AUTOPILOTTOGGLE = "Autopilot Off";
 	private final String STEPONCE = "Step Once";
 	private final String PAUSEPLAY = "Play";
 	private final String VIEWSPAWN = "View Spawn";
 	
 	private final SubjectiveComparator comparator;
 	public final TreeSet choices;
-	private final JButton pausePlayButton;
+	private final JButton pausePlayButton, autopilotButton;
 
 	private AvatarConsole(GUImain P) {
 		super(P);
@@ -47,6 +48,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 		setButton(AVATAR, KeyEvent.VK_A);
 		setButton(NEWQUEST, KeyEvent.VK_Q);
 		setButton(PURSUEQUEST, KeyEvent.VK_P);
+		autopilotButton = setButton(AUTOPILOTTOGGLE, -1);
 		setButton(STEPONCE, KeyEvent.VK_S);
 		pausePlayButton = setButton(PAUSEPLAY, -1);
 		setButton(VIEWSPAWN, -1);
@@ -103,12 +105,12 @@ public class AvatarConsole extends APanel implements ActionListener {
 		this.showChoices("Choose new quest", avatar, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
 			@Override
 			public void call(Object arg) {
-				avatar.MB.newQ(Quest.QtoQuest(avatar, ((Value) arg).pursuit(avatar)));
+				avatar.MB.newQ(Quest.QtoQuest(avatar, ((Value) arg).pursuit()));
 			}
 		}, new Calc.Transformer<Value, String>() {
 			@Override
 			public String transform(Value v) {
-				return Quest.QtoQuest(avatar, v.pursuit(avatar)).description();
+				return Quest.QtoQuest(avatar, v.pursuit()).description();
 			}
 		});
 	}
@@ -137,6 +139,14 @@ public class AvatarConsole extends APanel implements ActionListener {
 		}
 		else if (PURSUEQUEST.equals(e.getActionCommand()) && avatar.isActive()) {
 			avatarPursue();
+		}
+		else if ("Autopilot On".equals(e.getActionCommand())) {
+			AGPmain.turnOffAutopilot();
+			autopilotButton.setText("Autopilot Off");autopilotButton.setActionCommand("Autopilot Off");
+		}
+		else if ("Autopilot Off".equals(e.getActionCommand())) {
+			AGPmain.turnOnAutopilot();
+			autopilotButton.setText("Autopilot On");autopilotButton.setActionCommand("Autopilot On");
 		}
 		else if (STEPONCE.equals(e.getActionCommand())) {
 			AGPmain.TheRealm.goOnce();

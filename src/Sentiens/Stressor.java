@@ -1,7 +1,6 @@
 package Sentiens;
 
-import Defs.M_;
-import Game.Defs;
+import Defs.*;
 import Game.Job;
 import Questing.*;
 import Sentiens.Values.Value;
@@ -51,8 +50,7 @@ public class Stressor {
 		}
 		else if (target instanceof Job) {
 			// TODO find new job
-			responder.MB.newQ(new KnowledgeQuests.KnowledgeQuest(responder, responder));
-			((KnowledgeQuests.KnowledgeQuest)responder.MB.QuestStack.peek()).pursueKnowledge(Values.WEALTH); //TODO make sure it's about Job specifically
+			responder.MB.newQ(new KnowledgeQuests.KnowledgeQuest(responder, responder, K_.JOBS));
 		}
 		return success;
 	}

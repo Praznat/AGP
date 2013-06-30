@@ -2,7 +2,7 @@ package AMath;
 
 import Defs.*;
 import Descriptions.XWeapon;
-import Game.Realm;
+import Game.*;
 import Government.Order;
 import Sentiens.*;
 import Sentiens.Values.Value;
@@ -22,10 +22,13 @@ public class Testing {
 	public static void reset() {
 		testRealm = Realm.makeRealm(2, 2, 100);
 		testRealm.doCensus();
+		AGPmain.setRealm(testRealm);
 	}
 	
 	public static void doAllTests() {
 		System.out.println("starting tests");
+		
+		TestKnowledge.testWealthKnowledge();
 		
 		TestContracts.doAllContractTests();
 		
@@ -48,6 +51,13 @@ public class Testing {
 	protected static void affirm(boolean b) {affirm(b, "could not affirm");}
 	protected static void affirm(boolean b, String errorString) {if (!b) {throw new IllegalStateException(errorString);}}
 
+	protected static void pursueUntilDone(Clan c) {
+		int numQ = c.MB.QuestStack.size();
+		while (c.MB.QuestStack.size() >= numQ) {
+			c.pursue();
+		}
+	}
+	
 	public static void breeding() {
 		reset();
 	}
@@ -99,6 +109,12 @@ public class Testing {
 		Calc.p(stannis.getNomen() + " belongs to " + stannis.myOrder().getNationName() + " and follows " + stannis.getBoss().getNomen());
 		Calc.p(baratheon.getNomen() + " belongs to " + baratheon.myOrder().getNationName() + " and follows " + baratheon.getBoss().getNomen());
 		
+	}
+	
+	protected static void makePuritan(Clan c, Value v1, Value v2) {
+		while(c.FB.getValue(0) != v2) {c.FB.upSanc(v2);}
+		while(c.FB.getValue(0) != v1) {c.FB.upSanc(v1);}
+		c.FB.setBeh(M_.STRICTNESS, 15);
 	}
 
 	public static void naming() {

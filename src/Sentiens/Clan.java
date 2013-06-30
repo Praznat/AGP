@@ -5,14 +5,13 @@ import java.util.*;
 import AMath.Calc;
 import Defs.*;
 import Descriptions.*;
+import Descriptions.GobLog.*;
 import Game.*;
 import Government.Order;
 import Markets.MktAbstract;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.*;
 import Questing.PropertyQuests.LaborQuest;
-import Sentiens.GobLog.Book;
-import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 
 public class Clan implements Defs, Stressor.Causable {
@@ -99,7 +98,7 @@ public class Clan implements Defs, Stressor.Causable {
 		daily();
 		if (isActive()) {
 			if (MB.QuestStack.empty()) {
-				Q_ q = FB.randomValueInPriority().pursuit(this);
+				Q_ q = FB.randomValueInPriority().pursuit();
 				Quest quest = Quest.QtoQuest(this, q);
 				MB.QuestStack.add(quest);
 			}
@@ -317,7 +316,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public boolean getLastSuccess() {return lastSuccess;}
 	public boolean isActive() {return active;}
 	public void setActive(boolean a) {active = a;}
-	public int getAvgIncome() {return (int) Math.round((double)cumIncome / (double)(age - ageInherited));}
+	public double getAvgIncome() {return (int) Math.round((double)cumIncome / (double)(10 + age - ageInherited));} // +10 too smooth out "newborns"
 	public int getCumulativeIncome() {return cumIncome;}
 	public void alterCumIncome(int m) {cumIncome += m;}
 

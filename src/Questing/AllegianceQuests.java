@@ -5,6 +5,7 @@ import java.util.HashMap;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.M_;
+import Descriptions.GobLog;
 import Game.*;
 import Government.Order;
 import Questing.Quest.PatronedQuest;
@@ -80,7 +81,7 @@ public class AllegianceQuests {
 			}
 			if (attemptsLeft-- > 0) {
 				Clan candidate = Me.myShire().getRandOfCensus();
-				double resp = Me.conversation(candidate);
+				final double resp = Me.FB.randomValueInPriority().compare(Me, candidate, Me);
 				if (Me != candidate && !Me.isSomeBossOf(candidate)) {
 					Double d = respectMemo.get(candidate);
 					if (d == null) {respectMemo.put(candidate, resp);}

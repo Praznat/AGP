@@ -2,10 +2,10 @@ package GUI.TextDisplay;
 
 import java.awt.Graphics;
 
+import Descriptions.GobLog.Reportable;
 import GUI.PopupAbstract;
 import Questing.Quest;
 import Sentiens.Clan;
-import Sentiens.GobLog.Reportable;
 
 public class QuestScroll extends Papyrus {
 	private static final int REPORTSTART = 10;

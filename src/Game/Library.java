@@ -1,5 +1,6 @@
 package Game;
 
+import Defs.K_;
 import Government.Order;
 import Questing.KnowledgeQuests.KnowledgeBlock;
 import Sentiens.Values.Value;
@@ -16,10 +17,10 @@ public class Library {
 	
 	public int getCapacity() {return capacity * (owningOrder != null ? owningOrder.numShiresControlled() : 1);}
 	
-	public KnowledgeBlock findKnowledge(Value v) {
+	public KnowledgeBlock findKnowledge(K_ k) {
 		for (KnowledgeBlock kb : knowledge) {
 			if (kb == null) return null;
-			if (kb.isApplicableFor(v)) {return kb;}
+			if (kb.isApplicableFor(k)) {return kb;}
 		}	return null;
 	}
 	public void putKnowledge(KnowledgeBlock kb) {
@@ -30,4 +31,10 @@ public class Library {
 		knowledge[0] = kb;
 	}
 	public KnowledgeBlock getKnowledge(int i) {return knowledge[i];}
+	
+	@Override
+	public String toString() {
+		String s = ""; for (KnowledgeBlock kb : knowledge) {if (kb == null) break; s+=kb;}
+		return s;
+	}
 }

@@ -1,5 +1,6 @@
 package Sentiens;
 
+import Descriptions.GobLog;
 import Game.AGPmain;
 import Sentiens.Law.Commandment;
 

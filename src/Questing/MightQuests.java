@@ -4,7 +4,8 @@ import java.util.*;
 
 import AMath.Calc;
 import Avatar.SubjectiveType;
-import Defs.M_;
+import Defs.*;
+import Descriptions.GobLog;
 import Game.Contract;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
@@ -115,7 +116,7 @@ public class MightQuests {
 		public Set<Clan> getArmy() {return army;}
 		public void setArmy(Set<Clan> army) {} // this really shouldnt even be here
 		@Override
-		public String description() {return "Form army (size:" + army.size() + ")";}
+		public String description() {return army==null? "Form null army??" : "Form army (size:" + army.size() + ")";}
 		
 	}
 
@@ -148,8 +149,8 @@ public class MightQuests {
 			result = Math.signum(v.compare(pov, opponent, pov) + aos*v.compare(pov, hisTopBoss, pov));
 			if (result > 0) {confidence += result;} else {fear -= result;}
 		}
-		if (!opponent.FB.commandments.Murder.isSinful()) {fear *= pov.FB.getBeh(M_.MIERTE);}
-		confidence *= pov.FB.getBeh(M_.CONFIDENCE);
+		if (!opponent.FB.commandments.Murder.isSinful()) {fear *= (pov.FB.getBeh(M_.MIERTE) / 5 + 1);}
+		confidence *= (pov.FB.getBeh(M_.CONFIDENCE) / 5 + 1);
 		return confidence / (confidence + fear);
 	}
 	
@@ -157,6 +158,7 @@ public class MightQuests {
 		private final Value val;
 
 		public ChallengeMight(Clan P) {super(P); val = P.FB.randomValueInPriority();}
+		public ChallengeMight(Clan P, Value v) {super(P); val = v;}
 
 		@Override
 		protected FindTargetAbstract findWhat() {

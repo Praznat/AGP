@@ -2,6 +2,7 @@ package Questing;
 
 import AMath.Calc;
 import Defs.*;
+import Descriptions.GobLog;
 import Game.Defs;
 import Markets.GoodsAcquirable;
 import Questing.Quest.PatronedQuest;

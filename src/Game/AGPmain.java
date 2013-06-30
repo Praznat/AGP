@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import AMath.*;
 import GUI.GUImain;
+import Sentiens.Clan;
 
 public class AGPmain extends Applet {
 	private static int initpop = 10000;
@@ -24,12 +25,17 @@ public class AGPmain extends Applet {
 	 */
 	
 	public static boolean isGoing = true;
-	
+	public static boolean AUTOPILOT = false;
+
+	public static void turnOffAutopilot() {AUTOPILOT = false;}
+	public static void turnOnAutopilot() {AUTOPILOT = true;}
 	
 	public void init() {
 		
 //		this.setBackground(Color.gray);
 	}
+	
+	public static void setRealm(Realm r) {TheRealm = r;}
 	
 	public void start() {
 		
@@ -105,6 +111,9 @@ public class AGPmain extends Applet {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+	}
+	public static Clan getAvatar() {
+		return mainGUI != null ? mainGUI.AC.getAvatar() : null;
 	}
 	
 }

@@ -1,5 +1,6 @@
 package Questing;
 
+import Descriptions.GobLog;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.RelationCondition;
 import Questing.Quest.TransactionQuest;

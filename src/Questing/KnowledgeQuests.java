@@ -4,7 +4,8 @@ import java.util.*;
 
 import AMath.Calc;
 import Avatar.*;
-import Defs.M_;
+import Defs.*;
+import Descriptions.GobLog;
 import Game.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
@@ -15,20 +16,21 @@ public class KnowledgeQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(KnowledgeQuest.class) {public Quest createFor(Clan c, Clan p) {return new KnowledgeQuest(c, p);}};}
 	
 	public static class KnowledgeQuest extends PatronedQuest {
-		public KnowledgeQuest(Clan P, Clan patron) {super(P, patron);}
+		private final K_ kToStudy;
+		public KnowledgeQuest(Clan P, Clan patron) {super(P, patron); kToStudy = valToK(patron.FB.randomValueInPriority());}
+		public KnowledgeQuest(Clan P, Clan patron, K_ k) {super(P, patron); kToStudy = k;}
 
 		@Override
 		public void pursue() {
-			final Value v = patron.FB.randomValueInPriority();
-			pursueKnowledge(v);
+			pursueKnowledge(kToStudy);
 		}
 		
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices("Choose quest", Me, Values.All, SubjectiveType.VALUE_ORDER, new Calc.Listener() {
+			avatarConsole().showChoices("Choose quest", Me, K_.values(), SubjectiveType.NO_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
-					pursueKnowledge((Value) arg);
+					pursueKnowledge(valToK((Value) arg));
 				}
 			}, new Calc.Transformer<Value, String>() {
 				@Override
@@ -40,33 +42,38 @@ public class KnowledgeQuests {
 		@SuppressWarnings("rawtypes")
 		private void useKnowledgeBlock(KnowledgeBlock kb) {
 			kb.useKnowledge(patron);
+			finish();
 		}
 		@SuppressWarnings("rawtypes")
-		public void pursueKnowledge(Value v) {
-			final KnowledgeBlock kb = patron.getRelevantLibrary().findKnowledge(v);
-			if (kb != null) {useKnowledgeBlock(kb); finish(); return;}
-			final Quest newQuest = valueToKnowledgeQuest(v);
+		public void pursueKnowledge(K_ k) {
+			final KnowledgeBlock kb = patron.getRelevantLibrary().findKnowledge(k);
+			if (kb != null) {useKnowledgeBlock(kb); return;}
+			final Quest newQuest = kToKnowledgeQuest(k);
 			if (newQuest == null) {finish(); return;} // eventually should never happen
 			Me.MB.newQ(newQuest);
 		}
-		private Quest valueToKnowledgeQuest(Value v) {
-			if (v == Values.WEALTH) {
-				return new ObservationQuest<Job>(Me, patron, new JobObserver());
+		private K_ valToK(Value v) {
+			if (v == Values.WEALTH) return K_.JOBS;
+			else if (v == Values.INFLUENCE) return K_.POPVALS;
+			else return K_.NADA;
+		}
+		private Quest kToKnowledgeQuest(K_ k) {
+			switch(k) {
+			case JOBS: return new ObservationQuest<Job>(Me, patron, new JobObserver());
+			case POPVALS: return new ObservationQuest<Value>(Me, patron, new ValueObserver());
+			default: return null;
 			}
-			else if (v == Values.INFLUENCE) {
-				return new ObservationQuest<Value>(Me, patron, new ValueObserver());
-			}
-			else return null;
 		}
 		@Override
 		public String description() {return "Pursue knowledge";}
 	}
 	public static class ObservationQuest<T> extends PatronedQuest {
+		private static final int NUM_OBS_PER_TURN = 3;
 		private final KnowledgeObserver<T> knowledgeObserver;
 		private final Clan[] observationPopulation;
 		private int turnsLeft;
-		private transient int[] popv;
-		private transient int i = 0;
+		private transient int[] popv; //really transient??
+		private transient int i = 0; //really transient??
 		public ObservationQuest(Clan P, Clan patron, KnowledgeObserver<T> ko) {
 			super(P, patron);
 			knowledgeObserver = ko;
@@ -84,7 +91,7 @@ public class KnowledgeQuests {
 				success(); return;
 			}
 			final Clan target = observationPopulation[popv[i++]];
-			knowledgeObserver.observe(target);
+			for (int i = 0; i < NUM_OBS_PER_TURN; i++) {knowledgeObserver.observe(target);}
 			Me.addReport(GobLog.observe(target));
 		}
 		@Override
@@ -130,12 +137,12 @@ public class KnowledgeQuests {
 		@SuppressWarnings("rawtypes")
 		protected Class getKnowledgeClass() {return x[0].getClass();}
 		public void useKnowledge(Clan user) {
-			if (user != AGPmain.mainGUI.AC.getAvatar()) {alterBrain(user);} // should it not be automatic?
+			if (user != AGPmain.getAvatar()) {alterBrain(user);} // should it not be automatic?
 			if (discoverer != null) discoverer.incKnowledgeAttribution();
 		}
 		protected abstract void alterBrain(Clan user);
-		public boolean isApplicableFor(Value v) {return v == relVal();}
-		protected abstract Value relVal();
+		public boolean isApplicableFor(K_ k) {return k == relK();}
+		protected abstract K_ relK();
 	}
 	private static class Top3Block<T> extends KnowledgeBlock<T> {
 		public Top3Block(Clan clan, Map<T, Integer> map) {
@@ -165,9 +172,9 @@ public class KnowledgeQuests {
 			}
 		}
 		@Override
-		protected Value relVal() {
-			if (Value.class.isAssignableFrom(getKnowledgeClass())) {return Values.INFLUENCE;}
-			if (Job.class.isAssignableFrom(getKnowledgeClass())) {return Values.WEALTH;}
+		protected K_ relK() {
+			if (Value.class.isAssignableFrom(getKnowledgeClass())) {return K_.POPVALS;}
+			if (Job.class.isAssignableFrom(getKnowledgeClass())) {return K_.JOBS;}
 			else return null;
 		}
 	}
@@ -203,7 +210,7 @@ public class KnowledgeQuests {
 		@Override
 		public void observe(Clan c) {
 			final Job j = c.getJob();
-			final int x = c.getAvgIncome(); // NAV ?
+			final int x = (int)Math.round(c.getAvgIncome()); // NAV ?
 			final Integer oldX = map.get(j); // from possible previous Clans
 			map.put(j, oldX == null ? x : oldX + x);
 		}

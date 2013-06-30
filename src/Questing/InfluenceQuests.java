@@ -5,6 +5,7 @@ import java.util.*;
 import AMath.Calc;
 import Avatar.*;
 import Defs.M_;
+import Descriptions.GobLog;
 import Game.*;
 import Government.Order;
 import Questing.Quest.PatronedQuest;

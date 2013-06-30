@@ -3,6 +3,7 @@ package Questing;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.*;
+import Descriptions.GobLog;
 import Game.*;
 import Markets.GoodsAcquirable;
 import Questing.Quest.PatronedQuest;

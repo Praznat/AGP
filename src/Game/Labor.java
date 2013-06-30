@@ -2,6 +2,7 @@ package Game;
 
 import AMath.Calc;
 import Defs.*;
+import Descriptions.GobLog;
 import Questing.*;
 import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;

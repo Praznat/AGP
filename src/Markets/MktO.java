@@ -6,11 +6,10 @@ import Questing.FaithQuests.ContactQuest;
 import Questing.PropertyQuests.LaborQuest;
 import Questing.SplendorQuests.UpgradeDomicileQuest;
 import Sentiens.Clan;
-import Sentiens.GobLog;
 import Shirage.Shire;
 import AMath.Calc;
 import Defs.M_;
-import Descriptions.Naming;
+import Descriptions.*;
 import Game.*;
 
 public class MktO extends MktAbstract {

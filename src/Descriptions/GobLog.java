@@ -1,4 +1,4 @@
-package Sentiens;
+package Descriptions;
 
 import java.util.Date;
 
@@ -8,6 +8,7 @@ import Descriptions.*;
 import Game.*;
 import Questing.FaithQuests.ActOfFaith;
 import Questing.KnowledgeQuests.KnowledgeBlock;
+import Sentiens.*;
 import Sentiens.Law.Commandment;
 import Sentiens.Values.Value;
 

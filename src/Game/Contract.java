@@ -5,9 +5,10 @@ import java.util.*;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.P_;
+import Descriptions.GobLog;
+import Descriptions.GobLog.Reportable;
 import Questing.MightQuests;
 import Sentiens.*;
-import Sentiens.GobLog.Reportable;
 import Sentiens.Values.Assessable;
 import Sentiens.Values.Value;
 
@@ -37,7 +38,7 @@ public class Contract {   // AND/OR combination of Terms??
 		final double demandValue = getDemandValue();
 		final double offerValue = getOfferValue();
 		accepted = demandValue + offerValue > 0;
-		if (AGPmain.mainGUI != null && evaluator == AGPmain.mainGUI.AC.getAvatar()) {avatarChooseAcceptable(accepted);}
+		if (!AGPmain.AUTOPILOT && AGPmain.mainGUI != null && evaluator == AGPmain.mainGUI.AC.getAvatar()) {avatarChooseAcceptable(accepted);}
 		evaluator.addReport(GobLog.contractOutcome(proposer, evaluator, accepted, demandValue, offerValue));
 		proposer.addReport(GobLog.contractOutcome(proposer, evaluator, accepted, demandValue, offerValue));
 		return accepted;
@@ -166,29 +167,29 @@ public class Contract {   // AND/OR combination of Terms??
 	protected class ThreatenPropertyTerm extends ThreatTerm { // steal ok, kill is sin
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.COMFORT);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR);
 		}
 	}
 	public void threatenLife() {offers.add(new ThreatenLifeTerm());}
 	protected class ThreatenLifeTerm extends ThreatTerm { // steal is sin, kill ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.BEAUTY, Values.FREEDOM) +
-					evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.COMFORT) * (100 - evaluator.FB.getSancPct(Values.LEGACY));
+			return evaluator.FB.sumWeightOfValues(Values.BEAUTY, Values.HARMONY) +
+					evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR) * (100 - evaluator.FB.getSancPct(Values.LEGACY));
 		}
 	}
 	public void threatenLifeAndProperty() {offers.add(new ThreatenTotalSubversionTerm());}
 	protected class ThreatenTotalSubversionTerm extends ThreatTerm { // steal ok, kill ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.COMFORT, Values.BEAUTY, Values.FREEDOM);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR, Values.BEAUTY, Values.HARMONY);
 		}
 	}
 	public void threatenLineage() {offers.add(new ThreatenTotalAnnihilationTerm());}
 	protected class ThreatenTotalAnnihilationTerm extends ThreatTerm { // steal ok, kill ok, sever lineage ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.COMFORT, Values.BEAUTY, Values.FREEDOM, Values.LEGACY);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR, Values.BEAUTY, Values.HARMONY, Values.LEGACY);
 		}
 	}
 }

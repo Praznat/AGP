@@ -3,7 +3,7 @@ package Questing;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.*;
-import Descriptions.XWeapon;
+import Descriptions.*;
 import Game.*;
 import Markets.*;
 import Questing.Quest.PatronedQuest;
@@ -236,7 +236,7 @@ public class PropertyQuests {
 		@Override
 		public void pursue() {
 			// TODO Auto-generated method stub
-			final int expProfitBenchmark = Me.getAvgIncome(); // trade must be higher than this otherwise find random trade
+			final double expProfitBenchmark = Me.getAvgIncome(); // trade must be higher than this otherwise find random trade
 		}
 		
 		private int[] scoutShire(Shire buyShire, Trade trade) {

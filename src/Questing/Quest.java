@@ -3,6 +3,7 @@ package Questing;
 import AMath.Calc;
 import Avatar.*;
 import Defs.*;
+import Descriptions.GobLog;
 import Game.*;
 import Questing.AllegianceQuests.AllegianceQuest;
 import Questing.PropertyQuests.BuildWealthQuest;
@@ -14,12 +15,12 @@ public abstract class Quest {
 	protected Clan Me;
 	public Quest(Clan P) {Me = P;}
 	public void pursueQuest() {
-		if (Me == avatar()) {avatarPursue();}
+		if (!AGPmain.AUTOPILOT && Me == avatar()) {avatarPursue();}
 		else {pursue();}
 	}
 	public abstract void pursue();
 	public void avatarPursue() {pursue();}  //default leaves it to AI
-	
+
 	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
 	protected void success(Stressor.Causable relief) {Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));   success();}
 	protected void success(Stressor.Causable... reliefs) {failure(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
@@ -198,6 +199,7 @@ public abstract class Quest {
 	}
 	
 	public static class QuestRetrievalQuest extends Quest {
+		@SuppressWarnings("unused")
 		private final Class<? extends Quest>[] questTypes;
 		public QuestRetrievalQuest(Clan c, Class<? extends Quest>[] questTypes) {
 			super(c);

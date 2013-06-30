@@ -40,7 +40,7 @@ public class QStack extends Stack<Quest> {
 			clan = q.getDoer();
 			oldQuests[i++] = q.getClass();
 		}
-		System.out.println(clan.getNomen() + " QUEST EXPLOSION!!!");
+		System.out.println(clan.getNomen() + " QUEST EXPLOSION!!! " + this);
 		this.clear();
 		super.push(new QuestRetrievalQuest(clan, oldQuests));
 	}

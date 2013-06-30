@@ -1,10 +1,10 @@
 package Questing;
 
 import Defs.P_;
+import Descriptions.GobLog;
 import Questing.PersecutionQuests.PersecuteAbstract;
 import Questing.Quest.TargetQuest;
 import Sentiens.Clan;
-import Sentiens.GobLog;
 import Sentiens.Stressor;
 
 public class DestroyQuest extends TargetQuest {

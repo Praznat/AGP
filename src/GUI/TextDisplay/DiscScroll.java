@@ -2,6 +2,7 @@ package GUI.TextDisplay;
 
 import java.awt.Graphics;
 
+import AMath.Calc;
 import Descriptions.*;
 import GUI.PopupAbstract;
 import Game.Defs;
@@ -27,11 +28,11 @@ public class DiscScroll extends Papyrus {
 		g.drawString(" believer in the " + clan.FB.getDeusName(), 2, 15+15*r++);
 
 		g.drawString("Age: " + clan.getAge(), 2, 15+15*r++);
+		g.drawString("Wisdom: " + clan.getKnowledgeAttribution(), 2, 15+15*r++);
 		g.drawString("Holiness: " + clan.getHoliness(), 2, 15+15*r++);
-		g.drawString("Splendor: " + clan.getSplendor(), 2, 15+15*r++);
-		g.drawString("Knowledge: " + clan.getKnowledgeAttribution(), 2, 15+15*r++);
+		g.drawString("Grandeur: " + clan.getSplendor(), 2, 15+15*r++);
 		r++;r++;
-		write(g, "Avg Profit:" + clan.getAvgIncome(), r++);
+		write(g, "Avg Profit:" + Calc.roundy(clan.getAvgIncome()), r++);
 		write(g, "NAV:" + clan.getNetAssetValue(clan), r++);
 		write(g, "ASSETS:", r++);
 		for (int i = 0; i < Defs.numAssets; i++) {

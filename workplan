@@ -15,7 +15,7 @@ Stressor Reactions
 Continuous Play/Pause
 
 VALUE QUEST & MINISTRY PRIORITIES
-property
+wealth
 	self - build wealth: do trader job
 	ministry - figure out everything
 beauty (mostly done, ministry not split out properly)
@@ -30,13 +30,19 @@ expertise
 influence
 	self - recruit, propaganda
 	ministry - same
-comfort (mostly done, depends a lot on traders)
+grandeur (mostly done, depends a lot on traders)
 righteousness (half-done already)
 knowledge (all the philosophy quests...)
 	other triggers: BLAME shire -> find knowledge on better shires
 might
+	MIGHT SHOULD BE ABOUT TERRITORY
+	after wealth, choice between influence (light side) and might (dark side),
+	with influence being about "having" people and might being about "having"
+	governor benefits such as border control, tariffs, taxes, book-burning rights, etc.
+	maybe even works requiring writing to attribute to order but just building to attribute to shire
+	IN THIS CASE VALUATION OF MIGHT, PURSUIT OF MIGHT ARE ABOUT SHIRES, BUT ESTIMATION OF COMBAT STRENGTH IS SEPARATE
 	FormArmy should trigger upQuest differently depending on attack or defense
-freedom
+harmony
 	self - relieve stressors
 	ministry - relieve stressors for patron
 legacy (mostly done)

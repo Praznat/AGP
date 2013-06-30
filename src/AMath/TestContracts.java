@@ -60,7 +60,7 @@ public class TestContracts extends Testing {
 		resetContracts();
 		System.out.println(a.getNomen() + " vs " + b.getNomen());
 		Contract.getNewContract(a, b);
-		Contract.getInstance().demandService(Values.COMFORT);
+		Contract.getInstance().demandService(Values.GRANDEUR);
 		System.out.println("service value: " + Contract.getInstance().getDemandValue());
 	}
 	
@@ -87,10 +87,10 @@ public class TestContracts extends Testing {
 
 	private static void testChallengeMightQuest() {
 		resetContracts();
-		a.MB.newQ(new MightQuests.ChallengeMight(a));
-		((TargetQuest)a.MB.QuestStack.peek()).setTarget(b);
 		makePuritan(a, Values.WEALTH, Values.RIGHTEOUSNESS);
 		makePuritan(b, Values.WEALTH, Values.RIGHTEOUSNESS);
+		a.MB.newQ(new MightQuests.ChallengeMight(a, Values.WEALTH));
+		((TargetQuest)a.MB.QuestStack.peek()).setTarget(b);
 		a.pursue();
 		final double demandVal = Contract.getInstance().getDemandValue();
 		final double offerVal = Contract.getInstance().getOfferValue();
@@ -98,12 +98,6 @@ public class TestContracts extends Testing {
 		System.out.println("offer value: " + offerVal);
 		affirm(demandVal < 0);
 		affirm(offerVal > 10);
-	}
-	
-	private static void makePuritan(Clan c, Value v1, Value v2) {
-		while(c.FB.getValue(0) != v2) {c.FB.upSanc(v2);}
-		while(c.FB.getValue(0) != v1) {c.FB.upSanc(v1);}
-		c.FB.setBeh(M_.STRICTNESS, 15);
 	}
 	
 }

@@ -22,7 +22,7 @@ public class Values implements Defs {
 		/** returns difference in prestige in this Value between A & B in eyes of POV */
 		public double compare(Clan POV, Clan A, Clan B);
 		public String description(Clan POV);
-		public Q_ pursuit(Clan clan);
+		public Q_ pursuit();
 		public ClanAlone doPursuit(Clan clan);
 		public Ministry getMinistry();
 		public P_[] getRelevantSkills();
@@ -38,7 +38,7 @@ public class Values implements Defs {
 		@Override
 		public String description(Clan POV) {return "Value yet undefined";}
 		@Override
-		public Q_ pursuit(Clan clan) {return Q_.NOTHING;}
+		public Q_ pursuit() {return Q_.NOTHING;}
 		@Override
 		public Ministry getMinistry() {return null;}
 		@Override
@@ -68,7 +68,7 @@ public class Values implements Defs {
 		@Override
 		public String toString() {return description(null);}
 		@Override
-		public Q_ pursuit(Clan clan) {return (quest != null ? quest : Q_.NOTHING);}
+		public Q_ pursuit() {return (quest != null ? quest : Q_.NOTHING);}
 		@Override
 		public Ministry getMinistry() {return ministry;}
 		@Override
@@ -163,7 +163,7 @@ public class Values implements Defs {
 		}
 	};
 	
-	public static final Value COMFORT = new ValuatableValue("Luxury - Comfort", Q_.SPLENDORQUEST, Job.ARCHITECT,
+	public static final Value GRANDEUR = new ValuatableValue("Luxury - Comfort", Q_.SPLENDORQUEST, Job.ARCHITECT,
 			new P_[] {P_.MASONRY, P_.ARTISTRY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
@@ -182,7 +182,7 @@ public class Values implements Defs {
 			return result;
 		}
 	};
-	public static final Value FREEDOM = new ValuatableValue("Luxury - Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
+	public static final Value HARMONY = new ValuatableValue("Luxury - Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -221,7 +221,7 @@ public class Values implements Defs {
 	
 
 	private static final Value[] AllValues = new Value[] {
-		WEALTH, INFLUENCE, MIGHT, COMFORT, FREEDOM, BEAUTY,
+		WEALTH, INFLUENCE, MIGHT, GRANDEUR, HARMONY, BEAUTY,
 		ALLEGIANCE, RIGHTEOUSNESS, LEGACY, KNOWLEDGE, SPIRITUALITY, EXPERTISE
 	};
 	private static Value[] filterTodos(Value[] varray) {

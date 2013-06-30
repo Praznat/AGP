@@ -1,6 +1,7 @@
 package Questing;
 
 import Defs.M_;
+import Descriptions.GobLog;
 import Game.Defs;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.PatronedQuest;
@@ -29,8 +30,8 @@ public class RomanceQuests {
 		public BreedQuest(Clan P, Clan target) {this(P); this.target = target;}
 		@Override
 		public void pursue() {
-			if (courtsLeft == 0) {success(Me); return;}
-			if (failsLeft == 0) {failure(Me); return;}
+			if (courtsLeft <= 0) {success(Me); return;}
+			if (failsLeft <= 0) {failure(Me); return;}
 			if (target == null) {Me.MB.newQ(new FindMate(Me)); failsLeft--; return;}  //failsleft-- cuz it means findmate failed
 			resetFails();   //previous fails were for finding target
 			if (courtsLeft == Defs.E) {courtsLeft = 16 - target.useBeh(M_.PROMISCUITY);}
@@ -51,6 +52,7 @@ public class RomanceQuests {
 		public boolean meetsReq(Clan POV, Clan target) {
 			boolean success = POV.getGender() != target.getGender() &&
 			POV.FB.randomValueInPriority().compare(POV, target, POV) + Values.MAXVAL * POV.useBeh(M_.PROMISCUITY) / 15 > 0;
+			if (success) {Me.setSuitor(target);}
 			Me.addReport(GobLog.findSomeone((success ? target : null), "mate"));
 			return success;
 		}
@@ -67,7 +69,6 @@ public class RomanceQuests {
 
 		@Override
 		public void pursue() {
-			// set suitor somewhere??
 			Clan rival = target.getSuitor();
 			if (rival == null) {rival = target;}
 			if (rival == Me) {success(); return;}

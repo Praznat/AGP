@@ -25,7 +25,7 @@ public class LegacyQuests {
 		public void pursue() {
 			final boolean selfImproveChoice = decideToSelfImproveOrReenforceLegacy();
 			if (selfImproveChoice) {
-				replaceAndDoNewQuest(Me, QtoQuest(Me, Me.FB.randomValueInPriorityOtherThan(Values.LEGACY).pursuit(Me)));
+				replaceAndDoNewQuest(Me, QtoQuest(Me, Me.FB.randomValueInPriorityOtherThan(Values.LEGACY).pursuit()));
 			} else {reenforceLegacy(Me.FB.randomValueInPriority());}
 		}
 		

@@ -214,7 +214,7 @@ public class GobName {
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
 		Value V = goblin.FB.getValue(i);
-		if (V == Values.ALLEGIANCE || V == Values.WEALTH || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.COMFORT) {
+		if (V == Values.ALLEGIANCE || V == Values.WEALTH || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.GRANDEUR) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {
 				N = title + " " + N;
@@ -230,7 +230,7 @@ public class GobName {
 			}
 			else {return fullName(goblin, N, i+1);}
 		}
-		if (V == Values.FREEDOM && goblin.getAssets(Defs.meat) > 0) {return N + " the Glutton";}
+		if (V == Values.HARMONY && goblin.getAssets(Defs.meat) > 0) {return N + " the Glutton";}
 		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc(goblin);}
 		
 		return fullName(goblin, N, i+1);

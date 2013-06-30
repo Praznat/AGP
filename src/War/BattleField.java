@@ -3,10 +3,11 @@ package War;
 import java.awt.Rectangle;
 import java.util.*;
 
+import Descriptions.GobLog;
+import Descriptions.GobLog.Reportable;
 import Questing.MightQuests.InvolvesArmy;
 import Questing.*;
 import Sentiens.*;
-import Sentiens.GobLog.Reportable;
 import Shirage.Shire;
 import War.CombatDefs.BattleStats;
 
