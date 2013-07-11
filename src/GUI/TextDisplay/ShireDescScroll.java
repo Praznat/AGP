@@ -21,9 +21,9 @@ public class ShireDescScroll extends Papyrus {
 		g.drawString("Knowledge", 2, 15+15*r++);
 		for (int i = 0; i < library.getCapacity(); i++) {
 			@SuppressWarnings("rawtypes")
-			final KnowledgeBlock kb = library.getKnowledge(r);
-			if (library.getKnowledge(r) == null) {break;}
-			g.drawString(kb.toString(), 2, 15+15*r);
+			final KnowledgeBlock kb = library.getKnowledge(i);
+			if (kb == null) {break;}
+			g.drawString(kb.toString(), 2, 15+15*r++);
 		}
 	}
 

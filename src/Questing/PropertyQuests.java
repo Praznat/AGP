@@ -25,7 +25,7 @@ public class PropertyQuests {
 		@Override
 		public void pursue() {
 			if (Me.getCumulativeIncome() - startCumInc >= goalCumInc) {success(Me.myShire(), Me.getJob()); return;}
-			if (Me.getCumulativeIncome() <= startCumInc && Calc.pPercent(AGPmain.rand.nextInt(30-Me.FB.getBeh(M_.PATIENCE)))) {
+			if (Me.getCumulativeIncome() <= startCumInc && Calc.pPercent(80-4*Me.FB.getBeh(M_.PATIENCE))) { // 20-80% chance of give up
 				failure(Me.myShire(), Me.getJob()); return;
 			}
 			final Job j = Me.getJob();

@@ -472,6 +472,18 @@ public class Calc {
 		public void mouseReleased(MouseEvent arg0) {}
 	}
 	
+	public static class TwoObjects<K, J> {
+		final K k; final J j;
+		public TwoObjects(K k, J j) {this.k = k; this.j = j;}
+		public K get1st() {return k;}
+		public J get2nd() {return j;}
+	}
+	public static class ThreeObjects<K, J, L> extends TwoObjects<K, J> {
+		final L l;
+		public ThreeObjects(K k, J j, L l) {super(k, j); this.l = l;}
+		public L get3rd() {return l;}
+	}
+	
 }
 
 

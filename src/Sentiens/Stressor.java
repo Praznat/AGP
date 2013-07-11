@@ -3,6 +3,7 @@ package Sentiens;
 import Defs.*;
 import Game.Job;
 import Questing.*;
+import Questing.KnowledgeQuests.KnowledgeBlock;
 import Sentiens.Values.Value;
 import Shirage.Shire;
 
@@ -15,6 +16,7 @@ public class Stressor {
 	public static final int HATRED = 4;  //immediately maxes out amygdala, calling enoughIsEnough()
 	public static final int EXTREME_TRAUMA = 5;  //probably causes insanity
 	public static final int PROMISE_BROKEN = 6;  //probably causes insanity
+	public static final int COMPETITION_LOSS = 7;
 	private final int type;
 	private Object target;
 	
@@ -26,7 +28,8 @@ public class Stressor {
 		switch (type) {
 		case FEAR: return 2;
 		case ANNOYANCE: return 1;
-		case INSULT: return doer.FB.getBeh(M_.VANITY);
+		case COMPETITION_LOSS: return 4; // competitiveness MEME?
+		case INSULT: return doer.FB.getBeh(M_.VANITY) / 2;
 		case LIFE_THREAT: return 3 + doer.FB.getBeh(M_.MIERTE);
 		case HATRED: return 16; //must be higher than others to avoid getting relieved
 		case EXTREME_TRAUMA: return 50;
@@ -50,7 +53,9 @@ public class Stressor {
 		}
 		else if (target instanceof Job) {
 			// TODO find new job
-			responder.MB.newQ(new KnowledgeQuests.KnowledgeQuest(responder, responder, K_.JOBS));
+			responder.myShire().getNeighbors(true);
+			final KnowledgeBlock kb = responder.getRelevantLibrary().findKnowledge(K_.JOBS);
+			if (kb != null) kb.useKnowledge(responder);
 		}
 		return success;
 	}

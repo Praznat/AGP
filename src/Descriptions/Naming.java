@@ -1,11 +1,9 @@
 package Descriptions;
-import java.awt.*;
+import java.awt.Color;
 
-import Sentiens.Clan;
-import AMath.Calc;
 import Defs.P_;
-import Game.AGPmain;
-import Game.Defs;
+import Game.*;
+import Sentiens.Clan;
 
 public class Naming implements Defs {
 	

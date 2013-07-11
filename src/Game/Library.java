@@ -3,6 +3,7 @@ package Game;
 import Defs.K_;
 import Government.Order;
 import Questing.KnowledgeQuests.KnowledgeBlock;
+import Sentiens.*;
 import Sentiens.Values.Value;
 
 @SuppressWarnings("rawtypes")
@@ -24,6 +25,18 @@ public class Library {
 		}	return null;
 	}
 	public void putKnowledge(KnowledgeBlock kb) {
+		// if B started observing after A but before A finished, he will find that A beat him to it
+		final KnowledgeBlock preexisting = findKnowledge(kb.relK());
+		if (preexisting != null && betterThan(preexisting, kb)){
+			kb.getDiscoverer().AB.add(new Stressor(Stressor.COMPETITION_LOSS, preexisting.getDiscoverer()));
+		}
+		else {actuallyPutKnowledge(kb);}
+	}
+	private boolean betterThan(KnowledgeBlock preexisting, KnowledgeBlock kb) {
+		return true;// earliest wins or preexisting.getNumObservationsUsed() > kb.getNumObservationsUsed(); ?
+	}
+
+	public void actuallyPutKnowledge(KnowledgeBlock kb) {
 		final int effectiveCapacity = getCapacity();
 		for (int i = effectiveCapacity-1; i > 0; i--) {
 			knowledge[i] = knowledge[i-1]; // shift everything right (forgetting last one)

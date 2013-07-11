@@ -14,6 +14,7 @@ public class AGPmain extends Applet {
 	public static Random rand = new Random(0);
 	public static GUImain mainGUI;
 	public static Realm TheRealm;
+	private static Realm lastRealm;
 	
 	
 	//these are for shire naming... so they dont get new names every time u reload
@@ -34,8 +35,9 @@ public class AGPmain extends Applet {
 		
 //		this.setBackground(Color.gray);
 	}
-	
-	public static void setRealm(Realm r) {TheRealm = r;}
+
+	public static void setRealm(Realm r) {lastRealm = TheRealm; TheRealm = r;}
+	public static void setLastRealm() {Realm tmp = TheRealm; TheRealm = lastRealm; lastRealm = tmp;}
 	
 	public void start() {
 		
@@ -65,11 +67,6 @@ public class AGPmain extends Applet {
 		long elapsedTime = System.nanoTime() - start;
 
 		System.out.println("Elapsedtime: " + (double)elapsedTime / 1000000000 + " seconds");
-		
-
-		Testing.doAllTests();
-
-
 		
 	}
 	

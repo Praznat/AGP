@@ -81,6 +81,14 @@ public class Plot extends AbstractPlot {
 		HOOD[4] = getW();
 		HOOD[5] = getE();
 	}
+	public void refreshHood2() {
+		HOOD[0] = getNW2();
+		HOOD[1] = getNE2();
+		HOOD[2] = getSW2();
+		HOOD[3] = getSE2();
+		HOOD[4] = getW2();
+		HOOD[5] = getE2();
+	}
 	public Plot[] myHood() {return HOOD;}
 	public double getHoodAvgVal() {
 		int count = 0;   double sum = CWGT * getValue();
@@ -117,6 +125,13 @@ public class Plot extends AbstractPlot {
 	public Plot getSE() {return AGPmain.mainGUI.MD.getPlotXY(x+(y%2), y+1);}
 	public Plot getW() {return AGPmain.mainGUI.MD.getPlotXY(x-1, y);}
 	public Plot getE() {return AGPmain.mainGUI.MD.getPlotXY(x+1, y);}
+	// squared
+	public Plot getNW2() {return AGPmain.mainGUI.MD.getPlotXY(x-1, y-2);}
+	public Plot getNE2() {return AGPmain.mainGUI.MD.getPlotXY(x+1, y-2);}
+	public Plot getSW2() {return AGPmain.mainGUI.MD.getPlotXY(x-1, y+2);}
+	public Plot getSE2() {return AGPmain.mainGUI.MD.getPlotXY(x+1, y+2);}
+	public Plot getW2() {return AGPmain.mainGUI.MD.getPlotXY(x-2, y);}
+	public Plot getE2() {return AGPmain.mainGUI.MD.getPlotXY(x+2, y);}
 
 	public double getValue() {return value;}
 	public void setValue(double v) {value = v;}
@@ -259,7 +274,7 @@ public class Plot extends AbstractPlot {
 	public void makeLand() {ocean = false;}
 	public boolean isOcean() {return ocean;}
 	
-	private static final int[] getShireDef = {1, 5, 3};
+	private static final int[] getShireDef = {1, 5, 3}; // NE, E, SE
 	public void linkHoodToShire(Shire shire) {
 		refreshHood();
 		for (int neighbor : getShireDef) {HOOD[neighbor].linkToShire(shire);}

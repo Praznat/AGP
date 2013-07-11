@@ -2,7 +2,7 @@ package Game;
 
 import java.util.*;
 
-import AMath.Calc;
+import AMath.*;
 import Sentiens.*;
 import Sentiens.Values.Value;
 import Shirage.*;
@@ -11,7 +11,7 @@ public class Realm extends Thread {
 	int shiresX;
 	int shiresY;
 	int startPop;
-	public Shire[] shires;
+	protected Shire[] shires;
 	private Clan[] population;
 	private List<Clan> waitingForImmigration = new ArrayList<Clan>();
 	private int day;
@@ -31,14 +31,17 @@ public class Realm extends Thread {
 		startPop = cN;
 	}
 	public static Realm makeRealm(int pX, int pY, int cN) {
+		Calc.p("making realm");
 		Realm newRealm = new Realm(pX, pY, cN);
 		newRealm.generateShires(pX,pY);
 		newRealm.generatePopulation(cN);
-		//shdata = new ShireData[shires.length];
-		//for (int s = 0; s < shdata.length; s++) {
-		//	shdata[s] = new ShireData();
-		//}
-//		newRealm.Avatar = newRealm.population[0];
+		return newRealm;
+	}
+	public static Realm makeTestRealm(int pX, int pY, int cN) {
+		Calc.p("making test realm");
+		Realm newRealm = new TestRealm(pX, pY, cN);
+		newRealm.generateShires(pX,pY);
+		newRealm.generatePopulation(cN);
 		return newRealm;
 	}
 	public void setupDefs() {
@@ -77,17 +80,12 @@ public class Realm extends Thread {
 		}
 	}
 
-	private void generateShires(int H, int V) {
+	protected void generateShires(int H, int V) {
 		shires = new Shire[H*V];
 		for (int x = 0; x < H; x++) {
 			for (int y = 0; y < V; y++) {
 				shires[x + y*H] = new Shire(x, y);
-				if (AGPmain.mainGUI!=null && AGPmain.mainGUI.MD!=null) {
-					shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*2 + (y%2), y*2 + 1));
-				}	else {
-					Plot p = new Plot(0.5); p.makeLand();
-					shires[x + y*H].setLinkedPlot(p);
-				}
+				shires[x + y*H].linkToPlot(AGPmain.mainGUI.MD.getPlotXY(x*2 + (y%2), y*2 + 1));
 			}
 		}
 	}

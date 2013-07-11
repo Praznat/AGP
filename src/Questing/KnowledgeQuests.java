@@ -11,6 +11,7 @@ import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
 import Sentiens.Values.Value;
+import Shirage.Shire;
 
 public class KnowledgeQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(KnowledgeQuest.class) {public Quest createFor(Clan c, Clan p) {return new KnowledgeQuest(c, p);}};}
@@ -122,8 +123,10 @@ public class KnowledgeQuests {
 		private final Clan discoverer;
 		public KnowledgeBlock(Clan clan) {discoverer = clan;}
 		public Object[] getXs() {return x;}
+		public int[] getYs() {return y;}
 		public int getNumObservationsUsed() {return obsUsed;}
 		public int getDateRecorded() {return date;}
+		public Clan getDiscoverer() {return discoverer;}
 		@Override
 		public String toString() {
 			String s = "";
@@ -132,7 +135,7 @@ public class KnowledgeQuests {
 				if (o == null) {break;}
 				s += o + ":" + y[i] + "; ";
 			}
-			return s;
+			return s + " at day " + date + " by " + discoverer;
 		}
 		@SuppressWarnings("rawtypes")
 		protected Class getKnowledgeClass() {return x[0].getClass();}
@@ -142,20 +145,20 @@ public class KnowledgeQuests {
 		}
 		protected abstract void alterBrain(Clan user);
 		public boolean isApplicableFor(K_ k) {return k == relK();}
-		protected abstract K_ relK();
+		public abstract K_ relK();
 	}
 	private static class Top3Block<T> extends KnowledgeBlock<T> {
 		public Top3Block(Clan clan, Map<T, Integer> map) {
 			super(clan);
 			int gold = Integer.MIN_VALUE, silver = Integer.MIN_VALUE, bronze = Integer.MIN_VALUE;
-			T goldV = null, silverV = null, bronzeV = null;
+			T goldO = null, silverO = null, bronzeV = null;
 			for (Map.Entry<T, Integer> entry : map.entrySet()) {
 				final T v = entry.getKey(); final int i = entry.getValue();
-				if (i > gold) {bronze = silver; bronzeV = silverV; silver = gold; silverV = goldV; gold = i; goldV = v;}
-				else if (i > silver) {bronze = silver; bronzeV = silverV; silver = i; silverV = v;}
+				if (i > gold) {bronze = silver; bronzeV = silverO; silver = gold; silverO = goldO; gold = i; goldO = v;}
+				else if (i > silver) {bronze = silver; bronzeV = silverO; silver = i; silverO = v;}
 				else if (i > bronze) {bronze = i; bronzeV = v;}
 			}
-			x = new Object[] {goldV, silverV, bronzeV};
+			x = new Object[] {goldO, silverO, bronzeV};
 			y = new int[] {gold, silver, bronze};
 			obsUsed = map.size(); date = AGPmain.TheRealm.getDay();
 		}
@@ -168,11 +171,18 @@ public class KnowledgeQuests {
 				if (user.FB.getValue(2) != b) {user.FB.upSanc(b); return;} // if bronze is not already 3nd, increase it
 			}
 			else if (Job.class.isAssignableFrom(getKnowledgeClass())) {
-				if (y[0] > user.getAvgIncome()) {user.setJob((Job)x[0]);}
+				// this means neighboring shires' KBs wont get "used" (no wisdom attribution to discoverer) IS THIS RIGHT?
+				// probably? if they all get used, that means this is way more likely to get used than other types of KB
+				// so u would always want to go around researching jobs in other shires rather than anything else to up ur attribution...
+				Calc.ThreeObjects<Shire, Object, Integer> bestO = bestInShires(user, relK(), user.getAvgIncome(), true, true, true);
+				if (bestO != null) {
+					user.setJob((Job)bestO.get2nd());
+					// TODO emigrate to bestO.get1st();
+				}
 			}
 		}
 		@Override
-		protected K_ relK() {
+		public K_ relK() {
 			if (Value.class.isAssignableFrom(getKnowledgeClass())) {return K_.POPVALS;}
 			if (Job.class.isAssignableFrom(getKnowledgeClass())) {return K_.JOBS;}
 			else return null;
@@ -218,6 +228,25 @@ public class KnowledgeQuests {
 		public KnowledgeBlock<Job> createKnowledgeBlock(Clan creator) {
 			return new Top3Block<Job>(creator, map);
 		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private static Calc.ThreeObjects<Shire, Object, Integer> bestInShires(
+			Clan clan, K_ kType, double threshold, boolean hiOrLo, boolean areaOrPath, boolean stopAtNoLibrary) {
+		final int numShiresToLookAt = clan.FB.getBeh(M_.PATIENCE) / 3;
+		Shire lastShire = null; Shire bestShire = null;
+		double best = threshold; Object bestO = null; 
+		for (int i = 0; i < numShiresToLookAt; i++) {
+			final Shire newShire = lastShire == null ? clan.myShire() :
+				(areaOrPath ? clan.myShire().getSomeNeighbor() : lastShire.getSomeNeighbor());
+			if (newShire == null) {continue;} // edge
+			final KnowledgeBlock kb = newShire.getLibrary().findKnowledge(kType);
+			if (kb == null) {if (stopAtNoLibrary) {break;} else {continue;}}
+			int newPay = kb.getYs()[0];
+			int n = hiOrLo ? 1 : -1;
+			if (n*newPay > n*best) {best = newPay; bestO = kb.getXs()[0]; bestShire = newShire;}
+		}
+		return bestO != null ? new Calc.ThreeObjects<Shire, Object, Integer>(bestShire, bestO, (int)best) : null;
 	}
 	
 }

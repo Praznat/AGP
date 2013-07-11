@@ -222,7 +222,25 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public byte getGrowthD() {return growthD;}
 	public byte getGrowthT() {return growthT;}
 	
-
+	public Shire getSomeNeighbor() {
+		final int r = AGPmain.rand.nextInt(6);
+		switch(r) {
+		case 0: return linkedPlot.getW2().getLinkedShire();
+		case 1: return linkedPlot.getNW2().getLinkedShire();
+		case 2: return linkedPlot.getNE2().getLinkedShire();
+		case 3: return linkedPlot.getE2().getLinkedShire();
+		case 4: return linkedPlot.getSE2().getLinkedShire();
+		case 5: return linkedPlot.getSW2().getLinkedShire();
+		} return null;
+	}
+	public Shire[] getNeighbors(boolean includeSelf) {
+		linkedPlot.refreshHood2();
+		Plot[] plots = linkedPlot.myHood();
+		Shire[] result = new Shire[plots.length + (includeSelf ? 1 : 0)];
+		for (int i = 0; i < plots.length; i++) {result[i] = plots[i].getLinkedShire();}
+		if (includeSelf) result[plots.length] = this;
+		return result;
+	}
 
 	public Plot getLinkedPlot() {return linkedPlot;}
 

@@ -20,7 +20,7 @@ public class Testing {
 	}
 	
 	public static void reset() {
-		testRealm = Realm.makeRealm(2, 2, 100);
+		testRealm = TestRealm.makeTestRealm(2, 2, 100);
 		testRealm.doCensus();
 		AGPmain.setRealm(testRealm);
 	}
@@ -42,6 +42,8 @@ public class Testing {
 //		breeding();
 //		ideologyInteractions();
 		//naming();
+		
+		AGPmain.setLastRealm();
 	}
 
 	protected static Clan setClanMemMax(Clan c, M_ m) {c.FB.setBeh(m, 15); return c;}

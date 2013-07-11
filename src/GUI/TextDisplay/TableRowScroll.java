@@ -40,6 +40,7 @@ public class TableRowScroll extends Papyrus {
 		widths = new int[numCols];
 		String S;   parent.getGraphics().setFont(NORMFONT);
 		for (int col = 0; col < numCols; col++) {
+			if (vars == null) {Calc.p("NO DAMN VARS!!!"); break;}
 			S = vars[((PopupShire) parent).getVG(tab, col)].getVGName();
 			contents[0][col] = S;
 			adjustWidth(col, S);
