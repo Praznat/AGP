@@ -18,7 +18,7 @@ public class DestroyQuest extends TargetQuest {
 		boolean winorlose = Me.FB.getPrs(P_.COMBAT) > target.FB.getPrs(P_.COMBAT);
 		Me.addReport(GobLog.handToHand(target, winorlose));
 		((PersecuteAbstract) upQuest()).failDestroy(); 
-		if (winorlose) {target.AB.add(new Stressor(Stressor.INSULT, Me)); Me.FB.upPrest(P_.TYRRP); success();}
+		if (winorlose) {success(); target.AB.add(new Stressor(Stressor.INSULT, Me)); Me.FB.upPrest(P_.TYRRP);}
 		else {Me.FB.downPrest(P_.TYRRP); failure(target);}
 	}
 	@Override

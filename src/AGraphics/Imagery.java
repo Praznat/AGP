@@ -32,10 +32,15 @@ public class Imagery {
 			Memo.add(-1, 2);
 		}
 	}
-	public static void drawCTree(Graphics g, int x, int y, int len, boolean color) {
+	public static void drawSTree(Graphics g, int x, int y, int len, Color color) {
 		int dir = (int) Math.round(60 + AGPmain.rand.nextInt(61));
+		g.setColor(color);
+		drawArc(g,x,y,dir,3*len,len,AGPmain.rand.nextBoolean(),true);
+	}
+	public static void drawCTree(Graphics g, int x, int y, int len, boolean color) {
+		int dir = color?(int) Math.round(60 + AGPmain.rand.nextInt(61)):85;
 		if(color) {g.setColor(BROWN);}
-		drawArc(g,x,y,dir,3*len,len,(Math.random()>0.5),true);
+		drawArc(g,x,y,dir,3*len,len,color?AGPmain.rand.nextBoolean():true,true);
 		int tx = Ledger.Memo.take(0);  int ty = Ledger.Memo.take(1);    len = len/3;
 		if(color) {g.setColor(VGREEN);}
 		drawArc(g,tx,ty,dir+75,3*len,len,false,false);
@@ -112,6 +117,12 @@ public class Imagery {
 		int[] Y = {yy + 2*radius - ind, yy + ind, yy + radius + ind, yy + ind, yy + 2*radius - ind};
 		g.drawPolyline(X, Y, X.length);
 		g.drawLine(xx+ind/2, yy+radius, xx+2*radius-ind/2, yy+radius);
+	}
+	public static void drawPyramid(Graphics g, int xx, int yy, int radius) {
+		int border = radius / 5;
+		int[] X = {xx + border, xx + radius, xx + 2*radius - border};
+		int[] Y = {yy + 2*radius - border, yy + border, yy + 2*radius - border};
+		g.drawPolygon(X, Y, X.length);
 	}
 	
 	

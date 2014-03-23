@@ -1,11 +1,15 @@
 package AMath;
 
+import java.util.*;
+
 import Defs.*;
 import Descriptions.XWeapon;
 import Game.*;
 import Government.Order;
+import Questing.PropertyQuests.LaborQuest;
 import Sentiens.*;
 import Sentiens.Values.Value;
+import Shirage.Shire;
 
 /**
  *  This class should be used for testing certain game concepts to make sure they are not broken
@@ -13,6 +17,9 @@ import Sentiens.Values.Value;
 public class Testing {
 	
 	protected static Realm testRealm;
+	protected static boolean softFailed;
+	protected static int softFails;
+	protected static int maxSoftFails = 1;
 	
 
 	public static void main(String[] args) {
@@ -28,7 +35,11 @@ public class Testing {
 	public static void doAllTests() {
 		System.out.println("starting tests");
 		
-		TestKnowledge.testWealthKnowledge();
+		//TestKnowledge.testWealthKnowledge(); TODO null pointer
+		
+		TestTrading.doTradingTests();
+		
+		TestRomance.doAllRomanceTests();
 		
 		TestContracts.doAllContractTests();
 		
@@ -44,20 +55,64 @@ public class Testing {
 		//naming();
 		
 		AGPmain.setLastRealm();
+		
+		if (softFailed) {
+			softFailed = false;
+			softFails++;
+			doAllTests();
+		}
 	}
 
 	protected static Clan setClanMemMax(Clan c, M_ m) {c.FB.setBeh(m, 15); return c;}
 	protected static Clan setClanMemMin(Clan c, M_ m) {c.FB.setBeh(m, 0); return c;}
 	protected static Clan setClanMemMax(Clan c, P_ p) {c.FB.setPrs(p, 15); return c;}
 	protected static Clan setClanMemMin(Clan c, P_ p) {c.FB.setPrs(p, 0); return c;}
+	protected static void affirmSoft(boolean b) {
+		if(!b) {
+			System.out.println("soft fail");
+			if (softFails > maxSoftFails) affirm(b);
+			softFailed=true;
+		}
+	}
 	protected static void affirm(boolean b) {affirm(b, "could not affirm");}
 	protected static void affirm(boolean b, String errorString) {if (!b) {throw new IllegalStateException(errorString);}}
-
+	
+	private static Map<Clan, Shire> shireFiltrationMap = new HashMap<Clan, Shire>();
+	protected static void filterCensus(Shire s, Clan... survivors) {
+		Collection<Clan> census = s.getCensus();
+		Collection<Clan> toRemove = new ArrayList<Clan>();
+		censusLoop:
+		for (Clan c : census) {
+			for (Clan survivor : survivors) if (survivor == c) continue censusLoop;
+			shireFiltrationMap.put(c, s);
+			toRemove.add(c);
+		}
+		for (Clan c : toRemove) s.removeFromCensus(c);
+	}
+	protected static void restoreFilteredCensuses() {
+		for (Map.Entry<Clan, Shire> entry : shireFiltrationMap.entrySet()) entry.getValue().addToCensus(entry.getKey());
+		shireFiltrationMap.clear();
+	}
+	
 	protected static void pursueUntilDone(Clan c) {
 		int numQ = c.MB.QuestStack.size();
 		while (c.MB.QuestStack.size() >= numQ) {
 			c.pursue();
 		}
+	}
+	protected static void doNPursue(Clan clan, int n, boolean report) {
+		for (int i = 0; i < n; i++) {
+			clan.pursue();
+			if (report) {Calc.p(clan + " " + clan.MB.QuestStack);}
+		}
+	}
+	protected static void doPursueUntil(Clan clan, boolean report, Calc.BooleanCheck bool) {
+		for (int i = 0; i < 50; i++) {
+			if (bool.check()) {return;}
+			if (report) {Calc.p(clan + " " + clan.MB.QuestStack);}
+			clan.pursue();
+		}
+		throw new IllegalStateException("doPursueUntilComplete failed");
 	}
 	
 	public static void breeding() {

@@ -11,6 +11,7 @@ import Questing.KnowledgeQuests.KnowledgeBlock;
 import Sentiens.*;
 import Sentiens.Law.Commandment;
 import Sentiens.Values.Value;
+import Shirage.Shire;
 
 public class GobLog {
 	
@@ -118,7 +119,7 @@ public class GobLog {
 			final double demandValue, final double offerValue) {
 		return new Reportable() {
 			public String out() {return eval.getNomen() + (accepted ? " accepted" : " rejected") + " conditions" + (accepted?"":"!") +
-					" D:"+Calc.roundy(demandValue,2) + ", O:"+Calc.roundy(offerValue,2);}
+					" D:"+Calc.roundy(demandValue,2) + " + O:"+Calc.roundy(offerValue,2);}
 		};
 	}
 
@@ -172,6 +173,13 @@ public class GobLog {
 			public String out() {
 				return (result > 0 ? "Impressed " + mate.getNomen() + (rival!=mate?" more than " + rival.getNomen():"") :
 					(result < 0 ? "Failed to impress " + mate.getNomen() + (rival!=mate?" more than " + rival.getNomen():"") : ""));
+			}
+		};
+	}
+	public static Reportable preach(final Clan target, final boolean success) {
+		return new Reportable() {
+			public String out() {
+				return (success ? "Succeeded in preaching" : "Failed to preach") + " values to " + target.getNomen();
 			}
 		};
 	}
@@ -231,6 +239,11 @@ public class GobLog {
 //		System.out.println(winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!");
 		return new Reportable() {
 			public String out() {return winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!";}
+		};
+	}
+	public static Reportable moveCurrentShire(final Shire origin, final Shire destination) {
+		return new Reportable() {
+			public String out() {return "Moved from " + origin.getName() + " to " + destination.getName();}
 		};
 	}
 }

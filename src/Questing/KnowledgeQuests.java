@@ -33,10 +33,10 @@ public class KnowledgeQuests {
 				public void call(Object arg) {
 					pursueKnowledge(valToK((Value) arg));
 				}
-			}, new Calc.Transformer<Value, String>() {
+			}, new Calc.Transformer<K_, String>() {
 				@Override
-				public String transform(Value v) {
-					return "Study " + v.description(Me);
+				public String transform(K_ k) {
+					return "Study " + k;
 				}
 			});
 		}
@@ -177,7 +177,8 @@ public class KnowledgeQuests {
 				Calc.ThreeObjects<Shire, Object, Integer> bestO = bestInShires(user, relK(), user.getAvgIncome(), true, true, true);
 				if (bestO != null) {
 					user.setJob((Job)bestO.get2nd());
-					// TODO emigrate to bestO.get1st();
+					Shire newShire = bestO.get1st();
+					if (newShire != user.myShire()) {user.MB.newQ(new ImmigrationQuests.EmigrateQuest(user, newShire));}
 				}
 			}
 		}
@@ -233,7 +234,9 @@ public class KnowledgeQuests {
 	@SuppressWarnings("rawtypes")
 	private static Calc.ThreeObjects<Shire, Object, Integer> bestInShires(
 			Clan clan, K_ kType, double threshold, boolean hiOrLo, boolean areaOrPath, boolean stopAtNoLibrary) {
-		final int numShiresToLookAt = clan.FB.getBeh(M_.PATIENCE) / 3;
+
+		clan.myShire().getNeighbors(true);
+		final int numShiresToLookAt = clan.FB.getBeh(M_.PATIENCE) / 3 + 2; // one for myshire
 		Shire lastShire = null; Shire bestShire = null;
 		double best = threshold; Object bestO = null; 
 		for (int i = 0; i < numShiresToLookAt; i++) {
@@ -244,7 +247,9 @@ public class KnowledgeQuests {
 			if (kb == null) {if (stopAtNoLibrary) {break;} else {continue;}}
 			int newPay = kb.getYs()[0];
 			int n = hiOrLo ? 1 : -1;
-			if (n*newPay > n*best) {best = newPay; bestO = kb.getXs()[0]; bestShire = newShire;}
+			if (n*newPay > n*best) {
+				best = newPay; bestO = kb.getXs()[0]; bestShire = newShire;
+			}
 		}
 		return bestO != null ? new Calc.ThreeObjects<Shire, Object, Integer>(bestShire, bestO, (int)best) : null;
 	}

@@ -176,23 +176,7 @@ public class TestMarkets extends Testing {
 		setClanMemMin(clan, M_.MADNESS);
 		return clan;
 	}
-	private static void doNPursue(Clan clan, int n, boolean report) {
-		for (int i = 0; i < n; i++) {
-			clan.pursue();
-			if (report) {Calc.p(clan + " " + clan.MB.QuestStack);}
-		}
-	}
-	private static void doPursueUntil(Clan clan, boolean report, Calc.BooleanCheck bool) {
-		if (!clan.MB.QuestStack.isEmpty() && !(clan.MB.QuestStack.peek() instanceof LaborQuest)) {
-			throw new IllegalStateException("labor initiation failure");
-		}
-		for (int i = 0; i < 50; i++) {
-			if (bool.check()) {return;}
-			if (report) {Calc.p(clan + " " + clan.MB.QuestStack);}
-			clan.pursue();
-		}
-		throw new IllegalStateException("doPursueUntilComplete failed");
-	}
+
 	private static void doPursueUntilDoInputs(final Clan clan, boolean report) {
 		doPursueUntil(clan, report, new Calc.BooleanCheck() {
 			@Override

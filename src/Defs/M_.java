@@ -34,11 +34,13 @@ public enum M_ {
 	INDIVIDUALITY,
 	EMPIRICISM,
 	JOVIALITY,
+	/** smaller number means shorter temper */
 	TEMPER,   //used to decide when to explode in amygdala
 	ROMANTICNESS,
 	PROFANITY,
 	RESPENV,
 	BLOODLUST,
+	WANDERLUST,
 	MADNESS, //innovation, creativity, randomness in behavior
 	HUMILITY,
 	GREED,

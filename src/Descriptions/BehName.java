@@ -41,6 +41,7 @@ public class BehName {
 		case PROFANITY: descs = new String[] {}; break;
 		case RESPENV: descs = new String[] {"Finds nature disgusting","Avoids the wilderness","Enjoys being in the wilderness","Staunch defender of the environment"}; break;
 		case BLOODLUST: descs = new String[] {"Respects the sanctity of life","Does not like to hurt others","Fondness for cruelty and sadism","Revels in murder and bloodshed"}; break;
+		case WANDERLUST: break;
 		case MADNESS: descs = new String[] {"Unyielding adherance to reason and logic","Pragmatic and realistic","Exhibits unpredictable behavior","Completely insane"}; break;
 		case HUMILITY: descs = new String[] {}; break;
 		case GREED: descs = new String[] {}; break;
@@ -54,7 +55,7 @@ public class BehName {
 		case CONFIDENCE: descs = new String[] {"No self-confidence","Humble","Confident","Overconfident"}; break;
 		case MIERTE: descs = new String[] {"Welcomes death with open arms","Not afraid to die","Fond of living","Dreads the afterlife"}; break;
 		case OCD: descs = new String[] {"Dirty","Unwashed","Likes things to be clean and neat","Obsessive-compulsive"}; break;
-		case PROMISCUITY: descs = new String[] {"Puritanical","Prefers celibacy","Lecherous","Uncontrollable urges"}; break;
+		case PROMISCUITY: descs = new String[] {"Faithful lover","Romantic","Lecherous","Uncontrollable urges"}; break;
 		default: descs = new String[] {}; break;
 		}
 		return (grade < descs.length ? descs[grade] : "");

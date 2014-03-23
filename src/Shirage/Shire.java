@@ -176,6 +176,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 		return !(linkedPlot.isOcean() || linkedPlot.isNull());
 	}
 	public void addToCensus(Clan c) {census.add(c);}
+	public void removeFromCensus(Clan c) {census.remove(c);}
 	public int getPopsize() {return census.size();}
 	public Collection<Clan> getCensus() {return census;}
 	public Clan getCensus(int i) {return ((ArrayList<Clan>)census).get(i);}
@@ -223,15 +224,20 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public byte getGrowthT() {return growthT;}
 	
 	public Shire getSomeNeighbor() {
-		final int r = AGPmain.rand.nextInt(6);
-		switch(r) {
-		case 0: return linkedPlot.getW2().getLinkedShire();
-		case 1: return linkedPlot.getNW2().getLinkedShire();
-		case 2: return linkedPlot.getNE2().getLinkedShire();
-		case 3: return linkedPlot.getE2().getLinkedShire();
-		case 4: return linkedPlot.getSE2().getLinkedShire();
-		case 5: return linkedPlot.getSW2().getLinkedShire();
-		} return null;
+		Shire newShire = this;
+		for (int i = 0 ; i < 10; i++) {
+			final int r = AGPmain.rand.nextInt(6);
+			switch(r) {
+			case 0: newShire = linkedPlot.getW2().getLinkedShire();
+			case 1: newShire =  linkedPlot.getNW2().getLinkedShire();
+			case 2: newShire = linkedPlot.getNE2().getLinkedShire();
+			case 3: newShire = linkedPlot.getE2().getLinkedShire();
+			case 4: newShire = linkedPlot.getSE2().getLinkedShire();
+			case 5: newShire = linkedPlot.getSW2().getLinkedShire();
+			}
+			if (newShire != null) return newShire;
+		}
+		return this; // give up
 	}
 	public Shire[] getNeighbors(boolean includeSelf) {
 		linkedPlot.refreshHood2();
@@ -248,6 +254,8 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 
 	public void setGovernor(Clan clan) {this.governor = clan;}
 	
+	@Override
+	public String toString() {return getName() + " @ " + getID();}
 	
 }
 

@@ -2,6 +2,7 @@ WORKPLAN
 
 Stuff to do:
 
+BUG when recruiting your own boss, if recruitment succeeds, old boss should become minion
 BUG in breeding display offspring face... try using bald parent, i got instance where child was never bald
 Goblin Profile Select Previous Goblins
 Death, Sex, and Migration
@@ -18,7 +19,7 @@ VALUE QUEST & MINISTRY PRIORITIES
 wealth
 	self - build wealth: do trader job
 	ministry - figure out everything
-beauty (mostly done, ministry not split out properly)
+copulation (mostly done, ministry not split out properly)
 	self - fix it up, do compete4mate properly
 	ministry - fix up
 allegiance (mostly done)
@@ -30,7 +31,7 @@ expertise
 influence
 	self - recruit, propaganda
 	ministry - same
-grandeur (mostly done, depends a lot on traders)
+beauty (mostly done, depends a lot on traders)
 righteousness (half-done already)
 knowledge (all the philosophy quests...)
 	other triggers: BLAME shire -> find knowledge on better shires

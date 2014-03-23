@@ -1,14 +1,13 @@
 package Game;
-import java.applet.Applet;
 import java.util.Random;
 
 import javax.swing.*;
 
-import AMath.*;
-import GUI.GUImain;
+import AMath.Calc;
+import GUI.*;
 import Sentiens.Clan;
 
-public class AGPmain extends Applet {
+public class AGPmain {
 	private static int initpop = 10000;
 //	public static Random rand = new Random();
 	public static Random rand = new Random(0);
@@ -18,15 +17,15 @@ public class AGPmain extends Applet {
 	
 	
 	//these are for shire naming... so they dont get new names every time u reload
-	public static final int shireFPLen = 42;
-	public static final int shireLPLen = 70;
+	public static final int shireFPLen = 43;
+	public static final int shireLPLen = 73;
 	public static final int[] SR = Calc.randomOrder(shireFPLen*shireLPLen);
 	/**
 	 * @param args
 	 */
 	
-	public static boolean isGoing = true;
-	public static boolean AUTOPILOT = false;
+	public static boolean isGoing = false;
+	public static boolean AUTOPILOT = true;
 
 	public static void turnOffAutopilot() {AUTOPILOT = false;}
 	public static void turnOnAutopilot() {AUTOPILOT = true;}
@@ -54,11 +53,13 @@ public class AGPmain extends Applet {
 		//mainGUI.initializeTD(TheRealm.getShireData());
 		mainGUI.initializeGM();
 		mainGUI.initializeSM();
-		mainGUI.initializeAC(TheRealm.getClan(0));
-		Do.ShowRandomGoblin.doit();
-		Do.ShowRandomShire.doit();
+		Clan avatar = TheRealm.getClan(0);
+		mainGUI.initializeAC(avatar);
+		mainGUI.GM.loadClan(avatar);
+		AGPmain.mainGUI.SM.loadShire(avatar.myShire());
 		mainGUI.GM.setState();
 		mainGUI.SM.setState();
+		mainGUI.SM.setState("POPULATION", PopupShire.POPULATION);
 		
 
 		//TheRealm.go();
@@ -66,6 +67,7 @@ public class AGPmain extends Applet {
 		
 		long elapsedTime = System.nanoTime() - start;
 
+		System.out.println("num shires: " + TheRealm.shires.length);
 		System.out.println("Elapsedtime: " + (double)elapsedTime / 1000000000 + " seconds");
 		
 	}

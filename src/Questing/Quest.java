@@ -15,17 +15,19 @@ public abstract class Quest {
 	protected Clan Me;
 	public Quest(Clan P) {Me = P;}
 	public void pursueQuest() {
-		if (!AGPmain.AUTOPILOT && Me == avatar()) {avatarPursue();}
+		if (!AGPmain.AUTOPILOT && Me == avatar()) {
+			avatarPursue();
+		}
 		else {pursue();}
 	}
 	public abstract void pursue();
 	public void avatarPursue() {pursue();}  //default leaves it to AI
 
 	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
-	protected void success(Stressor.Causable relief) {Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));   success();}
+	protected void success(Stressor.Causable relief) {success(); Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));}
 	protected void success(Stressor.Causable... reliefs) {failure(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
 	protected void finish() {Me.MB.finishQ();}
-	protected void failure(Stressor.Causable blamee) {Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));   finish();}
+	protected void failure(Stressor.Causable blamee) {finish(); Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));} // must finish first in case stressor adds new quest
 	protected void failure(Stressor.Causable... blamees) {failure(blamees[AGPmain.rand.nextInt(blamees.length)]);}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
 	public String shortName() {return description();}
@@ -39,14 +41,18 @@ public abstract class Quest {
 		
 	public static class DefaultQuest extends PatronedQuest {
 		public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefaultQuest.class) {public Quest createFor(Clan c, Clan p) {return new DefaultQuest(c);}};}
-		
+		private boolean doForever = false;
 		public DefaultQuest(Clan P) {super(P);}
+		public DefaultQuest(Clan P, boolean isTest) {super(P); doForever = isTest;}
 		@Override
-		public void pursue() {Me.addReport(GobLog.idle()); Me.MB.finishQ();}
+		public void pursue() {Me.addReport(GobLog.idle()); if (!doForever) Me.MB.finishQ();}
 		@Override
 		public String description() {return "Default Quest";}
 	}
-	public static abstract class PatronedQuest extends Quest {
+	public static interface PatronedQuestInterface {
+		public Clan getPatron();
+	}
+	public static abstract class PatronedQuest extends Quest implements PatronedQuestInterface {
 		protected Clan patron;
 		public PatronedQuest(Clan P) {this(P, P);}
 		public PatronedQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
@@ -55,6 +61,8 @@ public abstract class Quest {
 			// TODO get paid by patron!!!
 			super.pursueQuest();
 		}
+		@Override
+		public Clan getPatron() {return patron;}
 	}
 	public static abstract class TargetQuest extends Quest {
 		protected Clan target;

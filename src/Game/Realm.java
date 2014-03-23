@@ -8,9 +8,9 @@ import Sentiens.Values.Value;
 import Shirage.*;
 
 public class Realm extends Thread {
-	int shiresX;
-	int shiresY;
-	int startPop;
+	protected int shiresX;
+	protected int shiresY;
+	protected int startPop;
 	protected Shire[] shires;
 	private Clan[] population;
 	private List<Clan> waitingForImmigration = new ArrayList<Clan>();
@@ -104,6 +104,11 @@ public class Realm extends Thread {
 	public void setNewImmigrations() {
 		for (Clan clan : waitingForImmigration) {
 			//TODO add to shire, remove from old shire
+			final Shire oldShire = clan.myShire();
+			final Shire newShire = clan.currentShire();
+			clan.setHomeShire(newShire);
+			oldShire.removeFromCensus(clan);
+			newShire.addToCensus(clan);
 		}
 		waitingForImmigration.clear();
 	}

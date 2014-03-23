@@ -33,13 +33,13 @@ public class VarGetter implements Defs {
 	private static final int LTAVG = 7;
 	//clan vars
 	public static final int CLANNAME = 0;
-	private static final int CLANJOB = 1;
-	private static final int CLANQUEST = 2;
-	private static final int SHIRENAME = 3;
-	private static final int CLANORDER = 4;
-	private static final int CLANASPIRATION = 5;
-	private static final int CLANBOSS = 6;
-	private static final int CLANCREED = 7;
+	public static final int CLANJOB = 1;
+	public static final int CLANQUEST = 2;
+	public static final int SHIRENAME = 3;
+	public static final int CLANORDER = 4;
+	public static final int CLANASPIRATION = 5;
+	public static final int CLANBOSS = 6;
+	public static final int CLANCREED = 7;
 	
 	
 	private String varName;
@@ -57,7 +57,7 @@ public class VarGetter implements Defs {
 		all[k++] = new VarGetter("Location", CLANBASIC, SHIRENAME);
 		all[k++] = new VarGetter("Order", CLANBASIC, CLANORDER);
 		all[k++] = new VarGetter("Creed", CLANBASIC, CLANCREED);
-		all[k++] = new VarGetter("Ruler", CLANBASIC, CLANBOSS);
+		all[k++] = new VarGetter("Liege", CLANBASIC, CLANBOSS);
 		all[k++] = new VarGetter("Aspiration", CLANBASIC, CLANASPIRATION);
 		all[k++] = new VarGetter("1stValue", CLANRANKSANCS, 0);
 		all[k++] = new VarGetter("2ndValue", CLANRANKSANCS, 1);
@@ -132,11 +132,11 @@ public class VarGetter implements Defs {
 			switch(var) {
 			case CLANNAME: return dude.getNomen();
 			case CLANJOB: return dude.getJob().getDesc(dude);
-			case CLANBOSS: return dude.getBoss().getNomen();
+			case CLANBOSS: Clan boss = dude.getBoss(); return boss == dude ? "none" : boss.getNomen();
 			case CLANCREED: return dude.FB.getDeusName();
 			case CLANASPIRATION: return dude.getAspiration().getDesc();
-			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "None" : dude.MB.QuestStack.peek().shortName());
-			case CLANORDER: return (dude.myOrder() == null ? "None" : dude.myOrder().getFollowerName());
+			case CLANQUEST: return (dude.MB.QuestStack.empty() ? "none" : dude.MB.QuestStack.peek().shortName());
+			case CLANORDER: return (dude.myOrder() == null ? "none" : dude.myOrder().getFollowerName());
 			case SHIRENAME: return dude.myShire().getName();
 			}
 		case CLANRANKSANCS: return dude.FB.valueInPriority(var).toString();

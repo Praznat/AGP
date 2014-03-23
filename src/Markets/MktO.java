@@ -1,16 +1,13 @@
 package Markets;
 
 
-import Questing.*;
-import Questing.FaithQuests.ContactQuest;
-import Questing.PropertyQuests.LaborQuest;
-import Questing.SplendorQuests.UpgradeDomicileQuest;
-import Sentiens.Clan;
-import Shirage.Shire;
 import AMath.Calc;
 import Defs.M_;
 import Descriptions.*;
 import Game.*;
+import Questing.*;
+import Sentiens.Clan;
+import Shirage.Shire;
 
 public class MktO extends MktAbstract {
 	//this is for LIQUID NAMES i.e. not ones that are kept in private inv
@@ -91,12 +88,14 @@ public class MktO extends MktAbstract {
 	public int sellablePX(Clan seller) {
 		return estFairOffer(seller);
 	}
-
+	public int riskySellPX(Clan clan) {
+		double r = bidlen == 0 ? (clan.FB.getBeh(M_.RISKPREMIUM)+1) : 1;
+		return (int) Math.round(estFairOffer(clan) / r);
+	}
 	public void buyFair(Clan buyer) {
 		int px = Math.min(estFairBid(buyer), buyer.getAssets(Defs.millet));
 		addReport(buyer.getNomen() + " tries to buy " + Naming.goodName(g) + " at fair price of " + px);
-		if(px >= bestOffer()) {liftOffer(buyer);}
-		else {placeBid(buyer, px);}
+		placeBid(buyer, px);
 	}
 	public void sellFair(Clan seller) {
 		int px = estFairOffer(seller);
@@ -173,7 +172,7 @@ public class MktO extends MktAbstract {
 				if (accountForGood(q, n)) {return;}
 			}
 		}
-		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not laborquest
+		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not GoodsAcquirable quest
 	}
 	private boolean accountForGood(Quest q, int n) {
 		if (GoodsAcquirable.class.isAssignableFrom(q.getClass())) {((GoodsAcquirable) q).alterG(g, n); return true;}
@@ -226,7 +225,8 @@ public class MktO extends MktAbstract {
 		int bb = bestBid();
 		if (bb == NOBID || bb == NOASK) {return NOBID;}
 		if(bb < MaxPX) {return Calc.AtoBbyRatio(bb, MaxPX, fear, 15);}
-		else {return Calc.AtoBbyRatio(MaxPX, bb, fear, 15);}
+		else return bb;
+		//else {return Calc.AtoBbyRatio(MaxPX, bb, fear, 15);}
 		//return Math.max(MaxPX, bestBid());
 	}
 	
@@ -295,6 +295,7 @@ public class MktO extends MktAbstract {
 	}
 
 	public void placeBid(Clan doer, int px){
+		if(px >= bestOffer()) {liftOffer(doer); return;}
 		if(px<0){
 			addReport(Math.min(estFairBid(doer), doer.getAssets(Defs.millet)) + " negative bid placed");
 			throw new IllegalStateException();

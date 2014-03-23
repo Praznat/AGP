@@ -22,12 +22,16 @@ public class Contract {   // AND/OR combination of Terms??
 	private List<DealTerm> demands = new ArrayList<DealTerm>();
 	private Clan evaluator, proposer;
 	private boolean accepted;
+	private double demandValue;
+	private double offerValue;
 	
 	public static Contract getNewContract(Clan evaluator, Clan proposer) {
 		theContract.evaluator = evaluator;
 		theContract.proposer = proposer;
 		theContract.offers.clear();
 		theContract.demands.clear();
+		theContract.offerValue = 0;
+		theContract.demandValue = 0;
 		theContract.accepted = false;
 		return theContract;
 	}
@@ -44,13 +48,18 @@ public class Contract {   // AND/OR combination of Terms??
 		return accepted;
 	}
 
-	private double getTermValue(Collection<DealTerm> terms) {
-		double termValue = 0;
-		for (DealTerm dt : terms) {termValue += dt.getEvaluation();}
-		return termValue;
+	public double getPreCalcedDemandValue() {return demandValue;}
+	public double getPreCalcedOfferValue() {return offerValue;}
+	public double getDemandValue() {
+		demandValue = 0;
+		for (DealTerm dt : demands) {demandValue += dt.getEvaluation();}
+		return demandValue;
 	}
-	public double getDemandValue() {return getTermValue(demands);}
-	public double getOfferValue() {return getTermValue(offers);}
+	public double getOfferValue() {
+		offerValue = 0;
+		for (DealTerm dt : offers) {offerValue += dt.getEvaluation();}
+		return offerValue;
+	}
 	
 	private void avatarChooseAcceptable(boolean aiWouldAccept) {
 		String prompt = "";
@@ -167,29 +176,29 @@ public class Contract {   // AND/OR combination of Terms??
 	protected class ThreatenPropertyTerm extends ThreatTerm { // steal ok, kill is sin
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.BEAUTY);
 		}
 	}
 	public void threatenLife() {offers.add(new ThreatenLifeTerm());}
 	protected class ThreatenLifeTerm extends ThreatTerm { // steal is sin, kill ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.BEAUTY, Values.HARMONY) +
-					evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR) * (100 - evaluator.FB.getSancPct(Values.LEGACY));
+			return evaluator.FB.sumWeightOfValues(Values.COPULATION, Values.HARMONY) +
+					evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.BEAUTY) * (100 - evaluator.FB.getSancPct(Values.LEGACY));
 		}
 	}
 	public void threatenLifeAndProperty() {offers.add(new ThreatenTotalSubversionTerm());}
 	protected class ThreatenTotalSubversionTerm extends ThreatTerm { // steal ok, kill ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR, Values.BEAUTY, Values.HARMONY);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.BEAUTY, Values.COPULATION, Values.HARMONY);
 		}
 	}
 	public void threatenLineage() {offers.add(new ThreatenTotalAnnihilationTerm());}
 	protected class ThreatenTotalAnnihilationTerm extends ThreatTerm { // steal ok, kill ok, sever lineage ok
 		@Override
 		protected int wgtOfValsToLose() {
-			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.GRANDEUR, Values.BEAUTY, Values.HARMONY, Values.LEGACY);
+			return evaluator.FB.sumWeightOfValues(Values.WEALTH, Values.BEAUTY, Values.COPULATION, Values.HARMONY, Values.LEGACY);
 		}
 	}
 }

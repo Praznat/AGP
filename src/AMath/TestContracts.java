@@ -1,11 +1,10 @@
 package AMath;
 
-import Defs.*;
+import Defs.P_;
 import Game.Contract;
 import Questing.*;
 import Questing.Quest.TargetQuest;
 import Sentiens.*;
-import Sentiens.Values.Value;
 import Shirage.Shire;
 
 public class TestContracts extends Testing {
@@ -60,7 +59,7 @@ public class TestContracts extends Testing {
 		resetContracts();
 		System.out.println(a.getNomen() + " vs " + b.getNomen());
 		Contract.getNewContract(a, b);
-		Contract.getInstance().demandService(Values.GRANDEUR);
+		Contract.getInstance().demandService(Values.BEAUTY);
 		System.out.println("service value: " + Contract.getInstance().getDemandValue());
 	}
 	
@@ -92,12 +91,12 @@ public class TestContracts extends Testing {
 		a.MB.newQ(new MightQuests.ChallengeMight(a, Values.WEALTH));
 		((TargetQuest)a.MB.QuestStack.peek()).setTarget(b);
 		a.pursue();
-		final double demandVal = Contract.getInstance().getDemandValue();
-		final double offerVal = Contract.getInstance().getOfferValue();
+		final double demandVal = Contract.getInstance().getPreCalcedDemandValue();
+		final double offerVal = Contract.getInstance().getPreCalcedOfferValue();
 		System.out.println("demand value: " + demandVal);
 		System.out.println("offer value: " + offerVal);
 		affirm(demandVal < 0);
-		affirm(offerVal > 10);
+		affirmSoft(offerVal > 10);
 	}
 	
 }

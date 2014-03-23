@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import AMath.Calc;
-import Defs.F_;
+import Defs.*;
 import Game.AGPmain;
 import Game.Defs;
 import Sentiens.Clan;
@@ -88,7 +88,7 @@ public class Face extends JPanel {
 	public FRelation EARH, EARW, EART, EARD;
 	public FRelation SKINR, SKING, SKINB;
 	public FRelation HAIRL, HAIRC, HAIRW, HAIRR, HAIRG, HAIRB, HAIRX, HAIRS;
-	protected int EARMINWID, NOSEMINWID, MAXMOUTHOPEN;
+	protected int EARMINWID, NOSEMINWID, NOSEMAXSLANT, MAXMOUTHOPEN;
 	protected double EARMINT;
 	
 
@@ -123,6 +123,12 @@ public class Face extends JPanel {
 		partez[NASO].megafix();
 		g.setColor(Color.GREEN);
 		g.fillOval(msplc[0]-1, msplc[1]-1, 3, 3);
+		
+		g.setColor(Color.red);
+		for (Parte part : partez) {
+			if (part.temp != null) g.fillOval(part.temp[0], part.temp[1], 6, 6);
+		}
+		
 		//if (getWidth() < w*3/4) {offscreen = ImageReader.blurImage(offscreen, 0, 15);}
 		offscreen = offscreen.getSubimage(x,y,w,h);
 		repaint();
@@ -158,6 +164,7 @@ public class Face extends JPanel {
 		EARMINT *= factor;
 		EARMINWID *= factor;
 		NOSEMINWID *= factor;
+		NOSEMAXSLANT *= factor;
 		MAXMOUTHOPEN *= factor;
 		ringlen *= factor;
 		ringwid *= factor;
@@ -179,7 +186,7 @@ public class Face extends JPanel {
 		MOUTHBX = new FRelation(I, (F_.MOUTHBX), 0, 20);
 		MOUTHBY = new FRelation(I, (F_.MOUTHBY), 4, 20);
 		MOUTHP = new FRelation(I, (F_.MOUTHP), 0, 15);
-		MOUTHC = new FRelation(I, (F_.MOUTHC), -50, 120);
+		MOUTHC = new FRelation(I, (F_.MOUTHC), -30, 50);
 		MOUTHLH = new FRelation(I, (F_.MOUTHLH), 2, 10);
 		MOUTHLW = new FRelation(I, (F_.MOUTHLW), 10, 60);
 		MOUTHJH = new FRelation(I, (F_.MOUTHJH), 0, 10);
@@ -208,6 +215,7 @@ public class Face extends JPanel {
 		EARMINT = 0.2;
 		EARMINWID = 20;
 		NOSEMINWID = 8;
+		NOSEMAXSLANT = 7;
 		MAXMOUTHOPEN = 12;
 		ringlen = 14;
 		ringwid = 6;
@@ -653,7 +661,7 @@ public class Face extends JPanel {
 		protected GKata[] K;
 		protected int [] baseXY;
 		protected int selected;
-		protected int[] temp;
+		public int[] temp;
 
 		protected static final double Npointiness = 1;
 		
@@ -765,6 +773,7 @@ public class Face extends JPanel {
 		
 		public void refix() {
 			for (int i = 0; i < 3; i++) {
+				bottoms[i][0] = Math.min(bottoms[i][0], i == 2 ? tops[0][0] : bottoms[i+1][0]);
 				K[NLOWER].setPointY(Math.max(K[NLOWER].getPoint(2-i)[1], NOSEMINWID + K[NUPPER].getPoint(i)[1]), 2-i);
 			}
 			//K[NLOWER].setPointY(Math.max(2*minwid + K[NUPPER].startPoint()[1], K[NLOWER].endPoint()[1]), K[NLOWER].numPoints()-1);
@@ -852,18 +861,18 @@ public class Face extends JPanel {
 			pointiness = (double) MOUTHP.val() / 15;
 			openness = randInt(MAXMOUTHOPEN);
 			height = MOUTHLH.val();
+			width = (female ? MOUTHLW.val() * 2/3 : MOUTHLW.val());
+			jawwidth = width + (female ? MOUTHJW.val() * 2/3 : MOUTHJW.val());
+			jawheight = height + (int)(pointiness*height) + MOUTHJH.val() + cavity/2;
+			LbaseXY = new int[] {baseXY[0] - width/10 - MOUTHBX.val(), baseXY[1] + height + MOUTHBY.val()};
+			cavity = (female ? 0 : MOUTHC.val());
 			refix();
 		}
 
 		public void refix() {
-			width = (female ? MOUTHLW.val() * 2/3 : MOUTHLW.val());
-			jawwidth = width + (female ? MOUTHJW.val() * 2/3 : MOUTHJW.val());
-			LbaseXY = new int[] {baseXY[0] - width/10 - MOUTHBX.val(), baseXY[1] + height + MOUTHBY.val()};
-			cavity = (female ? 0 : MOUTHC.val());
-			jawheight = height + (int)(pointiness*height) + MOUTHJH.val() + cavity/2;
 			openness = Math.max(0, Math.min(openness, 12));
 			pointiness = Math.max(0, Math.min(pointiness, 1));
-			cavity = Math.min(Math.max(cavity, -50), 150);
+			cavity = Math.min(Math.max(cavity, -30), 50);
 			height = Math.min(Math.max(height, (int)(resize*2)), (int) (resize*10));
 			width = Math.min(Math.max(width, 3*height/2), 60);
 			jawheight = Math.max(10, Math.max(jawheight, height + (int)(pointiness*height) + cavity/4));
@@ -989,10 +998,11 @@ public class Face extends JPanel {
 			g.drawPolyline(K[MIDDLE].getX(), K[MIDDLE].getY(), K[MIDDLE].length());
 			g.setColor(female?scol:dcol);
 			paintNotchesL(g, K[MIDDLE], false);
+			
 		}
 		
 		public int[][] latchPoints() {
-			return new int[][] {LbaseXY, K[UPPER].endPoint(), K[JAW].getPoint(1), K[JAW].endPoint(), K[MIDDLE].getPoint(2)};
+			return new int[][] {LbaseXY, K[UPPER].endPoint(), K[JAW].center(), K[JAW].endPoint(), K[MIDDLE].getPoint(2)};
 		}
 		public double[] nearestPoint(int[] xy) {
 			return closestPoint(xy, latchPoints());
@@ -1004,7 +1014,7 @@ public class Face extends JPanel {
 			switch (selected) {
 				case 0: LbaseXY[0] = temp[0] + dX; LbaseXY[1] = temp[1] + dY; break;
 				case 1: width = temp[0] - LbaseXY[0] + dX; height = temp[1] - LbaseXY[1] + dY; break;
-				case 2: pointiness = 2*((double)(temp[0] - LbaseXY[0] + (double)dX/10))/width;
+				case 2: pointiness = 2*((double)(temp[0] - LbaseXY[0] + dX))/width;
 					cavity = LbaseXY[1] + jawheight - temp[1] - dY; break;
 				case 3: jawwidth = temp[0] - LbaseXY[0] + dX; jawheight = temp[1] - LbaseXY[1] + dY; break;
 					//cavity -= Math.max(0, -cavity-jawheight);
@@ -1055,7 +1065,6 @@ public class Face extends JPanel {
 			lidheight = EYEHGT.val();
 			spread = EYESPRD.val();
 			
-			rhgt = rwid;   lhgt = lwid;
 			//rwid = (int)Math.round((double)rwid / Math.cos(Math.toRadians(rpoint)));
 			//lwid = (int)Math.round((double)lwid / Math.cos(Math.toRadians(lpoint)));
 			
@@ -1063,6 +1072,13 @@ public class Face extends JPanel {
 		}
 
 		public void refix() {
+			rwid = Math.min(Math.max(rwid, EYERW.min), EYERW.max);
+			lwid = Math.min(Math.max(lwid, EYELW.min), EYELW.max);
+			rpoint = Math.min(Math.max(rpoint, 50 - EYERP.max), 50 - EYERP.min);
+			lpoint = Math.min(Math.max(lpoint, 50 - EYELP.max), 50 - EYELP.min);
+			rhgt = rwid;   lhgt = lwid;
+			lidheight = Math.min(Math.max(EYEHGT.min, lidheight), EYEHGT.max);
+			spread = Math.min(Math.max(EYESPRD.min, spread), EYESPRD.max);
 			
 			K[RCIRCTOP] = new GArc(baseXY[0], baseXY[1], rwid, rhgt, rpoint, 180-rpoint, sharpN);
 			int[] ep = K[RCIRCTOP].getEnd();
@@ -1177,7 +1193,7 @@ public class Face extends JPanel {
 			switch (selected) {
 				case 0: rhgt = temp[1] - dY; rpoint = temp[1] + dX; break;
 				case 1: spread = (temp[0] - baseXY[0] + dX/2);
-					lidheight = (temp[1] - baseXY[1])*2 + (rhgt+lhgt)/2 - dY; break;
+					lidheight = (rhgt+lhgt)/2 - dY; break;
 				case 2: lhgt = temp[1] - dY; lpoint = temp[1] - dX; break;
 				default: break;
 			}
@@ -1251,7 +1267,7 @@ public class Face extends JPanel {
 		
 		public void paintPart(Graphics g) {
 			refix();
-			if (female) {pRing(g, (K[LOBE].startPoint()[0] + K[LOBE].endPoint()[0])/2, (K[LOBE].startPoint()[1] + K[LOBE].endPoint()[1])/2, false, ringlen, ringwid);}
+			if (female && GlobalParameters.DRAW_EARING) {pRing(g, (K[LOBE].startPoint()[0] + K[LOBE].endPoint()[0])/2, (K[LOBE].startPoint()[1] + K[LOBE].endPoint()[1])/2, false, ringlen, ringwid);}
 			GCombo shape = new GCombo(new GKata[] {K[EUPPER], K[EPOINT], K[EOUTER]});
 			g.setColor(scol);
 			g.fillPolygon(shape.getX(), shape.getY(), shape.length());
@@ -1263,7 +1279,7 @@ public class Face extends JPanel {
 			g.drawPolyline(shape.getX(), shape.getY(), shape.length());
 			g.drawPolyline(K[RIDGE].getX(), K[RIDGE].getY(), K[RIDGE].length());
 			g.drawPolyline(K[LOBE].getX(), K[LOBE].getY(), K[LOBE].length());
-			if (female) {pRing(g, (K[LOBE].startPoint()[0] + K[LOBE].endPoint()[0])/2, (K[LOBE].startPoint()[1] + K[LOBE].endPoint()[1])/2, true, ringlen, ringwid);}
+			if (female && GlobalParameters.DRAW_EARING) {pRing(g, (K[LOBE].startPoint()[0] + K[LOBE].endPoint()[0])/2, (K[LOBE].startPoint()[1] + K[LOBE].endPoint()[1])/2, true, ringlen, ringwid);}
 		}
 		
 		public int[][] latchPoints() {

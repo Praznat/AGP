@@ -27,12 +27,13 @@ public class QStack extends Stack<Quest> {
 	}
 	@Override
 	public Quest push(Quest item) {
-		if (this.elementCount >= maxCapacity) {explode();}
-		return super.push(item);
+		super.push(item);
+		if (this.elementCount >= maxCapacity) {return explode();}
+		else return item;
 	}
 	/** look at item right before latest item */
 	public Quest peekUp() {return elementAt(size() - 2);}
-	private void explode() {
+	private Quest explode() {
 		Clan clan = null;
 		@SuppressWarnings("unchecked")
 		Class<? extends Quest>[] oldQuests = new Class[maxCapacity];
@@ -42,6 +43,6 @@ public class QStack extends Stack<Quest> {
 		}
 		System.out.println(clan.getNomen() + " QUEST EXPLOSION!!! " + this);
 		this.clear();
-		super.push(new QuestRetrievalQuest(clan, oldQuests));
+		return super.push(new QuestRetrievalQuest(clan, oldQuests));
 	}
 }

@@ -2,19 +2,26 @@ package Questing;
 
 import Game.AGPmain;
 import Sentiens.Clan;
+import Shirage.Shire;
 
 public class ImmigrationQuests {
 	public static class EmigrateQuest extends Quest {
-
-		public EmigrateQuest(Clan P) {super(P);}
+		private final Shire destination;
+		
+		public EmigrateQuest(Clan P, Shire shire) {
+			super(P); destination = shire;
+		}
 
 		@Override
 		public void pursue() {
-			// TODO Auto-generated method stub
+			// TODO remove bids/offers from market
+			Shire oldShire = Me.myShire();
+			Me.setCurrentShire(destination);
 			AGPmain.TheRealm.addToWaitingForImmigration(Me); // when it happens
+			success(oldShire);
 		}
 		@Override
-		public String description() {return "Wander out in search of a better home";}
+		public String description() {return "Emigrate to " + destination.getName();}
 	}
 	public static class FleeQuest extends Quest {
 

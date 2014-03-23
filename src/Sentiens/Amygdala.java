@@ -49,6 +49,10 @@ public class Amygdala {
 		}
 		for (removeN--; removeN >= 0; removeN--) {stressors.remove(removeStressors[removeN]);}
 	}
+	public boolean containsStressor(Stressor.Causable sc) {
+		for (Stressor s : stressors) if (s.getTarget() == sc) return true;
+		return false;
+	}
 	
 	@Override
 	public String toString() {return stressors.toString();}

@@ -53,6 +53,7 @@ public class Naming implements Defs {
 		FP[39] = "Stumble";
 		FP[40] = "Jam";
 		FP[41] = "Iron";
+		FP[42] = "Spleen";
 		
 		LP[0] = "bank";
 		LP[1] = "beach";
@@ -123,7 +124,10 @@ public class Naming implements Defs {
 		LP[66] = "wood";
 		LP[67] = "worth";
 		LP[68] = "dam";
-		LP[68] = "gard";
+		LP[69] = "gard";
+		LP[70] = "crust";
+		LP[71] = "crater";
+		LP[72] = "vale";
 		//System.out.print(s  + " " + ((s / (AGPmain.shireLPLen-1)) % (AGPmain.shireFPLen-1)) + " " + (s % (AGPmain.shireLPLen-1)));
 		s = AGPmain.SR[s];
 		//System.out.print(" " + s  + " " + ((s / (AGPmain.shireLPLen-1)) % (AGPmain.shireFPLen-1)) + " " + (s % (AGPmain.shireLPLen-1)));
@@ -270,7 +274,7 @@ public class Naming implements Defs {
 		LP[3] = "Orb";
 		LP[4] = "Swords";
 		LP[5] = "Spear";
-		LP[6] = "Bovad";
+		LP[6] = "Bovid";
 		LP[7] = "Mace";
 		LP[8] = "Hammer";
 		LP[9] = "Mountains";
@@ -482,7 +486,7 @@ public class Naming implements Defs {
 			case millet : return (abbr ? "Millet" : "clump" + s + " of millet");
 			case land : return (abbr ? "Land" : "plot" + s + " of land");
 			case meat : return (abbr ? "Meat" : "glob" + s + " of meat");
-			case bovad : return (abbr ? "Bovads" : "bovad" + s);
+			case bovad : return (abbr ? "Bovids" : "bovid" + s);
 			case donkey : return (abbr ? "Donkeys" : "donkey" + s);
 			case lobodonkey : return (abbr ? "L.Donkeys" : "lobotomized donkey" + s);
 			case jewelry : return (abbr ? "Jewelry" : "silver accessor" + s);

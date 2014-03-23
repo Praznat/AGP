@@ -8,7 +8,7 @@ import Descriptions.*;
 import Descriptions.GobLog.*;
 import Game.*;
 import Government.Order;
-import Markets.MktAbstract;
+import Markets.*;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.*;
 import Questing.PropertyQuests.LaborQuest;
@@ -73,7 +73,7 @@ public class Clan implements Defs, Stressor.Causable {
 		boss = this;
 		suitor = null;
 		assets = new int[numAssets];
-		assets[millet] = 1000;
+		assets[millet] = 100;
 //		inventory = recalcInv();
 //		expTerms = new int[][] {{0}, {}, {}, {}};
 		backupJob = Job.HUNTERGATHERER;
@@ -110,8 +110,12 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getID() {return ID;}
 	public int getShireID() {return myShire().getX() + myShire().getY() * AGPmain.getShiresX();}
 	public Shire myShire() {return homeShire;}
+	public void setHomeShire(Shire s) {homeShire = s;}
 	public Shire currentShire() {return currentShire;}
-	public void setCurrentShire(Shire s) {currentShire = s;}
+	public void setCurrentShire(Shire s) {
+		goblog.addReport(GobLog.moveCurrentShire(currentShire, s));
+		currentShire = s;
+	}
 	/** market in current shire not home shire */
 	public MktAbstract myMkt(int g) {return currentShire().getMarket(g);}
 	public Library getRelevantLibrary() {return homeShire.getLibrary();}
@@ -128,6 +132,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getNumGoods() {return Goods.numGoods;}
 	public Clan getSuitor() {return suitor;}
 	public void setSuitor(Clan C) {suitor = C;}
+	public int getNumOffspring() {return numSpawns;}
 	public byte[] getNameBytes() {return name;}
 	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
 	public String getNomen() {return GobName.fullName(this);}
@@ -136,6 +141,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setJob(Job j) {backupJob = job; job = j;}
 	public Job getAspiration() {return aspiration;}
 	public void setAspiration(Job j) {aspiration = j;}
+	public Book getGoblog() {return goblog;}
 	
 	public void daily() {
 		age++;
@@ -157,6 +163,8 @@ public class Clan implements Defs, Stressor.Causable {
 		return getMillet() < (15 + FB.getBeh(M_.PARANOIA)) * DMC;
 	}
 	public void breed(Clan mate) {
+		this.setSuitor(mate);
+		mate.setSuitor(this);
 		// FIRST child
 		if (firstMateTraits == null) {
 			firstMateTraits = mate.FB.copyFs();
@@ -300,12 +308,12 @@ public class Clan implements Defs, Stressor.Causable {
 		int n = AGPmain.rand.nextInt(12);
 		switch (n) {
 		case 0: job = Job.HUNTERGATHERER; break;
-		case 1: job = Job.HUNTERGATHERER; break;
+		case 1: job = Job.TRADER; break;
 		case 2: job = Job.HERDER; break;
 		case 3: job = Job.MINER; break;
 		case 4: job = Job.MASON; break;
-		case 5: job = Job.BUILDER; break;
-//		case 6: job = Job.TRADER; break;
+		case 5: job = Job.CARPENTER; break;
+		case 6: job = Job.BUILDER; break;
 		default: job = Job.FARMER; break;
 		}
 		
@@ -333,8 +341,8 @@ public class Clan implements Defs, Stressor.Causable {
 	}
 	public long getNetAssetValue(Clan POV) {
 		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
-			int px = g != Defs.millet ? POV.myMkt(g).sellablePX(POV) : 1;
-			sum += getAssets(g) * px;
+			int px = g != Defs.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.myMkt(g).bestBid()) : 1;
+			if (px != MktO.NOASK && px != MktO.NOBID) sum += getAssets(g) * px;
 		}	return sum;
 	}
 	public int[] getAssets() {return assets;}
@@ -420,7 +428,7 @@ public class Clan implements Defs, Stressor.Causable {
 	}
     
 	public boolean iHigherPrest(P_ p, Clan other) {
-		boolean iHigherSanc = (FB.compareSanc(other) >= 0);
+		boolean iHigherSanc = (FB.compareRespect(other) >= 0);
 		if (p == P_.SANCP) {
 			return iHigherSanc;
 		}
@@ -431,8 +439,8 @@ public class Clan implements Defs, Stressor.Causable {
 	}
 	
 	public void prch(Clan patron, Clan other) {
-		int[] euR = patron.FB.getSancRanks();
-		int[] eleR = other.FB.getSancRanks();
+		int[] euR = patron.FB.getValueRanks();
+		int[] eleR = other.FB.getValueRanks();
 		int max = 0; int k = 0; int cur = 0;
 		for (int i = euR.length-1; i>=0; i--) {
 			cur = Math.abs(eleR[i] - euR[i]);

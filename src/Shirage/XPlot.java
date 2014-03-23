@@ -15,4 +15,6 @@ public class XPlot extends Plot {
 		chgW(-ev);   return ev;
 	}
 	public boolean isOcean() {return false;}
+	@Override
+	public Shire getLinkedShire() {return null;}
 }

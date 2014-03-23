@@ -61,7 +61,7 @@ public class Ideology implements Defs {
 		int mask = 0xf << ((plc%2==1)? 0 : 4);
 		return (V[plc/2] & mask) >> ((plc%2==1)? 0 : 4);
 	}
-	public int[] getSancRanks() {return sancranks;}
+	public int[] getValueRanks() {return sancranks;}
 	
 	public int getFac(F_ f) {return getVar(F(f));}
 	public void setFac(F_ f, int val) {setVar(F(f), val);}
@@ -198,19 +198,20 @@ public class Ideology implements Defs {
 		for (Value v : sancs) {if (v == A) return -1; else if (v == B) return 1;} return 0;
 	}
 
-	public int compareSanc(Clan other) { //true if eu > ele
+	/** 1 if eu > ele */
+	public int compareRespect(Clan other) {
 		int k;   int ihi;
-		for(int i = getEu().useBeh(M_.PATIENCE); i >= 0; i--) {
-			k = AGPmain.rand.nextInt(16);
-			ihi = (int) Math.signum(sancs[k].compare(getEu(), getEu(), other));
+		for(int i = getEu().useBeh(M_.PATIENCE) / 3; i >= 0; i--) {
+			k = AGPmain.rand.nextInt(NUMVALS);
+			ihi = (int) Math.signum(valueInPriority(k).compare(getEu(), getEu(), other));
 			switch (ihi) {
-				case 1: return 1;
-				case -1: return -1;
+				case -1: case 1: return ihi;
 				default: break;
 			}
 		}
 		return 0;
 	}
+	/** cognitive dissonance */
 	public void reflect(Value sanc, Clan other) {
 		int euvsele = (int) Math.signum(sanc.compare(getEu(), getEu(), other));
 		switch (euvsele) {
@@ -310,7 +311,34 @@ public class Ideology implements Defs {
 	public void setCreed(int creed) {
 		this.creed = creed;
 	}
-	
+
+	/** direction 1 means glorify, -1 means denounce */
+	private static void preach(Clan listener, Value v, int direction) {
+		if (direction == 1) {listener.FB.upSanc(v);}
+		else if (direction == -1) {listener.FB.downSanc(v);}
+		else {throw new IllegalStateException("Cant preach that way");}
+	}
+	private static boolean preach(Clan listener, Ideology ideology) {
+		final Value[] ideologyVals = ideology.getValues();
+		final Value[] listenerVals = listener.FB.getValues();
+		final int[] ideologyValRanks = ideology.getValueRanks();
+		final int[] listenerValRanks = listener.FB.getValueRanks();
+		int maxdiff = 0; int bestI = -1;
+		for (int i = 0; i < ideologyValRanks.length; i++) {
+			final int diff = Math.abs(ideologyValRanks[i] - listenerValRanks[i]);
+			if (diff > maxdiff) {maxdiff = diff; bestI = i;}
+		}
+		if (bestI < 0) {return false;}
+		final Value valToPreach = ideologyVals[ideologyValRanks[bestI]];
+		if (valToPreach != listenerVals[listenerValRanks[bestI]]) {throw new IllegalStateException("Shitty sanc arrays");}
+		final int direction = - (int) Math.signum(ideologyValRanks[bestI] - listenerValRanks[bestI]);
+		preach(listener, valToPreach, direction);
+		return true;
+	}
+	public static boolean attemptPreach(Clan preacher, Clan listener, Ideology ideology) {
+		if (listener.FB.compareRespect(preacher) > 0) {return preach(listener, ideology);}
+		else {return false;}
+	}
 	
 }
 

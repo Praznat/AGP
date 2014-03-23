@@ -180,6 +180,7 @@ public class MightQuests {
 				contract().demandAllegiance();
 			}
 			else if (v == Values.RIGHTEOUSNESS) {contract().demandRepentance();}
+			// TODO beauty should be give up mate if mate is desired
 			else if (v == Values.MIGHT) {
 				// TODO just fight
 			}

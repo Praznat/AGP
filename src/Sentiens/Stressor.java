@@ -45,21 +45,20 @@ public class Stressor {
 			else {}
 		}
 		else if (target instanceof Shire) {
-			success = true;
-			responder.MB.newQ(new ImmigrationQuests.EmigrateQuest(responder));
+			Shire newShire = responder.myShire().getSomeNeighbor();
+			if (responder.myShire() != newShire) {responder.MB.newQ(new ImmigrationQuests.EmigrateQuest(responder, newShire));}
 		}
 		else if (target instanceof Value) {
 
 		}
 		else if (target instanceof Job) {
 			// TODO find new job
-			responder.myShire().getNeighbors(true);
 			final KnowledgeBlock kb = responder.getRelevantLibrary().findKnowledge(K_.JOBS);
 			if (kb != null) kb.useKnowledge(responder);
 		}
 		return success;
 	}
-
+	
 	public boolean sameAndLessThan(Clan doer, Stressor other) {
 		return (other.getTarget() == target && getLevel(doer) <= other.getLevel(doer));
 	}

@@ -67,6 +67,7 @@ public class AconSelector extends JPanel implements MouseListener {
     		if (type == parent.INFO[2]) {Imagery.drawStar(g, x, y, radius); return;}
     		if (type == parent.INFO[3]) {Imagery.drawMemSign(g, x, y, radius); return;}
     		if (type == parent.INFO[4]) {Imagery.drawFlag(g, x, y, radius); return;}
+    		if (type == parent.INFO[5]) {Imagery.drawPyramid(g, x, y, radius); return;}
     	}
     	else {
     		if (type == parent.INFO[0]) {Imagery.drawCTreeFromTopRight(g, x, y, radius*2); return;}

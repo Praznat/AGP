@@ -96,7 +96,7 @@ public class Values implements Defs {
 		protected abstract int value(Clan POV, Clan clan);
 	}
 
-	public static final Value MIGHT = new ValuatableValue("Power - Might", Q_.PICKFIGHT, Job.GENERAL,
+	public static final Value MIGHT = new ValuatableValue("Might", Q_.PICKFIGHT, Job.GENERAL,
 			new P_[] {P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
@@ -104,14 +104,14 @@ public class Values implements Defs {
 		}    // TODO this should be about empirical fight record
 	};
 
-	public static final Value WEALTH = new ValuatableValue("Power - Wealth", Q_.BUILDWEALTH, Job.TREASURER,
+	public static final Value WEALTH = new ValuatableValue("Wealth", Q_.BUILDWEALTH, Job.TREASURER,
 			new P_[] {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.LOBOTOMY}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			return (int) Math.min(clan.getNetAssetValue(POV), Integer.MAX_VALUE/2);
 		}
 	};
-	public static final Value INFLUENCE = new ValuatableValue("Power - Influence", Q_.BUILDPOPULARITY, Job.VIZIER, new P_[] {}) {
+	public static final Value INFLUENCE = new ValuatableValue("Influence", Q_.BUILDPOPULARITY, Job.VIZIER, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			//minus my minions if hes my boss.. so i can judge myself against my bosses
@@ -121,7 +121,7 @@ public class Values implements Defs {
 
 	//TODO VIRTUE "Honor - Virtue"
 
-	public static final Value RIGHTEOUSNESS = new ValuatableValue("Honor - Righteousness", Q_.CREEDQUEST, Job.JUDGE, new P_[] {}) {
+	public static final Value RIGHTEOUSNESS = new ValuatableValue("Righteousness", Q_.CREEDQUEST, Job.JUDGE, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -143,7 +143,7 @@ public class Values implements Defs {
 	
 	public static final Value ALLEGIANCE = new ValuatableValue("", Q_.LOYALTYQUEST, Job.NOBLE, new P_[] {}) {
 		@Override
-		public String description(Clan POV) {return "Honor - Allegiance" + (POV != null && POV != POV.getBoss() ? " to " + POV.getBoss() : "");}
+		public String description(Clan POV) {return "Allegiance" + (POV != null && POV != POV.getBoss() ? " to " + POV.getBoss() : "");}
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -156,21 +156,15 @@ public class Values implements Defs {
 		}
 	};
 	
-	public static final Value LEGACY = new ValuatableValue("Honor - Legacy", Q_.LEGACYQUEST, Job.HISTORIAN, new P_[] {}) {
+	public static final Value LEGACY = new ValuatableValue("Legacy", Q_.LEGACYQUEST, Job.HISTORIAN, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			return clan.LB.getLegacyFor(POV.FB.randomValueInPriority());
 		}
 	};
 	
-	public static final Value GRANDEUR = new ValuatableValue("Luxury - Comfort", Q_.SPLENDORQUEST, Job.ARCHITECT,
+	public static final Value BEAUTY = new ValuatableValue("Beauty", Q_.SPLENDORQUEST, Job.ARCHITECT,
 			new P_[] {P_.MASONRY, P_.ARTISTRY}) {
-		@Override
-		protected int value(Clan POV, Clan clan) {
-			return clan.getSplendor();  //should be MONUMENTS
-		}
-	};
-	public static final Value BEAUTY = new ValuatableValue("Luxury - Beauty", Q_.BREED, Job.COURTESAN, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			int result = clan.FB.getFac(F_.NOSELX) + clan.FB.getFac(F_.NOSERX);
@@ -179,10 +173,17 @@ public class Values implements Defs {
 			result -= Math.abs(25 - clan.getAge()); // age
 			result += Math.abs(clan.FB.getBeh(M_.OCD) - clan.FB.getFac(F_.HAIRL));
 			result += Math.min(15, clan.getAssets(Defs.jewelry)); // no need for more than 15 jewelry
+			result += 10 * clan.getSplendor();
 			return result;
 		}
 	};
-	public static final Value HARMONY = new ValuatableValue("Luxury - Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
+	public static final Value COPULATION = new ValuatableValue("Copulation", Q_.BREED, Job.COURTESAN, new P_[] {}) {
+		@Override
+		protected int value(Clan POV, Clan clan) {
+			return clan.numSpawns;
+		}
+	};
+	public static final Value HARMONY = new ValuatableValue("Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
@@ -192,21 +193,21 @@ public class Values implements Defs {
 	};
 	
 	
-	public static final Value EXPERTISE = new ValuatableValue("Mind - Expertise", Q_.TRAIN, Job.TUTOR, new P_[] {}) {
+	public static final Value EXPERTISE = new ValuatableValue("Expertise", Q_.TRAIN, Job.TUTOR, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {
 			double sum = 0;   for (P_ s : ExpertiseQuests.ALLSKILLS) {sum += clan.FB.getPrs(s);}
 			return (int) Math.round(sum / ExpertiseQuests.ALLSKILLS.length);
 		}
 	};
-	public static final Value KNOWLEDGE = new ValuatableValue("Mind - Knowledge", Q_.KNOWLEDGEQUEST, Job.PHILOSOPHER, new P_[] {P_.ARITHMETIC}) {
+	public static final Value KNOWLEDGE = new ValuatableValue("Knowledge", Q_.KNOWLEDGEQUEST, Job.PHILOSOPHER, new P_[] {P_.ARITHMETIC}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			//TODO
-			return 0;
+			return clan.getKnowledgeAttribution();
 		}
 	};
-	public static final Value SPIRITUALITY = new ValuatableValue("Mind - Spirituality", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
+	public static final Value SPIRITUALITY = new ValuatableValue("Spirituality", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			return clan.getHoliness();
@@ -221,7 +222,7 @@ public class Values implements Defs {
 	
 
 	private static final Value[] AllValues = new Value[] {
-		WEALTH, INFLUENCE, MIGHT, GRANDEUR, HARMONY, BEAUTY,
+		WEALTH, INFLUENCE, MIGHT, BEAUTY, HARMONY, COPULATION,
 		ALLEGIANCE, RIGHTEOUSNESS, LEGACY, KNOWLEDGE, SPIRITUALITY, EXPERTISE
 	};
 	private static Value[] filterTodos(Value[] varray) {

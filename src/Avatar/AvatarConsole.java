@@ -153,7 +153,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 		}
 		else if ("Play".equals(e.getActionCommand())) {
 			if (AGPmain.TheRealm.getDay() == 0) {AGPmain.TheRealm.start();}
-			else {AGPmain.play();}
+			AGPmain.play();
 		}
 		else if ("Pause".equals(e.getActionCommand())) {
 			AGPmain.pause();

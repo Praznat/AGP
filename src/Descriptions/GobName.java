@@ -214,7 +214,7 @@ public class GobName {
 	private static String fullName(Clan goblin, String N, int i) {
 		if (i >= 5) {return N;}
 		Value V = goblin.FB.getValue(i);
-		if (V == Values.ALLEGIANCE || V == Values.WEALTH || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.GRANDEUR) {
+		if (V == Values.ALLEGIANCE || V == Values.WEALTH || V == Values.MIGHT || V == Values.INFLUENCE || V == Values.BEAUTY) {
 			String title = (goblin.myOrder() == null ? "" : goblin.myOrder().getTitle(goblin));
 			if (title != "") {
 				N = title + " " + N;
@@ -230,18 +230,17 @@ public class GobName {
 			}
 			else {return fullName(goblin, N, i+1);}
 		}
-		if (V == Values.HARMONY && goblin.getAssets(Defs.meat) > 0) {return N + " the Glutton";}
-		if (V == Values.EXPERTISE) {return N + " the " + goblin.getJob().getDesc(goblin);}
 		
 		return fullName(goblin, N, i+1);
 	}
 	
 	private static String tyrantWord(int i, boolean bloody) {
-		switch (i % 5) {
+		switch (i % 6) {
 		case 0: return (bloody ? "Merciless" : "Conqueror");
 		case 1: return (bloody ? "Cruel" : "Unstoppable");
 		case 2: return (bloody ? "Tyrant" : "Mountain");
 		case 3: return (bloody ? "Terrible" : "Mighty");
+		case 4: return (bloody ? "Wicked" : "Conqueror");
 		default: return (bloody ? "Bloodthirsty" : "Vanquisher");
 		}
 	}

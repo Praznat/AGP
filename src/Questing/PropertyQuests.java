@@ -36,7 +36,7 @@ public class PropertyQuests {
 			else if (j == Job.TRADER) {Me.MB.newQ(new TradingQuest(Me));}
 			else {Me.MB.newQ(new LaborQuest(Me));}
 		}
-		public String description() {return "Build Wealth";}
+		public String description() {return "Build Wealth" + (patron != Me ? " for " + patron.getNomen() : "");}
 	}
 	
 	
@@ -229,25 +229,66 @@ public class PropertyQuests {
 	
 	
 	
-
+	/**
+	 * trader initiates quest choosing a random route to go on and number of rounds to go on that route.
+	 * at movement in the route, trader chooses best good and places bid at Shire
+	 * which when hit will trigger a sell in the Shire with best seen value for good
+	 * @author alexanderbraylan
+	 *
+	 */
 	public static class TradingQuest extends Quest implements GoodsAcquirable {
-		public TradingQuest(Clan P) {super(P);}
+		Shire[] route;
+		int plcInRoute = 0;
+		Trade favTrade = Job.TradeC; // TODO
+		int[] sellPlcs = new int[Defs.numGoods];
+		int numRounds;
+		
+		public TradingQuest(Clan P) {
+			super(P);
+			route = new Shire[2 + P.FB.getBeh(M_.WANDERLUST) / 4];
+			route[0] = Me.myShire();
+			for (int i = 1; i < route.length; i++) route[i] = route[i-1].getSomeNeighbor();
+			for (int i = 0; i < sellPlcs.length; i++) sellPlcs[i] = Defs.E;
+			numRounds = 3 + Me.FB.getBeh(M_.PATIENCE) / 5;
+		}
 
 		@Override
 		public void pursue() {
-			// TODO Auto-generated method stub
-			final double expProfitBenchmark = Me.getAvgIncome(); // trade must be higher than this otherwise find random trade
+			Shire lastShire = route[plcInRoute < route.length ? plcInRoute : (route.length - 2 - plcInRoute % route.length)];
+			plcInRoute++;
+			int newshireplc = plcInRoute < route.length ? plcInRoute : (route.length - 2 - plcInRoute % route.length);
+			Shire newShire = route[newshireplc];
+			int[] prospects = scoutShire(lastShire, newShire, favTrade);
+			int g = prospects[0]; int buyPx = prospects[1]; int sellPx = prospects[2];
+			if (sellPx > 0) {
+				((MktO)lastShire.getMarket(g)).placeBid(Me, buyPx);
+				if (sellPlcs[g] == Defs.E || sellPx >= ((MktO)route[sellPlcs[g]].getMarket(g)).riskySellPX(Me)) {
+					sellPlcs[g] = newshireplc;
+				}
+			}
+			Me.setCurrentShire(newShire);
+			if (plcInRoute == route.length * 2 - 2) {finishUp(); return;}
 		}
 		
-		private int[] scoutShire(Shire buyShire, Trade trade) {
-			int bestG = -1; double bestTrade = 0;
+		private void finishUp() {
+			plcInRoute = 0;
+			if(--numRounds == 0) success();
+		}
+		
+		/** find best good, its cost at buyShire and value at sellShire */
+		private int[] scoutShire(Shire buyShire, Shire sellShire, Trade trade) {
+			int bestG = -1; double bestTrade = 0; double bestCost = 0; double bestValue = 0;
 			for (int g : trade.getGoods()) {
-				final int cost = buyShire.getMarket(g).buyablePX(Me);
-				final int value = Me.myMkt(g).sellablePX(Me);
+				final int value = ((MktO)sellShire.getMarket(g)).riskySellPX(Me);
+				int cost = buyShire.getMarket(g).buyablePX(Me);
+				// offer to buy to make money at cost = between 1/3 and 2/3 of value)
+				if (cost == MktO.NOASK) cost = 2 * value / (3 + Me.FB.getBeh(M_.BIDASKSPRD) / 5);
+				// calc profit before you limit cost to money you own
 				final double expProfit = Me.confuse((double)value - (double)cost);
-				if (expProfit >= bestTrade) {bestG = g; bestTrade = expProfit;}
+				cost = Math.min(cost, Me.getMillet());
+				if (expProfit >= bestTrade) {bestG = g; bestTrade = expProfit; bestCost = cost; bestValue = value;}
 			}
-			return new int[] {(int)Math.round(bestTrade), bestG};
+			return new int[] {bestG, (int)Math.round(bestCost), (int)Math.round(bestValue)};
 		}
 
 		@Override
@@ -255,7 +296,9 @@ public class PropertyQuests {
 
 		@Override
 		public void alterG(int good, int num) {
-			// TODO Auto-generated method stub
+			int p = sellPlcs[good];
+			Shire sellShire = p < 0 ? Me.currentShire() : route[p];
+			for (int i = 0; i < num; i++) sellShire.getMarket(good).sellFair(Me);
 		}
 		
 	}

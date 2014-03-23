@@ -42,7 +42,7 @@ public class PersecutionQuests {
 		} // relieves previous anger from target
 
 		protected void failCase() {
-			Me.MB.newQ(new DestroyQuest(Me, target, EXILECONDITION));
+			Me.MB.newQ(new MightQuests.AttackClanQuest(Me, target));
 		}
 
 		protected void report(boolean success) {

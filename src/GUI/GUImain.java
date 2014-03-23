@@ -1,14 +1,12 @@
 package GUI;
-import AMath.Calc;
-import Avatar.AvatarConsole;
-import Game.AGPmain;
-import Sentiens.Clan;
-
-
 import javax.swing.*;
 
+import AMath.Calc;
+import Avatar.AvatarConsole;
+import Sentiens.Clan;
+
 public class GUImain extends JFrame {
-	private static final int WWID = 600;
+	private static final int WWID = 1000;
 	private static final int WHGT = 800;
 	private static final int BUFF = 20;
 	private JPanel MainPanel;
@@ -18,8 +16,8 @@ public class GUImain extends JFrame {
 	public AvatarConsole AC;
 	public FaceEditor Editor;
 	public SexDisplay sexDisplay;
-	private static final double MW = 0.4;
-	private static final double MH = 0.85;
+	private static final double MW = 0.25; // % of screen for ScrollPanels
+	private static final double MH = 0.85; // % of screen for ScrollPanels
 	public GUImain(String title) {
 		super(title);
 		MainPanel = new JPanel();
@@ -61,7 +59,7 @@ public class GUImain extends JFrame {
 		AC = AvatarConsole.create(this);
 		AC.setAvatar(avatar);
 		this.getLayeredPane().add(AC, new Integer(3));
-		AC.setBounds(50,50,AC.getDesWid(),AC.getDesHgt());
+		AC.setBounds(390,50,AC.getDesWid(),AC.getDesHgt());
 		AC.setVisible(true);
 	}
 	public void initializeFaceEditor() {

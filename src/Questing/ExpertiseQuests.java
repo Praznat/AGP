@@ -28,8 +28,6 @@ public class ExpertiseQuests {
 			if (success) {success(Values.EXPERTISE);}
 			else {failure(Values.EXPERTISE);}
 		}
-		
-		Clan getPatron() {return patron;}
 	}
 	
 	

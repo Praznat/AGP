@@ -65,6 +65,8 @@ public class EditableFace extends Face implements MouseListener, MouseMotionList
 
 	public void mouseReleased(MouseEvent e) {
 		dragging = false;
+		for (Parte part : partez) part.temp = null;
+		paintFace();
     }
 
     public void mouseEntered(MouseEvent e) {
