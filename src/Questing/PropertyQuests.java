@@ -277,7 +277,7 @@ public class PropertyQuests {
 		
 		/** find best good, its cost at buyShire and value at sellShire */
 		private int[] scoutShire(Shire buyShire, Shire sellShire, Trade trade) {
-			int bestG = -1; double bestTrade = 0; double bestCost = 0; double bestValue = 0;
+			int bestG = -1; double bestTrade = 0; double bestCost = 1; double bestValue = 0;
 			for (int g : trade.getGoods()) {
 				final int value = ((MktO)sellShire.getMarket(g)).riskySellPX(Me);
 				int cost = buyShire.getMarket(g).buyablePX(Me);
@@ -285,7 +285,7 @@ public class PropertyQuests {
 				if (cost == MktO.NOASK) cost = 2 * value / (3 + Me.FB.getBeh(M_.BIDASKSPRD) / 5);
 				// calc profit before you limit cost to money you own
 				final double expProfit = Me.confuse((double)value - (double)cost);
-				cost = Math.min(cost, Me.getMillet());
+				cost = Math.min(cost, Math.max(1, Me.getMillet()));
 				if (expProfit >= bestTrade) {bestG = g; bestTrade = expProfit; bestCost = cost; bestValue = value;}
 			}
 			return new int[] {bestG, (int)Math.round(bestCost), (int)Math.round(bestValue)};

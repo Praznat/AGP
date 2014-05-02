@@ -20,5 +20,5 @@ public class Entry {
 	public boolean isRented() {return px < 0;}
 	
 	@Override
-	public String toString() {return (trader == null ? "null" : trader.toString() + "@" + px);}
+	public String toString() {return (trader == null ? "none" : trader.toString() + "@" + px);}
 }

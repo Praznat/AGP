@@ -52,22 +52,24 @@ public class Assets implements Defs {
 		case bovad:   return MktO.annuity(getBestBidOrBestOffer(doer, rentanimal, true), doer);
 		case donkey:   return MktO.annuity(getBestBidOrBestOffer(doer, rentanimal, true), doer);
 		case lobodonkey:   return getBestBidOrBestOffer(doer, donkey, true);
-		default: return 0;
+		default: return 1;
 		}
 	}
 	public static int FVmax(Clan doer, int good) {
+		int result;
 		switch (good) {
-		case rentland:   return MktO.interest(getBestBidOrBestOffer(doer,land,false), doer);
-		case rentanimal:   return MktO.interest(Math.max(getBestBidOrBestOffer(doer,donkey,false), 
-				getBestBidOrBestOffer(doer,bovad,false)), doer);
-		default: return Integer.MAX_VALUE;
+		case rentland:   result = MktO.interest(getBestBidOrBestOffer(doer,land,false), doer); break;
+		case rentanimal:   result = MktO.interest(Math.max(getBestBidOrBestOffer(doer,donkey,false), 
+				getBestBidOrBestOffer(doer,bovad,false)), doer); break;
+		default: result = Integer.MAX_VALUE; break;
 		}
+		return Math.max(1, result);
 	}
 	private static int getBestBidOrBestOffer(Clan c, int g, boolean bidFirst) {
 		int bb = c.myMkt(g).bestBid();
 		int bo = Math.abs(c.myMkt(g).bestOffer());
 		bo = bo >= 0 ? bo : MktO.NOASK;
-		if (bidFirst) {return bb != MktO.NOBID ? bb : (bo != MktO.NOASK ? bo : 0);}
+		if (bidFirst) {return bb != MktO.NOBID && bb != MktO.NOASK ? bb : (bo != MktO.NOASK ? bo : 0);} //bb != MktO.NOASK for nobiddercanpay ... i know weird
 		else {return bo != MktO.NOASK ? bo : (bb != MktO.NOBID ? bb : Integer.MAX_VALUE);}
 	}
 	public static double estimateNAV(Clan POV, Clan clan) {

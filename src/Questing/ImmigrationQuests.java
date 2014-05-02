@@ -14,7 +14,7 @@ public class ImmigrationQuests {
 
 		@Override
 		public void pursue() {
-			// TODO remove bids/offers from market
+			// TODO remove bids/offers from market? or no. but sell land. dunno
 			Shire oldShire = Me.myShire();
 			Me.setCurrentShire(destination);
 			AGPmain.TheRealm.addToWaitingForImmigration(Me); // when it happens

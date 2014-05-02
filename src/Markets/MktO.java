@@ -95,15 +95,16 @@ public class MktO extends MktAbstract {
 	public void buyFair(Clan buyer) {
 		int px = Math.min(estFairBid(buyer), buyer.getAssets(Defs.millet));
 		addReport(buyer.getNomen() + " tries to buy " + Naming.goodName(g) + " at fair price of " + px);
+		if (px == 0) return;
 		placeBid(buyer, px);
 	}
 	public void sellFair(Clan seller) {
 		int px = estFairOffer(seller);
 		addReport(seller.getNomen() + " tries to sell " + Naming.goodName(g) + " at fair price of " + px);
 		//if(px <= bestBid() && px > NOBID) {hitBid(seller);}
-		if(px<0) {
+		if(px<=0) {
 			System.out.println("SHWIIIIT");
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("cant do this price: " + estFairOffer(seller));
 		}
 		else {placeOffer(seller, px);}
 	}
@@ -185,7 +186,7 @@ public class MktO extends MktAbstract {
 		int C = doer.useBeh(M_.CONFIDENCE);
 		int T = doer.useBeh(M_.TECHNICAL) + C;  int F = doer.useBeh(M_.FLOW) + 15 - C;
 		int PX = flow > 0 ? Calc.AtoBbyRatio(TechPX, flow, T, T+F) : Calc.roundy(TechPX);
-		int min = Assets.FVmin(doer, g);   int max = Assets.FVmax(doer, g);
+		int min = Assets.FVmin(doer, g);   final int max = Assets.FVmax(doer, g);
 //		addReport(doer.getNomen() + " estimates fair price for " + Naming.goodName(g) + " in following manner:");
 //		addReport(PX + " = [(Flow=" + flow + ")*" + F + " + " + "(Tech=" + TechPX + ")*" + T + "] / " + (T+F));
 //		addReport(min == 0 && max == NOASK ? "" : ", bounded between " + min + " and " + max);
@@ -196,11 +197,22 @@ public class MktO extends MktAbstract {
 		}
 		return Math.min(Math.max(PX, min), max);
 	}
+	protected void checkPriceLegality(Clan doer, int px) {
+		if(px <= 0 || px == NOASK){
+			String s = "Illegal entry placed by " + doer.getNomen();
+			addReport(s);
+			throw new IllegalStateException(s);
+		}
+	}
 	protected int estFairOffer(Clan doer) {
 		int bestoffer = (offerlen > 0 ? bestOffer() : offerFromNowhere(doer));
-		if (bestoffer == NOBID) {return fairPX(doer, 0);}
-		double FlowPX = addSpread(bestoffer, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
-		return fairPX(doer, FlowPX);
+		int result;
+		if (bestoffer == NOBID) {result = fairPX(doer, 0);}
+		else {
+			double FlowPX = addSpread(bestoffer, imbalance()*RATES[doer.useBeh(M_.BIDASKSPRD)]);
+			result = fairPX(doer, FlowPX);
+		}
+		return result;
 	}
 	protected int estFairBid(Clan doer) {
 		int bestbid = (bidlen > 0 ? bestBid() : bidFromNowhere(doer));
@@ -241,7 +253,9 @@ public class MktO extends MktAbstract {
 		}
 	}
 	public void removeBids(int num) {
-		for(int i = 0; i < bidlen; i++) {Bids[i].set(Bids[i+num]);}
+		for(int i = 0; i < bidlen; i++) {
+			Bids[i].set(i + num < Bids.length ? Bids[i+num] : new Entry());
+		}
 		bidlenDown(num);
 		addReport(num + " bids removed");
 	}
@@ -294,12 +308,9 @@ public class MktO extends MktAbstract {
 		}  return -1;
 	}
 
-	public void placeBid(Clan doer, int px){
+	public void placeBid(final Clan doer, final int px){
 		if(px >= bestOffer()) {liftOffer(doer); return;}
-		if(px<0){
-			addReport(Math.min(estFairBid(doer), doer.getAssets(Defs.millet)) + " negative bid placed");
-			throw new IllegalStateException();
-		}
+		checkPriceLegality(doer, px);
 		doer.addReport(GobLog.limitOrder(g, px, true));
 		addReport(doer.getNomen() + " places bid for " + Naming.goodName(g) + " at " + px);
 		if(px >= bestOffer()) {liftOffer(doer); return;}
@@ -310,11 +321,8 @@ public class MktO extends MktAbstract {
 		finish();
 //		Log.info(doer.getNomen() + " places bid for " + Naming.goodName(this.g, false, false) + " at " + px);
 	}
-	public int placeOffer(Clan doer, int px){
-		if(px<0){
-			addReport((estFairOffer(doer)) + " negative offer placed");
-			throw new IllegalStateException();
-		}
+	public int placeOffer(final Clan doer, final int px){
+		checkPriceLegality(doer, px);
 		doer.addReport(GobLog.limitOrder(g, px, false));
 		addReport(doer.getNomen() + " places offer for " + Naming.goodName(g) + " at " + px);
 		int bbp = bestBidPlc();
@@ -403,6 +411,17 @@ public class MktO extends MktAbstract {
 		addReport(this.printOneLineStatus());
 	}
 	protected int addSpread(int px, double s) {int result = (int) Math.round((double)px * (1+s)); return (result > 0 ? result : px);}
+
+	//	/** for cases like [Praznat@42, null, null, Praznat@42, null, null] dunno why it would even happen, TODO maybe case where bids and he cant pay so later ones get taken? */
+//	public void clearAllNulls(Entry[] entries) {
+//		for (int i = entries.length - 2; i >= 0; i--) {
+//			if (entries[i] == null && entries[i+1] != null) {
+//				for (int j = i; j < entries.length - 1; j++) entries[j] = entries[j+1];
+//				entries[entries.length - 1] = null;
+//				bidlenDown(1);
+//			}
+//		}
+//	}
 	
 	public String[][] getBaikai() {
 		String[][] B = new String[1+offerlen+bidlen][3];

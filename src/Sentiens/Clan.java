@@ -12,6 +12,7 @@ import Markets.*;
 import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.*;
 import Questing.PropertyQuests.LaborQuest;
+import Questing.PropertyQuests.TradingQuest;
 import Shirage.Shire;
 
 public class Clan implements Defs, Stressor.Causable {
@@ -151,12 +152,15 @@ public class Clan implements Defs, Stressor.Causable {
 			if (numSpawns > 0) {numSpawns--;} else {die();}
 		}
 		if (isHungry()) {
-			boolean hustleHard = true;
+			boolean currentlyHustling = false;
 			if (!MB.QuestStack.isEmpty()){
 				final Quest q = MB.QuestStack.peek();
-				hustleHard = !(q instanceof BuildWealthQuest || q instanceof LaborQuest);
+				currentlyHustling = (q instanceof BuildWealthQuest || q instanceof LaborQuest || q instanceof TradingQuest);
 			}
-			if (hustleHard) {MB.newQ(new BuildWealthQuest(this, this));}
+			if (!currentlyHustling) {
+				MB.QuestStack.quenchQuests();
+				MB.newQ(new BuildWealthQuest(this, this));
+			}
 		}
 	}
 	public boolean isHungry() {
@@ -348,9 +352,11 @@ public class Clan implements Defs, Stressor.Causable {
 	public int[] getAssets() {return assets;}
 	public int getAssets(int g) {return assets[g];}
 	public void incAssets(int g, int x) {if (x < 0) {System.out.println("error incAssets x is negative");}
+		if (g == Defs.millet) throw new IllegalStateException("use alterMillet");
 		assets[g] += x;
 	}
 	public void decAssets(int g, int x) {
+		if (g == Defs.millet) throw new IllegalStateException("use alterMillet");
 		if (assets[g] - x < 0) {
 			System.out.println(Naming.goodName(g, false, false) + " error negative assets in decAssets for " + getNomen());
 		}
@@ -398,9 +404,9 @@ public class Clan implements Defs, Stressor.Causable {
     public boolean eat() {
     	assets[Defs.millet] -= DMC;
     	if (assets[Defs.millet] < 0) {
-//    		assets[Defs.millet] = 0;
+    		assets[Defs.millet] = 0; // just for now
     		return false;
-    		//starvation!
+    		//TODOstarvation!
     	}	return true;
     }
     public boolean eatMeat() {

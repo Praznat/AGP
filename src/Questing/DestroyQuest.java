@@ -4,11 +4,12 @@ import Defs.P_;
 import Descriptions.GobLog;
 import Questing.PersecutionQuests.PersecuteAbstract;
 import Questing.Quest.TargetQuest;
-import Sentiens.Clan;
-import Sentiens.Stressor;
+import Questing.Quest.Unquenchable;
+import Sentiens.*;
 
-public class DestroyQuest extends TargetQuest {
+public class DestroyQuest extends TargetQuest implements Unquenchable {
 	private RelationCondition victoryCondition;
+	private boolean unquenchable; // true if its some serious revenge shit
 	public DestroyQuest(Clan P, Clan T, RelationCondition c) {super(P, T); victoryCondition = c;}
 
 	@Override
@@ -23,4 +24,9 @@ public class DestroyQuest extends TargetQuest {
 	}
 	@Override
 	public String description() {return "Destroy " + (target == null ? "Someone" : target.getNomen());}
+
+	@Override
+	public boolean isUnquenchable() {
+		return unquenchable;
+	}
 }

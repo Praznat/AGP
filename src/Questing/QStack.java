@@ -2,8 +2,11 @@ package Questing;
 
 import java.util.Stack;
 
+import Questing.Quest.PatronedQuest;
 import Questing.Quest.QuestRetrievalQuest;
+import Questing.Quest.Unquenchable;
 import Sentiens.Clan;
+import Sentiens.Values.Value;
 
 @SuppressWarnings("serial")
 public class QStack extends Stack<Quest> {
@@ -41,8 +44,16 @@ public class QStack extends Stack<Quest> {
 			clan = q.getDoer();
 			oldQuests[i++] = q.getClass();
 		}
-		System.out.println(clan.getNomen() + " QUEST EXPLOSION!!! " + this);
+		System.out.println(clan.getNomen() + " the " + clan.getJob() + " QUEST EXPLOSION!!! " + this);
 		this.clear();
 		return super.push(new QuestRetrievalQuest(clan, oldQuests));
+	}
+	public void quenchQuests() {
+		for (int i = size() - 1; i >= 0; i--) {
+			final Quest q = elementAt(i);
+//			Unquenchable.class.isAssignableFrom(q)
+			if (q instanceof Unquenchable && ((Unquenchable) q).isUnquenchable()) continue;
+			this.removeElementAt(i);
+		}
 	}
 }

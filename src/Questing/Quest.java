@@ -63,6 +63,8 @@ public abstract class Quest {
 		}
 		@Override
 		public Clan getPatron() {return patron;}
+		@Override
+		public String toString() {return super.toString() + (patron != Me ? " for " + patron.getNomen() : "");}
 	}
 	public static abstract class TargetQuest extends Quest {
 		protected Clan target;
@@ -220,6 +222,10 @@ public abstract class Quest {
 		}
 		@Override
 		public String description() {return "Remember old quests";}
+	}
+	
+	public interface Unquenchable {
+		public boolean isUnquenchable();
 	}
 
 }

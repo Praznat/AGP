@@ -101,8 +101,8 @@ public class Contract {   // AND/OR combination of Terms??
 		protected boolean doit() {
 			boolean enough = evaluator.getMillet() >= millet;
 			int amt = (enough ? millet : evaluator.getMillet());
-			evaluator.decAssets(Defs.millet, amt);
-			proposer.incAssets(Defs.millet, amt);
+			evaluator.alterMillet(-amt);
+			proposer.alterMillet(amt);
 			return enough;
 		}
 		protected Reportable loggy() {return GobLog.dealTermTribute(proposer, evaluator, millet);}
