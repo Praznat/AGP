@@ -183,7 +183,7 @@ public class Values implements Defs {
 			return clan.numSpawns;
 		}
 	};
-	public static final Value HARMONY = new ValuatableValue("Freedom", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
+	public static final Value HARMONY = new ValuatableValue("Harmony", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override

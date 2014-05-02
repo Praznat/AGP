@@ -132,7 +132,10 @@ public class Clan implements Defs, Stressor.Causable {
 
 	public int getNumGoods() {return Goods.numGoods;}
 	public Clan getSuitor() {return suitor;}
-	public void setSuitor(Clan C) {suitor = C;}
+	public void setSuitor(Clan C) {
+		if (suitor != this && suitor != C) FB.commandments.Adultery.commit();
+		suitor = C;
+	}
 	public int getNumOffspring() {return numSpawns;}
 	public byte[] getNameBytes() {return name;}
 	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
@@ -414,7 +417,9 @@ public class Clan implements Defs, Stressor.Causable {
     	if (assets[Defs.meat] < 0) {
     		assets[Defs.meat] = 0;
     		return false;
-    	}	return true;
+    	}
+    	FB.commandments.Carnivory.commit();
+    	return true;
     }
     
     

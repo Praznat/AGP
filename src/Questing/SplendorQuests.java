@@ -49,6 +49,7 @@ public class SplendorQuests {
 			ExpertiseQuests.practiceSkill(Me, P_.ARTISTRY);
 			final int max = 1 + Me.FB.getPrs(P_.ARTISTRY);
 			final int producedSplendor = Calc.randBetween(max / 2, max);
+			System.out.println(Me.getNomen() + " of " + Me.myShire() + " produced splendor!!");
 			Me.addReport(GobLog.build(patron, producedSplendor, true));
 			patron.addReport(GobLog.build(Me, producedSplendor, false));
 			patron.chgSplendor(producedSplendor);
