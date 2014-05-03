@@ -2,6 +2,7 @@ package Markets;
 
 import java.util.logging.Logger;
 
+import Defs.Defs;
 import Game.*;
 import Sentiens.Clan;
 import Shirage.Shire;
@@ -11,6 +12,7 @@ public abstract class MktAbstract implements Defs {
 	protected int g, smavol, todayvol;
 	protected Shire home;
 	
+	public int getGood() {return g;}
 	public abstract int lastPrice();
 	public abstract int stAvg();
 	public abstract int ltAvg();
@@ -31,6 +33,7 @@ public abstract class MktAbstract implements Defs {
 	public abstract void chgBid(int plc, int v);
 	protected abstract void auction();
 	protected abstract void clearMarket();
+	public String getReport() {return "";}
 	
 	public void newDay() {
 		clearMarket();

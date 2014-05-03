@@ -2,6 +2,7 @@ package Shirage;
 import java.util.*;
 
 import AMath.Calc;
+import Defs.Defs;
 import Descriptions.Naming;
 import Game.*;
 import Markets.*;

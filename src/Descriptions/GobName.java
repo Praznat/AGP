@@ -167,6 +167,7 @@ public class GobName {
 		new BiName("xum"),
 		new BiName("xy"),
 		new BiName("zle"),
+		new BiName("znat"),
 		new BiName("znax"),
 		new BiName("zz"),
 		new BiName("r", "re"),

@@ -1,8 +1,7 @@
 package Questing;
 
-import Defs.M_;
+import Defs.*;
 import Descriptions.GobLog;
-import Game.Defs;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;

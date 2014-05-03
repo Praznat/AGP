@@ -2,7 +2,7 @@ package Markets;
 
 
 import AMath.Calc;
-import Defs.M_;
+import Defs.*;
 import Descriptions.*;
 import Game.*;
 import Questing.*;
@@ -20,10 +20,14 @@ public class MktO extends MktAbstract {
 	public static final int NOBID = 0;
 	public static final int NOBIDDERCANPAY = -1;
 	
-	protected static String report;
+	private static final int TOO_MANY_TRANSACTIONS_THRESH = 10;
+	private static final int reportG = Defs.poop;
+	
+	protected String report = "";
 	
 	protected int LTAvg, STAvg, LastPX, MaxPX, MinPX, offerlen, bidlen, bb;
 	protected Entry[] Bids, Offers;
+	private int numTransactions;
 	
 	public MktO() {}
 	public MktO(int ggg, Shire h) {
@@ -138,6 +142,7 @@ public class MktO extends MktAbstract {
 		} else {sellFair(seller);}
 	}
 	protected void selfTransaction(Clan clan, int plc, int bidorask) {
+		numTransactions++;
 		if (bidorask == Entry.BIDDIR) {removeBid(plc);}
 		else if (bidorask == Entry.OFFERDIR) {removeOffer(plc);}
 		addReport(clan.getNomen() + " takes own " + (bidorask == Entry.BIDDIR ? "bid" : "offer") + " of " + Naming.goodName(g) + " from market");
@@ -157,6 +162,7 @@ public class MktO extends MktAbstract {
 		sendToInventory(buyer); //, price);
 		updateAvgs(price);
 //		Log.info(buyer.getNomen() + " buys " + Naming.goodName(this.g) + " from " + seller.getNomen() + " for " + price);
+		numTransactions++;
 		return true;
 	}
 	protected void sendToInventory(Clan buyer) { //, int px) {
@@ -176,7 +182,7 @@ public class MktO extends MktAbstract {
 		sellFairAndRemoveBid(buyer);  //in case current (and previous) quest is not GoodsAcquirable quest
 	}
 	private boolean accountForGood(Quest q, int n) {
-		if (GoodsAcquirable.class.isAssignableFrom(q.getClass())) {((GoodsAcquirable) q).alterG(g, n); return true;}
+		if (GoodsAcquirable.class.isAssignableFrom(q.getClass())) {((GoodsAcquirable) q).alterG(this, n); return true;}
 		else {return false;}
 	}
 	protected int fairPX(Clan doer, double flow) {
@@ -394,10 +400,11 @@ public class MktO extends MktAbstract {
 		   //dont forget to clear bids&offers from same trader (who isnt market maker)
 			//also should probably handle unwanted bids here
 		auction();
-		addReport("Clearing " + Naming.goodName(g) + " market " + RET + this.printOneLineStatus());
+//		addReport("Clearing " + Naming.goodName(g) + " market " + RET + this.printOneLineStatus());
+//		finish();
 		Entry bid, ask; int i = 0;
 		while (true) {
-			if (i >= offerlen || i >= bidlen) {return;}
+			if (i >= offerlen || i >= bidlen) {return;} // TODO probably shouldnt be return?? unit test!
 			bid = Bids[i]; ask = Offers[i];
 			if (bid.px >= ask.px) {
 				if (bid.trader == ask.trader) {selfTransaction(bid.trader, 0, Entry.AUCTION);}
@@ -408,7 +415,12 @@ public class MktO extends MktAbstract {
 		}
 		// remove up to i
 		removeBids(i);   removeOffers(i);
-		addReport(this.printOneLineStatus());
+
+		//finish day stuff
+		numTransactions = 0;
+		if (numTransactions > TOO_MANY_TRANSACTIONS_THRESH) {
+			System.out.println("TOO MANY MARKET REPORTS... INF LOOP?   " + report);
+		}
 	}
 	protected int addSpread(int px, double s) {int result = (int) Math.round((double)px * (1+s)); return (result > 0 ? result : px);}
 
@@ -466,25 +478,31 @@ public class MktO extends MktAbstract {
 		return cur;
 	}
 	
-	/*
+	/**
 	 * use when string of market actions is finished to get complete detailed briefing
-	 */
+	 **/
 	public void finish() {
 		report += this + RET;
 		for (int i = 0; i < bidlen; i++) {report += Bids[i] + ", ";} report += RET;
 		for (int i = 0; i < offerlen; i++) {report += Offers[i] + ", ";} report += RET;
 		if (AGPmain.mainGUI != null
 				&& home == AGPmain.mainGUI.SM.getShire()
-				&& g == Defs.poop) {Log.info(report + RET);}
+				&& (reportG < 0 || g == reportG)) {Log.info(report + RET);}
 		report = "";
 	}
 	
 	protected void addReport(String s) {
 		if (AGPmain.mainGUI != null
 				&& home == AGPmain.mainGUI.SM.getShire()
-				&& g == Defs.poop)
+				&& (reportG < 0 || g == reportG)){
 //				) {Calc.p(s);}
-		report += s + RET;
+			report += s + RET;
+		}
+	}
+	
+	@Override
+	public String getReport() {
+		return report;
 	}
 	
 	@Override

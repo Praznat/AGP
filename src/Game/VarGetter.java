@@ -1,6 +1,6 @@
 package Game;
 
-import Defs.P_;
+import Defs.*;
 import Descriptions.Naming;
 import Markets.MktO;
 import Sentiens.*;

@@ -10,10 +10,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import AMath.Calc;
-import Defs.F_;
-import Defs.M_;
+import Defs.*;
 import Game.AGPmain;
-import Game.Defs;
 import Sentiens.Clan;
 import Sentiens.Ideology;
 

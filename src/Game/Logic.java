@@ -1,5 +1,6 @@
 package Game;
 
+import Defs.Defs;
 import Questing.PropertyQuests.LaborQuest;
 import Questing.*;
 import Sentiens.Clan;

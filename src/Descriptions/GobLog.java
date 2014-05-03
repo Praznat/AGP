@@ -230,9 +230,12 @@ public class GobLog {
 			public String out() {return "Backed down from fight";}
 		};
 	}
-	public static Reportable recruitForWar(final Clan recruit) {
+	public static Reportable recruitForWar(final Clan recruiter, final Clan recruit) {
 		return new Reportable() {
-			public String out() {return "Mobilized " + recruit.getNomen() + " for combat";}
+			public String out() {
+				if (recruiter == recruit) return "Mobilized for combat";
+				return recruiter.getNomen() + " mobilized " + recruit.getNomen() + " for combat";
+			}
 		};
 	}
 	public static Reportable battleResult(final Clan winner, final Clan loser, final int numA, final int numD) {

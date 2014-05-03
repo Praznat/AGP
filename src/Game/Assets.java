@@ -1,5 +1,6 @@
 package Game;
 
+import Defs.Defs;
 import Descriptions.XWeapon;
 import Markets.*;
 import Sentiens.Clan;

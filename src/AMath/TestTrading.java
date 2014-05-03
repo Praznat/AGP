@@ -1,6 +1,6 @@
 package AMath;
 
-import Defs.M_;
+import Defs.*;
 import Descriptions.GobLog.Reportable;
 import Game.*;
 import Questing.PropertyQuests;

@@ -79,9 +79,8 @@ public class Labor implements Act, Defs {
 		return doer.confuse((double)this.expOut(doer)[0] - (double)this.expIn(doer)[0]);
 	}
 
-	public void storeAllInputsInWM(Clan doer) {
+	public void storeAllInputsInWM(LaborQuest lq) {
 		// fill WORKMEMO with allPossibleInputs
-		LaborQuest lq = (LaborQuest) doer.MB.QuestStack.peek();
 		for (int i = 0; i < allPossibleInputs.length; i++) {
 			lq.setWM(allPossibleInputs[i], i);
 		}

@@ -3,8 +3,7 @@ package Questing;
 import AMath.Calc;
 import Defs.*;
 import Descriptions.GobLog;
-import Game.Defs;
-import Markets.GoodsAcquirable;
+import Markets.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
@@ -39,7 +38,7 @@ public class SplendorQuests {
 			else { failure(Me.myShire()); }
 		}
 		
-		public void alterG(int g, int n) {if(g == Defs.constr) {numConstrs += n;}}
+		public void alterG(MktO origin, int n) {if(origin.getGood() == Defs.constr) {numConstrs += n;}}
 		
 		private boolean buildForPatron() {
 			if (numConstrs <= 0) {return false;}

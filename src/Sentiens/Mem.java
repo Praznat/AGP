@@ -1,8 +1,6 @@
 package Sentiens;
 
-import Defs.M_;
-import Defs.P_;
-import Game.Defs;
+import Defs.*;
 
 
 

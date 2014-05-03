@@ -1,7 +1,7 @@
 package Sentiens;
 
 
-import Game.Defs;
+import Defs.Defs;
 import Questing.QStack;
 import Questing.Quest;
 

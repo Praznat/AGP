@@ -14,6 +14,7 @@ public class InputConsole extends JTextField {
 	private static final String CMD_FIND_CLAN = "find clan ";
 	private static final String CMD_FIND_SHIRE = "find shire ";
 	private static final String CMD_SHOW_RESOURCE = "show resource ";
+	private static final String CMD_DEBUG_MARKETS = "debug markets ";
 	
 	private final KeyListener keyListener = new KeyListener() {
 		@Override
@@ -41,16 +42,22 @@ public class InputConsole extends JTextField {
 		System.out.println(command);
 		
 		boolean didSomething =
-		(doForCommand(command, CMD_FIND_CLAN, new InputThing() {public void doit(String input) {
-				Clan c = AGPmain.TheRealm.getClan(input);
-				System.out.println(c);
-				if (c != null) AGPmain.mainGUI.GM.loadClan(c);
-		}})) ||
-		(doForCommand(command, CMD_FIND_SHIRE, new InputThing() {public void doit(String input) {
-				Shire s = AGPmain.TheRealm.getShire(input);
-				if (s != null) AGPmain.mainGUI.SM.loadShire(s);
-		}})) ||
-		(doForCommand(command, CMD_SHOW_RESOURCE, new InputThing() {public void doit(String input) {
+				(doForCommand(command, CMD_FIND_CLAN, new InputThing() {public void doit(String input) {
+					Clan c = AGPmain.TheRealm.getClan(input);
+					System.out.println(c);
+					if (c != null) AGPmain.mainGUI.GM.loadClan(c);
+				}})) ||
+				(doForCommand(command, CMD_FIND_SHIRE, new InputThing() {public void doit(String input) {
+					Shire s = AGPmain.TheRealm.getShire(input);
+					if (s != null) AGPmain.mainGUI.SM.loadShire(s);
+				}})) ||
+				(doForCommand(command, CMD_DEBUG_MARKETS, new InputThing() {public void doit(String input) {
+					Shire s = AGPmain.TheRealm.getShire(input);
+					if (s != null) for (int g = 1; g < Defs.Defs.numGoods; g++) {
+						System.out.println(s.getMarket(g).getReport());
+					}
+				}})) ||
+				(doForCommand(command, CMD_SHOW_RESOURCE, new InputThing() {public void doit(String input) {
 				// TODO highlight resource
 		}}));
 			

@@ -1,6 +1,6 @@
 package Game;
 
-import Defs.P_;
+import Defs.*;
 import Questing.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;

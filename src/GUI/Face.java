@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import AMath.Calc;
 import Defs.*;
 import Game.AGPmain;
-import Game.Defs;
 import Sentiens.Clan;
 import Sentiens.Ideology;
 

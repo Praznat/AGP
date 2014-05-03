@@ -5,7 +5,7 @@ import Avatar.SubjectiveType;
 import Defs.*;
 import Descriptions.GobLog;
 import Game.*;
-import Markets.GoodsAcquirable;
+import Markets.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
@@ -131,7 +131,7 @@ public class FaithQuests {
 			numCaptives += (Integer) arg;
 		}
 		@Override
-		public void alterG(int g, int num) {if(g == Defs.captive) {affect(num);}}
+		public void alterG(MktO origin, int num) {if(origin.getGood() == Defs.captive) {affect(num);}}
 	};
 	private static final ActOfFaith[] ACTS_OF_FAITH = new ActOfFaith[] {
 		INCANTATE, RITUAL, ONEWITHNATURE, ONEWITHGOD, SACRIFICE

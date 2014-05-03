@@ -151,18 +151,12 @@ public class Clan implements Defs, Stressor.Causable {
 		age++;
 		final boolean starve = !eat();
 		if (starve) {
-			setJob(Job.HUNTERGATHERER);
 			if (numSpawns > 0) {numSpawns--;} else {die();}
 		}
 		if (isHungry()) {
-			boolean currentlyHustling = false;
-			if (!MB.QuestStack.isEmpty()){
-				final Quest q = MB.QuestStack.peek();
-				currentlyHustling = (q instanceof BuildWealthQuest || q instanceof LaborQuest || q instanceof TradingQuest);
-			}
+			boolean currentlyHustling = !MB.QuestStack.isEmpty() && MB.QuestStack.peek() instanceof LaborQuest;
 			if (!currentlyHustling) {
-				MB.QuestStack.quenchQuests();
-				MB.newQ(new BuildWealthQuest(this, this));
+				MB.newQ(new LaborQuest(this, Job.HUNTERGATHERER));
 			}
 		}
 	}

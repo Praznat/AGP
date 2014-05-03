@@ -1,6 +1,6 @@
 package Game;
 
-import Defs.M_;
+import Defs.*;
 import Sentiens.Clan;
 
 public class Const implements Defs {

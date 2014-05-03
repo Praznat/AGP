@@ -2,6 +2,18 @@ WORKPLAN
 
 Stuff to do:
 
+hungry goblins' conversion to savage should be temporary (thats why no construction: builders starve and become savages)
+bug? number of buyers of (r) good > 0 even when it shows no bid price?
+bug? unit test: check auction clearing with self-transaction (bidder = offerer)
+
+new Clan Scroll GUI?
+BASIC - basic info, values/ideology, behaviors
+PLEASURE (diamond) - copulation: suitor, numspawn; beauty: grandeur; harmony: stuff
+HONOR (club) - allegiance: order accomplishments?; legacy: legacy buckets; righteousness: commandments
+POWER (spade) - might: battle stats; influence: order chart; wealth: nav, millet, assets
+WISDOM (heart) - expertise: skills; knowledge: library contributions, wisdom; spirituality: holiness, etc
+QUESTS/GOBLOG
+
 BUG when recruiting your own boss, if recruitment succeeds, old boss should become minion
 BUG in breeding display offspring face... try using bald parent, i got instance where child was never bald
 Goblin Profile Select Previous Goblins

@@ -1,7 +1,7 @@
 package Descriptions;
 import java.awt.Color;
 
-import Defs.P_;
+import Defs.*;
 import Game.*;
 import Sentiens.Clan;
 

@@ -9,14 +9,12 @@ import java.awt.event.*;
 import javax.swing.JPanel;
 
 import AMath.Calc;
-import Defs.M_;
-import Defs.P_;
+import Defs.*;
 import Descriptions.Naming;
 import GUI.PopupAbstract;
 import GUI.PopupFace;
 import GUI.PopupShire;
 import Game.AGPmain;
-import Game.Defs;
 import Sentiens.Clan;
 import Sentiens.Ideology;
 import Shirage.Shire;

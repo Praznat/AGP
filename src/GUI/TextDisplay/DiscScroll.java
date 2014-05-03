@@ -3,10 +3,9 @@ package GUI.TextDisplay;
 import java.awt.Graphics;
 
 import AMath.Calc;
-import Defs.GlobalParameters;
+import Defs.*;
 import Descriptions.*;
 import GUI.PopupAbstract;
-import Game.Defs;
 import Sentiens.Clan;
 
 public class DiscScroll extends Papyrus {

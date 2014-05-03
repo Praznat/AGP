@@ -1,5 +1,6 @@
 package Descriptions;
 
+import Defs.Defs;
 import Game.*;
 import Sentiens.Clan;
 

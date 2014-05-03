@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import AMath.Calc;
+import Defs.Defs;
 import GUI.PopupAbstract;
 import GUI.PopupShire;
 import Game.*;

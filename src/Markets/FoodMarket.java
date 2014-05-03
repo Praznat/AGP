@@ -1,5 +1,6 @@
 package Markets;
 
+import Defs.Defs;
 import Descriptions.Naming;
 import Game.*;
 import Sentiens.Clan;

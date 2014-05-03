@@ -2,8 +2,8 @@ package Government;
 
 import java.util.*;
 
+import Defs.Defs;
 import Descriptions.GobName;
-import Game.Defs;
 import Sentiens.Clan;
 import Shirage.Shire;
 

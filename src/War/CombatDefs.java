@@ -1,6 +1,6 @@
 package War;
 
-import Game.Defs;
+import Defs.Defs;
 import Sentiens.Clan;
 
 public class CombatDefs {

@@ -49,6 +49,10 @@ public class PropertyQuests {
 		private int turnsLeft;
 		private Labor chosenAct;
 
+		/** skips choose act stage (done immediately based on given job) */
+		public LaborQuest(Clan P, Job j) {
+			this(P); stage++; chooseAct(j);
+		}
 		public LaborQuest(Clan P) {
 			super(P); setChosenAct((Labor) Job.NullAct); resetWM();
 			turnsLeft = P.FB.getBeh(M_.PATIENCE) / 3 + 5;
@@ -60,7 +64,7 @@ public class PropertyQuests {
 		public void avatarPursue() {
 			if (Me.getJob() instanceof Ministry) {Me.MB.finishQ(); return;}
 			switch (stage) {
-			case 0: avatarChooseAct(); break; //avatarDoInputs called by avatarChooseAct
+			case 0: avatarChooseAct(Me.getJob()); break; //avatarDoInputs called by avatarChooseAct
 			case 1: avatarDoInputs(); break;
 			case 2: doWork(); break;
 			case 3: doOutputs(); break;
@@ -72,7 +76,7 @@ public class PropertyQuests {
 		public void pursue() {
 			if (Me.getJob() instanceof Ministry) {Me.MB.finishQ(); return;}
 			switch (stage) {
-			case 0: chooseAct();
+			case 0: chooseAct(Me.getJob());
 			case 1: doInputs(); break;
 			case 2: doWork(); break;
 			case 3: doOutputs(); break;
@@ -84,7 +88,8 @@ public class PropertyQuests {
 			for(int i = 0; i < workmemo.length; i++) {workmemo[i] = Defs.E; workmemoX[i] = 0;}
 		}
 		public void setWM(int g, int plc) {workmemo[plc] = g;   workmemoX[plc] = 0;}
-		public void alterG(int g, int n) {
+		public void alterG(MktO origin, int n) {
+			int g = origin.getGood();
 			for(int i = 0; i < workmemo.length; i++) {
 				if (getAbsWM(i) == g) {
 					int newWMX = workmemoX[i] + n;
@@ -114,10 +119,10 @@ public class PropertyQuests {
 				liquidateWM();
 				chosenAct = a;
 			} //new WORKMEMO
-			if (chosenAct != Job.NullAct) {chosenAct.storeAllInputsInWM(Me);}
+			if (chosenAct != Job.NullAct) {chosenAct.storeAllInputsInWM(this);}
 		}
-		private Labor compareTrades() {
-			final Act[] actSet = Me.getJobActs();
+		private Labor compareTrades(Job j) {
+			final Act[] actSet = j.getActs();
 			Labor curAct;   Labor bestAct = (Labor) Job.NullAct;   int bestPL = 0;//Integer.MIN_VALUE / 2;
 			for(int i = 0; i < actSet.length; i++) {
 				curAct = (Labor) actSet[i];
@@ -133,8 +138,8 @@ public class PropertyQuests {
 //			System.out.println(bestPL);
 			return bestAct;
 		}
-		private void avatarChooseAct() {
-			avatarConsole().showChoices("Choose labor", Me, Me.getJobActs(), SubjectiveType.ACT_PROFIT_ORDER, new Calc.Listener() {
+		private void avatarChooseAct(Job j) {
+			avatarConsole().showChoices("Choose labor", Me, j.getActs(), SubjectiveType.ACT_PROFIT_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
 					Quest q = Me.MB.QuestStack.peek();
@@ -144,8 +149,8 @@ public class PropertyQuests {
 				}
 			});
 		}
-		private void chooseAct() {
-			setChosenAct(compareTrades());
+		private void chooseAct(Job j) {
+			setChosenAct(compareTrades(j));
 			if (chosenAct == Job.NullAct) {
 				failure(Me.myShire()); //LaborQuest fails Shire, BuildWealth fails Shire and Job
 			}
@@ -295,9 +300,11 @@ public class PropertyQuests {
 		public String description() {return "Trading";}
 
 		@Override
-		public void alterG(int good, int num) {
+		public void alterG(MktO origin, int num) {
+			int good = origin.getGood();
 			int p = sellPlcs[good];
 			Shire sellShire = p < 0 ? Me.currentShire() : route[p];
+			origin.removeBids(Me);
 			for (int i = 0; i < num; i++) sellShire.getMarket(good).sellFair(Me);
 		}
 		

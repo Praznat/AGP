@@ -93,7 +93,8 @@ public class MightQuests {
 				army = getArmyOf(patron);
 				if (army == null) {return;} // TODO will only form army if that is patron's top quest??
 			}
-			patron.addReport(GobLog.recruitForWar(Me));
+			Me.addReport(GobLog.recruitForWar(patron, Me));
+			if (Me != patron) patron.addReport(GobLog.recruitForWar(patron, Me));
 			army.add(Me);
 		}
 		@Override

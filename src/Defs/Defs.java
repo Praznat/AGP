@@ -1,4 +1,4 @@
-package Game;
+package Defs;
 
 public interface Defs {
 	public static final String RET = System.getProperty("line.separator");

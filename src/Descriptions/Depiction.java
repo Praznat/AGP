@@ -1,6 +1,6 @@
 package Descriptions;
 
-import Game.Defs;
+import Defs.Defs;
 import Government.Order;
 import Shirage.Shire;
 
