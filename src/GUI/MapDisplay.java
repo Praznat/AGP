@@ -73,13 +73,14 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 	}
 	
 	public void paint(Graphics gx) {
+		Graphics2D g = highlightOffscreen.createGraphics();
 		if (highlightedShire != null) {
 //			topLayer = new BufferedImage(TotW(),TotH(), BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = highlightOffscreen.createGraphics();
 			g.drawImage(offscreen, 0, 0, this);
-			highlightedShire.getLinkedPlot().drawShireHighlighted(g);
+			highlightedShire.getLinkedPlot().drawShireHighlighted(g, Color.red);
 			//if (prevHighlightedShire != highlightedShire) {prevHighlightedShire.getLinkedPlot().unDrawShireHighlighted(g);}
 		}
+		AGPmain.mainGUI.SM.getShire().getLinkedPlot().drawShireHighlighted(g, Color.white);
 
 		gx.drawImage(offscreen.getSubimage(tmpX,tmpY,getWidth(),getHeight()),  0,0,getWidth(),getHeight(),this);
 		gx.drawImage(highlightOffscreen.getSubimage(tmpX,tmpY,getWidth(),getHeight()),  0,0,getWidth(),getHeight(),this);

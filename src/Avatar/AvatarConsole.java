@@ -17,7 +17,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 	
 	private Clan avatar;
 	private final int DESWID = 200;
-	private final int DESHGT = 250;
+	private final int DESHGT = 270;
 	private final int BUFFX = 5;
 	private final int BUFFY = 5;
 	private final int BUTTW = 150;
@@ -37,7 +37,8 @@ public class AvatarConsole extends APanel implements ActionListener {
 	private final SubjectiveComparator comparator;
 	public final TreeSet choices;
 	private final JButton pausePlayButton, autopilotButton;
-
+	private final InputConsole inputConsole = new InputConsole();
+	
 	private AvatarConsole(GUImain P) {
 		super(P);
 		comparator = new SubjectiveComparator();
@@ -52,6 +53,8 @@ public class AvatarConsole extends APanel implements ActionListener {
 		setButton(STEPONCE, KeyEvent.VK_S);
 		pausePlayButton = setButton(PAUSEPLAY, -1);
 		setButton(VIEWSPAWN, -1);
+		add(inputConsole);
+		inputConsole.setBounds(BUFFX, BUFFY + numButtons * (BUTTH + BUFFY), BUTTW, BUTTH);
 	}
 	public static AvatarConsole create(GUImain P) {return new AvatarConsole(P);}
 	public void setAvatar(Clan c) {avatar = c;}

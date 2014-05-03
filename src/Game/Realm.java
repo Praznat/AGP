@@ -118,8 +118,18 @@ public class Realm extends Thread {
 	public int getNumShires() {return shiresX*shiresY;}
 	public Shire getShire(int x, int y) {return shires[x + y*shiresX];}
 	public Shire getShire(int xy) {return shires[xy];}
+	public Shire getShire(String name) {
+		for (Shire s : shires) {
+			if (s.getName().toLowerCase().equals(name.toLowerCase())) return s;
+		} return null;
+	}
 	public Shire[] getShires() {return shires;}
 	public Clan getClan(int ID) {return population[ID];}
+	public Clan getClan(String name) {
+		for (Clan c : population) {
+			if (c.getFirstName().toLowerCase().equals(name.toLowerCase())) return c;
+		} return null;
+	}
 	public Clan getRandClan() {return population[Calc.randBetween(0, popSize())];}
 	public Clan[] getPopulation() {return population;}
 	public int popSize() {return population.length;}

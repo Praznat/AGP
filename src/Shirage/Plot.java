@@ -287,14 +287,14 @@ public class Plot extends AbstractPlot {
 		for (int neighbor : getShireDef) {HOOD[neighbor].linkToShire(shire);}
 		linkToShire(shire);
 	}
-	public void drawShireHighlighted(Graphics g) {
+	public void drawShireHighlighted(Graphics g, Color color) {
 		refreshHood();
-		for (int neighbor : getShireDef) {HOOD[neighbor].drawHighlighted(g);}
-		drawHighlighted(g);
+		for (int neighbor : getShireDef) {HOOD[neighbor].drawHighlighted(g, color);}
+		drawHighlighted(g, color);
 		g.drawString(linkedShire.getID()+" "+linkedShire.getName(), x(), y() - H());
 	}
-	private void drawHighlighted(Graphics g) {
-		g.setColor(new Color(255,0,0));
+	private void drawHighlighted(Graphics g, Color color) {
+		g.setColor(color);
 		g.drawRect(x()+1, y()+1, W()-2, H()-2);
 	}
 	private void linkToShire(Shire shire) {
