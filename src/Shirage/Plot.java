@@ -20,12 +20,14 @@ public class Plot extends AbstractPlot {
 	protected static final double rbm = 0.25;
 	protected static final double waterthresh = 0.3;
 	protected static final int adjFert = 2;
-	protected static final int RC = 120;
-	protected static final int GC = 75;
+	protected static final int RC = 100;
+	protected static final int GC = 65;
 	protected static final int BC = 40;
 	protected static Color dCol = new Color(RC, GC, BC);
 	protected static Color fCol = new Color(80, 20, 170);
 	protected static Color wCol = new Color(40, 40, 190);
+	protected static Color oCol1 = new Color(20,70,95);
+	protected static Color oCol2 = new Color(50,70,95);
 	protected static MapDisplay Map() {return AGPmain.mainGUI.MD;}
 	
 	protected Shire linkedShire;
@@ -66,7 +68,7 @@ public class Plot extends AbstractPlot {
 	}
 	public void setGradients() {
 		int H = H();   int offY = Map().getTmpY();
-		GPW = new GradientPaint(0, y*H - H/2 - offY, new Color(50,50,135), 0, y*H - H/2 - offY + 2, new Color(50,50,145), true);
+		GPW = new GradientPaint(0, y*H - H/2 - offY, oCol1, 0, y*H - H/2 - offY + 2, oCol2, true);
 		GPM = new GradientPaint(0, y*H - H*2/3 - offY, Color.white, 0, y*H + H - offY, dCol);
 		GPMo = new GradientPaint(GPM.getPoint1(), Color.black, GPM.getPoint2(), GPM.getColor2());
 		GPF = new GradientPaint(0, y*H - offY, Color.gray, 0, y*H + H*3/2 - offY, fCol);

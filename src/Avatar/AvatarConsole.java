@@ -69,6 +69,7 @@ public class AvatarConsole extends APanel implements ActionListener {
 
 	public void showChoices(String prompt, Clan POV, Object[] choices, SubjectiveType sct,
 			Calc.Listener listener, Calc.Transformer transformer) {
+		AGPmain.pause();
 		this.choices.clear();
 		this.getComparator().setPOV(POV);
 		switch (sct) {
@@ -80,7 +81,6 @@ public class AvatarConsole extends APanel implements ActionListener {
 		}
 		for (Object choice : choices) {this.choices.add(choice);}
 		APopupMenu.set(this, prompt, this.choices, listener, transformer);
-		AGPmain.pause();
 	}
 	public void showChoices(String prompt, Clan POV, Object[] choices,
 			SubjectiveType sct, Calc.Listener listener) {
@@ -155,7 +155,6 @@ public class AvatarConsole extends APanel implements ActionListener {
 			AGPmain.TheRealm.goOnce();
 		}
 		else if ("Play".equals(e.getActionCommand())) {
-			if (AGPmain.TheRealm.getDay() == 0) {AGPmain.TheRealm.start();}
 			AGPmain.play();
 		}
 		else if ("Pause".equals(e.getActionCommand())) {

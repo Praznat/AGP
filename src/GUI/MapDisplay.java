@@ -80,7 +80,10 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 			highlightedShire.getLinkedPlot().drawShireHighlighted(g, Color.red);
 			//if (prevHighlightedShire != highlightedShire) {prevHighlightedShire.getLinkedPlot().unDrawShireHighlighted(g);}
 		}
-		AGPmain.mainGUI.SM.getShire().getLinkedPlot().drawShireHighlighted(g, Color.white);
+		if (AGPmain.mainGUI.SM != null) {
+			if (AGPmain.mainGUI.SM.getShire() == null) return;
+			AGPmain.mainGUI.SM.getShire().getLinkedPlot().drawShireHighlighted(g, Color.white);
+		}
 
 		gx.drawImage(offscreen.getSubimage(tmpX,tmpY,getWidth(),getHeight()),  0,0,getWidth(),getHeight(),this);
 		gx.drawImage(highlightOffscreen.getSubimage(tmpX,tmpY,getWidth(),getHeight()),  0,0,getWidth(),getHeight(),this);

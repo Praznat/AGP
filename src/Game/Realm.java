@@ -7,7 +7,7 @@ import Sentiens.*;
 import Sentiens.Values.Value;
 import Shirage.*;
 
-public class Realm extends Thread {
+public class Realm {
 	protected int shiresX;
 	protected int shiresY;
 	protected int startPop;
@@ -25,7 +25,6 @@ public class Realm extends Thread {
 //	private Clan Avatar;
 
 	public Realm(int pX, int pY, int cN) {
-		super("TheRealm"); //name thread
 		shiresX = pX;
 		shiresY = pY;
 		startPop = cN;
@@ -60,12 +59,9 @@ public class Realm extends Thread {
 		}
 		setNewImmigrations();
 	}
-	@Override
+
 	public void run() {
-		while (true) {
-			if (!AGPmain.isGoing) {System.out.println("paused");}
-			if (AGPmain.isGoing) {goOnce();}
-		}
+		while (AGPmain.isGoing) {goOnce();}
 	}
 
 	private void generatePopulation(int C) {

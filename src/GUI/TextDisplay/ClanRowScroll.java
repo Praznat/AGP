@@ -25,7 +25,9 @@ public class ClanRowScroll extends TableRowScroll {
 			if (contents[0][col].equals("Name")) {
 				g.drawString("Name", x + 2, BHGT+BHGT*0);
 				for (int r = 1; r < contents.length; r++) {
-					addToClickStrings(pop.get(r-1), x + 2, BHGT+BHGT*r, g);
+					if (r-1 >= pop.size()) 
+						System.out.println("illegal clanrowscroll stuff");
+					else addToClickStrings(pop.get(r-1), x + 2, BHGT+BHGT*r, g);
 				}
 			}
 			x += widths[col];
