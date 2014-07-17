@@ -27,7 +27,7 @@ public class TestKnowledge extends Testing {
 		a.FB.setBeh(M_.PATIENCE, 15);
 		a.setJob(Job.FARMER);
 		b.setJob(Job.LOBOTOMIST);
-		b.alterCumIncome(1000);
+		b.alterMillet(1000);
 		a.MB.newQ(new KnowledgeQuests.KnowledgeQuest(a, a, K_.JOBS));
 		pursueUntilDone(a);
 		affirm(a.getJob() == Job.LOBOTOMIST);

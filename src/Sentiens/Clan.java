@@ -5,22 +5,25 @@ import java.util.*;
 import AMath.Calc;
 import Defs.*;
 import Descriptions.*;
-import Descriptions.GobLog.*;
+import Descriptions.GobLog.Book;
+import Descriptions.GobLog.Reportable;
 import Game.*;
 import Government.Order;
 import Markets.*;
-import Questing.PropertyQuests.BuildWealthQuest;
-import Questing.*;
+import Questing.MightQuests.FormArmy;
 import Questing.PropertyQuests.LaborQuest;
-import Questing.PropertyQuests.TradingQuest;
+import Questing.*;
+import Sentiens.Law.Commandments;
 import Shirage.Shire;
 
 public class Clan implements Defs, Stressor.Causable {
 	public static int DMC = 3; //daily millet consumption
+	public static final int MIN_DMC_RESERVE = 15;
 	protected static final int MUTATION_PCT = 2;
 	//protected static final int MEMORY = 8;
 	//bio
 	protected byte[] name = new byte[2];
+	protected String nameOverride = null;
 	protected boolean gender;
 	private int age;
 	private int ageInherited; //at what age did it start "playing" (ancestor died)
@@ -117,6 +120,10 @@ public class Clan implements Defs, Stressor.Causable {
 		goblog.addReport(GobLog.moveCurrentShire(currentShire, s));
 		currentShire = s;
 	}
+	public void moveTowards(Shire target) {
+		// TODO set current shire one step closer to target
+		setCurrentShire(target);
+	}
 	/** market in current shire not home shire */
 	public MktAbstract myMkt(int g) {return currentShire().getMarket(g);}
 	public Library getRelevantLibrary() {return homeShire.getLibrary();}
@@ -133,12 +140,14 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getNumGoods() {return Goods.numGoods;}
 	public Clan getSuitor() {return suitor;}
 	public void setSuitor(Clan C) {
-		if (suitor != this && suitor != C) FB.commandments.Adultery.commit();
+		if (C == this) throw new IllegalStateException("illegal suitor");
+		if (C != null && suitor != C) Commandments.INSTANCE.Adultery.getFor(C).commit();
 		suitor = C;
 	}
 	public int getNumOffspring() {return numSpawns;}
 	public byte[] getNameBytes() {return name;}
-	public String getFirstName() {return GobName.firstName(name[0], name[1], gender);}
+	public void overrideName(String newName) {nameOverride = newName;}
+	public String getFirstName() {return nameOverride != null ? nameOverride : GobName.firstName(name[0], name[1], gender);}
 	public String getNomen() {return GobName.fullName(this);}
 	public String getSancName() {return FB.getDeusName();}
 	public Job getJob() {return job;}
@@ -154,14 +163,21 @@ public class Clan implements Defs, Stressor.Causable {
 			if (numSpawns > 0) {numSpawns--;} else {die();}
 		}
 		if (isHungry()) {
-			boolean currentlyHustling = !MB.QuestStack.isEmpty() && MB.QuestStack.peek() instanceof LaborQuest;
-			if (!currentlyHustling) {
-				MB.newQ(new LaborQuest(this, Job.HUNTERGATHERER));
+			Quest currQ = !MB.QuestStack.isEmpty() ? MB.QuestStack.peek() : null;
+			if (currQ != null) {
+				if (currQ instanceof LaborQuest) return; //currentlyHustling
+				if (currQ instanceof FormArmy) { // should be just having patron? belonging to order?
+					Order o = myOrder();
+					if (o != null) { // army of one...
+						 if (o.requestFeed(this)) return;
+					}
+				}
 			}
+			MB.newQ(new LaborQuest(this, Job.HUNTERGATHERER));
 		}
 	}
 	public boolean isHungry() {
-		return getMillet() < (15 + FB.getBeh(M_.PARANOIA)) * DMC;
+		return getMillet() < (MIN_DMC_RESERVE + FB.getBeh(M_.PARANOIA)) * DMC;
 	}
 	public void breed(Clan mate) {
 		this.setSuitor(mate);
@@ -256,6 +272,7 @@ public class Clan implements Defs, Stressor.Causable {
 	public boolean join(Clan newBoss) {
 		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
 		Clan oldBoss = this.getBoss();
+		if (oldBoss == newBoss) {return true;} // already is boss
 		if (oldBoss != this) {oldBoss.removeMinion(this);}
 		this.boss = newBoss;
 		if (newBoss != this) {newBoss.addMinion(this);}
@@ -327,7 +344,9 @@ public class Clan implements Defs, Stressor.Causable {
 	public void setActive(boolean a) {active = a;}
 	public double getAvgIncome() {return (int) Math.round((double)cumIncome / (double)(10 + age - ageInherited));} // +10 too smooth out "newborns"
 	public int getCumulativeIncome() {return cumIncome;}
-	public void alterCumIncome(int m) {cumIncome += m;}
+	public void alterCumIncome(int m) {
+		cumIncome += m;
+	}
 
 	public int getMillet() {return assets[millet];}
 	public void setMillet(int m) {assets[millet] = m;}
@@ -337,7 +356,7 @@ public class Clan implements Defs, Stressor.Causable {
 			assets[millet] = 0; System.out.println("millet below zero " + getNomen() + " the " + getJob() + " $" + assets[millet] + " altered by " + c);
 //			throw new IllegalStateException(); // return false;
 		}//System.out.println(1 / 0);}
-		else {assets[millet] = assets[millet] + c; cumIncome += c; return true;}
+		else {assets[millet] = assets[millet] + c; alterCumIncome(c); return true;}
 		return false;
 	}
 	public long getNetAssetValue(Clan POV) {
@@ -412,7 +431,7 @@ public class Clan implements Defs, Stressor.Causable {
     		assets[Defs.meat] = 0;
     		return false;
     	}
-    	FB.commandments.Carnivory.commit();
+    	Commandments.INSTANCE.Carnivory.getFor(this).commit();
     	return true;
     }
     

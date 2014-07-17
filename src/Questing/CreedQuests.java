@@ -6,7 +6,7 @@ import Descriptions.GobLog;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;
-import Sentiens.Law.Commandment;
+import Sentiens.Law.PersonalCommandment;
 
 public class CreedQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(PriestQuest.class) {public Quest createFor(Clan c, Clan p) {return new PriestQuest(c, p);}};}
@@ -25,11 +25,11 @@ public class CreedQuests {
 		}
 		@Override
 		public void avatarPursue() {
-			avatarConsole().showChoices("Choose commandment to tweak", Me, Me.FB.commandments.list,
+			avatarConsole().showChoices("Choose commandment to tweak", Me, Me.FB.commandments,
 					SubjectiveType.NO_ORDER, new Calc.Listener() {
 				@Override
 				public void call(Object arg) {
-					final Commandment c = ((Commandment) arg);
+					final PersonalCommandment c = ((PersonalCommandment) arg);
 					final boolean newlyActive = !c.isSinful();
 					c.setSinful(newlyActive);
 					Me.addReport(GobLog.decidedMoral(c, newlyActive));

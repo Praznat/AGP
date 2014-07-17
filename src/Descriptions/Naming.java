@@ -460,7 +460,8 @@ public class Naming implements Defs {
 			case ARITHMETIC : return "Arithmetic";
 			case STRATEGYP : return "Strategy";
 			case TACTICSP : return "Tactics";
-			case COMBAT : return "Martial Prowess";
+			case COMBAT : return "Fighting Ability";
+			case BATTLEP : return "Military Success";
 			case DANCE : return "Ritual Dance";
 			case ARMORYP : return "Arms Lore";
 			case WPREDICTION : return "Divination";

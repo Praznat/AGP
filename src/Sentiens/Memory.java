@@ -20,6 +20,4 @@ public class Memory implements Defs {
 		return QuestStack.peek().toString();
 	}
 	
-	
-	
 }

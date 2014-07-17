@@ -36,8 +36,8 @@ public class TestMarkets extends Testing {
 		//FAAIL!!!!! on date()
 	}
 	public static void normalMarketFunctions() {
-		Clan.DMC = 0;
 		resetMarketFunctions();
+		Clan.DMC = 0;
 		final int aStartMillet = a.getMillet();
 		final int bStartMillet = b.getMillet();
 		normalMarketFunctions(s, a, b);
@@ -81,7 +81,7 @@ public class TestMarkets extends Testing {
 	public static void testPlaceBidForInputChangeQuestGetFilled(Clan doer1, Clan doer2) {
 		resetMarketFunctions();
 		MktO timberMarket = ((MktO)doer1.myShire().getMarket(Defs.timber));
-		doer1.incAssets(Defs.millet, 1000000);
+		doer1.alterMillet(1000000);
 		((MktO)doer1.myShire().getMarket(Defs.timber)).placeBid(doer1, 10000);
 		doer1.MB.QuestStack.clear();
 		setupClanForWork(doer2.myShire(), doer2, Job.Lumberjacking);

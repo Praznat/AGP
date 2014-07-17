@@ -9,7 +9,7 @@ import Defs.*;
 import Game.*;
 import Game.Do.ClanAlone;
 import Questing.ExpertiseQuests;
-import Sentiens.Law.Commandment;
+import Sentiens.Law.PersonalCommandment;
 
 public class Values implements Defs {
 	
@@ -127,8 +127,8 @@ public class Values implements Defs {
 		@Override
 		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			int sins = 0;
-			Commandment[] myCommandments = POV.FB.commandments.list;
-			Commandment[] hisCommandments = clan.FB.commandments.list;
+			PersonalCommandment[] myCommandments = POV.FB.commandments;
+			PersonalCommandment[] hisCommandments = clan.FB.commandments;
 			for (int i = 0; i < myCommandments.length; i++) {
 				if (myCommandments[i].isSinful()) {sins += hisCommandments[i].getTransgressions();}
 			}

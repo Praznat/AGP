@@ -2,15 +2,16 @@ package Sentiens;
 
 import Descriptions.GobLog;
 import Game.AGPmain;
-import Sentiens.Law.Commandment;
+import Sentiens.Law.Commandments.Commandment;
+import Sentiens.Law.PersonalCommandment;
 
 public class CognitiveDissonance {
 	public static void doMorals(Clan clan) {
 		doMorals(clan, clan);
 	}
 	public static void doMorals(Clan teacher, Clan student) {
-		Commandment[] studentCommandments = student.FB.commandments.list;
-		Commandment[] teacherCommandments = teacher.FB.commandments.list;
+		PersonalCommandment[] studentCommandments = student.FB.commandments;
+		PersonalCommandment[] teacherCommandments = teacher.FB.commandments;
 		int cardinal = -1;
 		//teachers sins are not bad
 		int worst = 0; 
@@ -27,9 +28,9 @@ public class CognitiveDissonance {
 		}
 		if (cardinal >= 0) {setCommandment(student, studentCommandments[cardinal], true);}
 	}
-	private static void setCommandment(Clan clan, Commandment com, boolean enable) {
-		com.setSinful(enable);
-		clan.addReport(GobLog.decidedMoral(com, enable));
+	private static void setCommandment(Clan clan, PersonalCommandment studentCommandments, boolean enable) {
+		studentCommandments.setSinful(enable);
+		clan.addReport(GobLog.decidedMoral(studentCommandments, enable));
 	}
 	public static void doValues(Clan clan, Clan other) {
 		

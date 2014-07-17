@@ -88,8 +88,9 @@ public class KnowledgeQuests {
 				final KnowledgeBlock<T> result = knowledgeObserver.createKnowledgeBlock(Me);
 				patron.getRelevantLibrary().putKnowledge(result); // patron doesnt get credit but does get knowledge placement
 				Me.addReport(GobLog.contributeKnowledge(result));
-				((KnowledgeQuest)upQuest()).useKnowledgeBlock(result);
-				success(); return;
+				success();
+				((KnowledgeQuest)Me.MB.QuestStack.peek()).useKnowledgeBlock(result);
+				return;
 			}
 			final Clan target = observationPopulation[popv[i++]];
 			for (int i = 0; i < NUM_OBS_PER_TURN; i++) {knowledgeObserver.observe(target);}

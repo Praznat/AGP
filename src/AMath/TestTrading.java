@@ -37,6 +37,8 @@ public class TestTrading extends Testing {
 		resetTrading();
 		testSimple(s2, s1);
 		System.out.println("TRADING TESTS OK");
+		
+		// TODO test bid 100 in s1, bid 500 in s2, trader should put a bid slightly above 100 in s1 to sell at 500 in s2
 	}
 	
 	private static void testNoMarkets() {
@@ -62,7 +64,7 @@ public class TestTrading extends Testing {
 		affirm(s1.getMarket(18).sellablePX(b) > 0); // non-zero bid at s1
 		affirm(s1.getMarket(18).sellablePX(b) < s2.getMarket(18).sellablePX(b)); //s1 bid smaller than s2 bid
 		s1.getMarket(18).hitBid(b);
-		affirm(s2.getMarket(18).getAskSz() > 0 && s2.getMarket(18).sellablePX(b) < s2.getMarket(18).buyablePX(b));
+		affirm(s2.getMarket(18).getAskSz() > 0 && s2.getMarket(18).sellablePX(b) <= s2.getMarket(18).buyablePX(b));
 		for (Reportable r : a.getGoblog().getBook()) System.out.println(r.out());
 	}
 }

@@ -14,6 +14,8 @@ public class Order {
 	private final byte[] founderName;
 	private final boolean founderGender;
 	
+	private int treasury;
+	
 	public static Order createBy(Clan creator) {
 		Order newOrder = new Order(creator);
 		creator.joinOrder(newOrder);
@@ -82,8 +84,28 @@ public class Order {
 		if (n  > 5) {return (clan.getGender() == Defs.FEMALE ? "Madam" : "Sir");}
 		return "";
 	}
-	
-	
+	private void tax(Clan c) { // should be some affects on Clan's measured Allegiance contribution as well as Stressors
+		double taxRate = 0.15;
+	}
+	private void raiseFunds() { // should be various ways to do this
+		// TODO probably should be done through Quest stuff?
+	}
+	public boolean requestMillet(Clan requester, int amt) {
+		if (requester == ruler) {raiseFunds(); return false;}
+		Clan boss = requester.getBoss(); // if requester is ruler, only way to get more money is by raising funds
+		int treasury = boss.getMillet(); // for subjects, request money from direct boss
+		boolean success = treasury >= amt || requestMillet(boss, amt); // if direct boss doesnt have enough, he will request from
+		if (success) {
+			// TODO should be some affects on Clan's measured Allegiance contribution as well as Stressors?
+			boss.alterMillet(-amt);
+			requester.alterMillet(amt);
+			return true;
+		}
+		return false;
+	}
+	public boolean requestFeed(Clan requester) {
+		return requestMillet(requester, Clan.DMC * Clan.MIN_DMC_RESERVE);
+	}
 
 	public boolean preferableOver(Clan pov) {
 		return preferableOver(null, pov);

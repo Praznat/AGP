@@ -6,7 +6,7 @@ import Defs.M_;
 import Descriptions.BehName;
 import GUI.PopupAbstract;
 import Sentiens.*;
-import Sentiens.Law.Commandment;
+import Sentiens.Law.PersonalCommandment;
 
 
 public class MemScroll extends Papyrus {
@@ -23,7 +23,7 @@ public class MemScroll extends Papyrus {
 			if (s != "") {g.drawString(s, 2, 15+15*r++);}
 		}
 		r++;
-		for (Commandment c : clan.FB.commandments.list) {
+		for (PersonalCommandment c : clan.FB.commandments) {
 			g.drawString(c.toString(), 2, 15+15*r++);
 		}
 	}

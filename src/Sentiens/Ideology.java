@@ -5,6 +5,7 @@ import Defs.*;
 import Descriptions.Naming;
 import Game.*;
 import Sentiens.Law.Commandments;
+import Sentiens.Law.PersonalCommandment;
 import Sentiens.Values.Value;
 
 public class Ideology implements Defs {
@@ -20,12 +21,12 @@ public class Ideology implements Defs {
 	private int[] sancranks = new int[NUMVALS]; //rank of sancs in default sanc order
 	private int creed;
 	private Clan Me;
-	public Commandments commandments;
+	public PersonalCommandment[] commandments;
 	public Clan getEu() {return Me;}
 
 	public Ideology(Clan i) {   
 		Me = i;   initialize(defaultVars());   this.setPrs(P_.COMBAT.ordinal(), AGPmain.rand.nextInt(15));
-		commandments = new Commandments();
+		commandments = Commandments.INSTANCE.generatePersonalCommandments();
 	}
 	
 	public Ideology() {

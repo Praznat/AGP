@@ -3,8 +3,10 @@ package War;
 import java.awt.Rectangle;
 import java.util.*;
 
+import Defs.P_;
 import Descriptions.GobLog;
 import Descriptions.GobLog.Reportable;
+import Questing.MightQuests.FormArmy;
 import Questing.MightQuests.InvolvesArmy;
 import Questing.*;
 import Sentiens.*;
@@ -25,30 +27,29 @@ public class BattleField {
 		determineFormation(attacker, INSTANCE.offenseArmy);
 		
 		INSTANCE.go();
-		final Reportable resultLog = wasVictorious(attacker) ? GobLog.battleResult(attacker, defender, INSTANCE.offenseArmy.size(), INSTANCE.defenseArmy.size()) :
-			GobLog.battleResult(defender, attacker, INSTANCE.defenseArmy.size(), INSTANCE.offenseArmy.size());
+		boolean attackerWins = wasVictorious(attacker);
+		 // TODO make sure changing prest here is correct thing to do
+		if (attackerWins) {attacker.FB.upPrest(P_.BATTLEP); defender.FB.downPrest(P_.BATTLEP);}
+		else {defender.FB.upPrest(P_.BATTLEP); attacker.FB.downPrest(P_.BATTLEP);}
+		final Reportable resultLog = GobLog.battleResult(attacker, defender, INSTANCE.offenseArmy.size(), INSTANCE.defenseArmy.size(), attackerWins);
 		attacker.addReport(resultLog); defender.addReport(resultLog);
 				
 	}
 	private static void createArmyFrom(Clan clan, Army army) {
 		final QStack qs = clan.MB.QuestStack;
-		Set<Clan> clanArmy = null;
+		Set<FormArmy> clanArmy = null;
 		if (!qs.isEmpty()) {
 			final Quest topQuest = qs.peek();
 			if (InvolvesArmy.class.isAssignableFrom(topQuest.getClass())) {clanArmy = ((InvolvesArmy)topQuest).getArmy();}
 		}
-		if (clanArmy == null) {clanArmy = new HashSet<Clan>(); clanArmy.add(clan);}
+		if (clanArmy == null) {clanArmy = new HashSet<FormArmy>();}
 		createArmyFrom(clanArmy, army);
 	}
-	@Deprecated
-	private static void createArmyFromFollowersInShire(Clan clan, Shire location, Army army) {
-		createArmyFrom(clan.myOrder().getFollowers(clan, location, true, true), army);
-	}
-	private static Army createArmyFrom(Set<Clan> clans, Army army) {
+	private static Army createArmyFrom(Set<FormArmy> fas, Army army) {
 		army.clear();
-		for (Clan c : clans) {
+		for (FormArmy fa : fas) {
 			Warrior w = new Warrior();
-			w.setRefClan(c);
+			w.setRefClan(fa.getDoer());
 			army.add(w);
 		}
 		return army;

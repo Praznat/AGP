@@ -4,12 +4,13 @@ import java.util.Date;
 
 import AMath.Calc;
 import Defs.P_;
-import Descriptions.*;
+import Descriptions.GobLog.Reportable;
 import Game.*;
 import Questing.FaithQuests.ActOfFaith;
 import Questing.KnowledgeQuests.KnowledgeBlock;
+import Questing.*;
 import Sentiens.*;
-import Sentiens.Law.Commandment;
+import Sentiens.Law.PersonalCommandment;
 import Sentiens.Values.Value;
 import Shirage.Shire;
 
@@ -53,6 +54,12 @@ public class GobLog {
 			public String out() {return "Idled";}
 		};
 	}
+	
+	public static Reportable newQuest(final Quest q) {
+		return new Reportable() {
+			public String out() {return "Began " + q;}
+		};
+	}
 
 //	public static Reportable buySellFair(final int g, final int px, final boolean buyNotSell) {
 //		return new Reportable() {
@@ -93,6 +100,11 @@ public class GobLog {
 	public static Reportable dealTermTribute(final Clan prop, final Clan eval, final int millet) {
 		return new Reportable() {
 			public String out() {return prop.getNomen() + " demanded " + millet + " millet from " + eval.getNomen();}
+		};
+	}
+	public static Reportable dealTermReward(final Clan prop, final Clan eval, final int millet) {
+		return new Reportable() {
+			public String out() {return prop.getNomen() + " offered " + millet + " millet to " + eval.getNomen();}
 		};
 	}
 	public static Reportable dealTermAllegiance(final Clan prop, final Clan eval) {
@@ -146,7 +158,7 @@ public class GobLog {
 			public String out() {return "Assigned " + c.getNomen() + " to " + m.getDesc(c) + (replaced != null ? ", replacing " + replaced.getNomen() : "");}
 		};
 	}
-	public static Reportable decidedMoral(final Commandment c, final boolean enabled) {
+	public static Reportable decidedMoral(final PersonalCommandment c, final boolean enabled) {
 		return new Reportable() {
 			public String out() {return "Decided that to " + c.getVerb() + " is " + (enabled ? "" : "not ") + "a sin";}
 		};
@@ -238,15 +250,22 @@ public class GobLog {
 			}
 		};
 	}
-	public static Reportable battleResult(final Clan winner, final Clan loser, final int numA, final int numD) {
+	public static Reportable battleResult(final Clan attacker, final Clan defender, final int numA, final int numD, final boolean attackerWins) {
 //		System.out.println(winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!");
 		return new Reportable() {
-			public String out() {return winner.getNomen() + "(" + numA + ") defeated " + loser.getNomen() + "(" + numD + ") in battle!";}
+			public String out() {return attackerWins ? attacker.getNomen() + "(" + numA + ") successfully attacked " + defender.getNomen() + "(" + numD + ")!"
+					: defender.getNomen() + "(" + numD + ") successfully defended against " + attacker.getNomen() + "(" + numA + ")!";}
 		};
 	}
 	public static Reportable moveCurrentShire(final Shire origin, final Shire destination) {
 		return new Reportable() {
 			public String out() {return "Moved from " + origin.getName() + " to " + destination.getName();}
+		};
+	}
+
+	public static Reportable disbanded() {
+		return new Reportable() {
+			public String out() {return "Disbanded army";}
 		};
 	}
 }

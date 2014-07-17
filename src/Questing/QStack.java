@@ -2,26 +2,30 @@ package Questing;
 
 import java.util.Stack;
 
-import Questing.Quest.PatronedQuest;
 import Questing.Quest.QuestRetrievalQuest;
 import Questing.Quest.Unquenchable;
 import Sentiens.Clan;
-import Sentiens.Values.Value;
 
 @SuppressWarnings("serial")
 public class QStack extends Stack<Quest> {
 	private int maxCapacity;
 	public QStack(int c) {maxCapacity = c;}
-	public boolean prioritizeExistingMemberOfType(Class<? extends Quest> clasz) {
-		for (int i = this.size() - 1; i >= 0; i--) {
-			Quest member = this.get(i);
-			if (member.getClass().isAssignableFrom(clasz)) {
-				this.remove(member);
-				this.push(member);
-				return true;
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Quest getOfType(Class clasz) {
+		for (Quest member : this) {
+			if (clasz.isAssignableFrom(member.getClass())) {
+				return member;
 			}
 		}
-		return false; //not found
+		return null;
+	}
+	public boolean prioritizeExistingMemberOfType(Class<? extends Quest> clasz) {
+		Quest q = getOfType(clasz);
+		if (q == null) return false;
+		this.remove(q);
+		this.push(q);
+		return true;
 	}
 	@Override
 	public Quest peek() {

@@ -43,6 +43,7 @@ public class PersecutionQuests {
 
 		protected void failCase() {
 			Me.MB.newQ(new MightQuests.AttackClanQuest(Me, target));
+			target.MB.newQ(new MightQuests.AttackClanQuest(target, Me));
 		}
 
 		protected void report(boolean success) {

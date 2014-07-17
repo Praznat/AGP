@@ -8,8 +8,7 @@ import Defs.M_;
 import Descriptions.GobLog;
 import Game.*;
 import Government.Order;
-import Questing.Quest.PatronedQuest;
-import Questing.Quest.PatronedQuestFactory;
+import Questing.Quest.*;
 import Sentiens.*;
 import Sentiens.Values.Value;
 
@@ -26,15 +25,47 @@ public class InfluenceQuests {
 		public String description() {return "Spread propaganda";}
 	}
 	
-	public static class RecruitmentQuest extends PatronedQuest {
-		public RecruitmentQuest(Clan P, Clan patron) {super(P, patron);}
-		@Override
-		public void pursue() {
-			// TODO recruit
-			replaceAndDoNewQuest(Me, new PersecutionQuests.PersecuteInfidel(Me));
-		}
+	public static class RecruitmentQuest extends TransactionQuest {
+		private final Clan patron; // basically PatronQuest but extends TransactionQuest
+		public RecruitmentQuest(Clan P, Clan patron) {super(P); this.patron = patron;}
 		@Override
 		public String description() {return "Recruit followers";}
+		@Override
+		protected FindTargetAbstract findWhat() {
+			return new FindTargetAbstract(Me, TargetQuest.getReasonableCandidates(Me), Me) {
+				@Override
+				public boolean meetsReq(Clan POV, Clan target) {return target.myOrder() != POV.myOrder();}
+			};
+		}
+		@Override
+		protected void setContractDemand() {
+			contract().demandAllegiance();
+		}
+		@Override
+		protected void setContractOffer() {
+			// options:
+			// -improve respectability (target ideology = allegiance)
+			// -hire paid employees (target ideology = wealth)
+			// -offer salvation (target is sinful)
+			// -offer power/status (target ideology = influence)
+			// -offer land (target ideology = might??)
+			if (timesLeft > 2) {contract().offerPatronage();}
+			else {contract().offerReward(Me.getMillet() * timesLeft / 10);} // TODO this formula is arbitrary...
+		}
+		@Override
+		protected void successCase() {
+			// TODO Auto-generated method stub
+			success();
+		}
+		@Override
+		protected void failCase() {
+			// TODO Auto-generated method stub
+			finish(); // maybe try to improve patron's respectability?
+		}
+		@Override
+		protected void report(boolean success) {
+			// TODO Auto-generated method stub
+		}
 	}
 	
 	public static class InfluenceQuest extends PatronedQuest {

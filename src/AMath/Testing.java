@@ -27,6 +27,7 @@ public class Testing {
 	}
 	
 	public static void reset() {
+		Clan.DMC = 3;
 		testRealm = TestRealm.makeTestRealm(2, 2, 100);
 		testRealm.doCensus();
 		AGPmain.setRealm(testRealm);
@@ -36,6 +37,8 @@ public class Testing {
 		System.out.println("starting tests");
 		
 		//TestKnowledge.testWealthKnowledge(); TODO null pointer
+		
+		TestCombat.doAllCombatTests();
 		
 		TestTrading.doTradingTests();
 		
@@ -93,8 +96,11 @@ public class Testing {
 		for (Map.Entry<Clan, Shire> entry : shireFiltrationMap.entrySet()) entry.getValue().addToCensus(entry.getKey());
 		shireFiltrationMap.clear();
 	}
-	
 	protected static void pursueUntilDone(Clan c) {
+		while (!c.MB.QuestStack.isEmpty()) c.pursue();
+	}
+	@Deprecated
+	protected static void pursueUntilDoneOLD(Clan c) { // no idea why i ever did it like this
 		int numQ = c.MB.QuestStack.size();
 		while (c.MB.QuestStack.size() >= numQ) {
 			c.pursue();

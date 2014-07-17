@@ -200,9 +200,9 @@ public class Face extends JPanel {
 		EARW = new FRelation(I, (F_.EARW), 10, 50);
 		EART = new FRelation(I, (F_.EART), 0, 15);
 		EARD = new FRelation(I, (F_.EARD), 20, 80);
-		SKINR = new FRelation(I, (F_.SKINR), 0, 99);
-		SKING = new FRelation(I, (F_.SKING), 50, 239);
-		SKINB = new FRelation(I, (F_.SKINB), 50, 239);
+		SKINR = new FRelation(I, (F_.SKINR), 0, 129);
+		SKING = new FRelation(I, (F_.SKING), 50, 249);
+		SKINB = new FRelation(I, (F_.SKINB), 50, 249);
 		HAIRL = new FRelation(I, (F_.HAIRL), 0, 30);
 		HAIRC = new FRelation(I, (F_.HAIRC), 0, 89);
 		HAIRW = new FRelation(I, (F_.HAIRW), 0, 10);

@@ -2,9 +2,14 @@ WORKPLAN
 
 Stuff to do:
 
+allegiance: Order legacy, Order treasury(wealth), Order domain(might), Order library(knowledge)
+*Order must be at least certain size OR control at least one shire before it can have its own legacy, library, etc
+*until then, those things refer to order leader's legacy, home shire's library, etc
+
 hungry goblins' conversion to savage should be temporary (thats why no construction: builders starve and become savages)
 bug? number of buyers of (r) good > 0 even when it shows no bid price?
 bug? unit test: check auction clearing with self-transaction (bidder = offerer)
+on unheired death, etc, owned property goes to lord/governor/market?
 
 new Clan Scroll GUI?
 BASIC - basic info, values/ideology, behaviors

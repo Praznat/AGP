@@ -5,7 +5,7 @@ import java.util.*;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.P_;
-import Descriptions.GobLog;
+import Descriptions.*;
 import Descriptions.GobLog.Reportable;
 import Questing.MightQuests;
 import Sentiens.*;
@@ -83,6 +83,10 @@ public class Contract {   // AND/OR combination of Terms??
 		for (DealTerm demand : demands) {if (!demand.doit()) {proposer.AB.add(new Stressor(Stressor.PROMISE_BROKEN, evaluator));}}
 	}
 
+	private double milletEval(int millet) {
+		return ((Assessable)Values.WEALTH).evaluate(evaluator, null, millet);
+	}
+	
 	protected abstract class DealTerm {
 		public double getEvaluation() {evaluator.addReport(loggy()); proposer.addReport(loggy()); return evaluate();}
 		protected abstract double evaluate();
@@ -95,7 +99,7 @@ public class Contract {   // AND/OR combination of Terms??
 		public DemandTributeTerm(int millet) {this.millet = millet;}
 		@Override
 		protected double evaluate() {
-			return ((Assessable)Values.WEALTH).evaluate(evaluator, null, -Math.min(millet, evaluator.getMillet())); // evaluator never assumes debt
+			return milletEval(-Math.min(millet, evaluator.getMillet())); // evaluator never assumes debt
 		}
 		@Override
 		protected boolean doit() {
@@ -141,7 +145,40 @@ public class Contract {   // AND/OR combination of Terms??
 		protected boolean doit() {evaluator.MB.newQ(Ministry.getPatronQuestFactoryForValue(val).createFor(evaluator, proposer)); return true;}
 		protected Reportable loggy() {return GobLog.dealTermService(proposer, evaluator, val);}
 	}
-	
+	public void offerReward(int millet) {offers.add(new OfferRewardTerm(millet));}
+	protected class OfferRewardTerm extends DealTerm {
+		private final int millet;
+		public OfferRewardTerm(int millet) {this.millet = millet;}
+		@Override
+		protected double evaluate() {
+			return milletEval(Math.min(millet, proposer.getMillet())); // evaluator never assumes debt
+		}
+		@Override
+		protected boolean doit() {
+			boolean enough = proposer.getMillet() >= millet;
+			int amt = (enough ? millet : proposer.getMillet());
+			evaluator.alterMillet(amt);
+			proposer.alterMillet(-amt);
+			return enough;
+		}
+		@Override
+		protected Reportable loggy() {return GobLog.dealTermReward(proposer, evaluator, millet);}
+	}
+	public void offerPatronage() {offers.add(new OfferPatronageTerm());}
+	protected class OfferPatronageTerm extends DealTerm {
+		@Override
+		protected double evaluate() {
+			return evaluator.FB.randomValueInPriority().compare(evaluator, proposer, evaluator);
+		}
+		@Override
+		protected boolean doit() {
+			return evaluator.join(proposer);
+		}
+		@Override
+		protected Reportable loggy() {
+			return null;
+		}
+	}
 	protected abstract class ThreatTerm extends DealTerm {
 		protected abstract int wgtOfValsToLose();
 		@Override

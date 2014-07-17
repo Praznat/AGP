@@ -13,7 +13,7 @@ import Sentiens.Stressor.Causable;
 
 public abstract class Quest {
 	protected Clan Me;
-	public Quest(Clan P) {Me = P;}
+	public Quest(Clan P) {Me = P; Me.addReport(GobLog.newQuest(this));}
 	public void pursueQuest() {
 		if (!AGPmain.AUTOPILOT && Me == avatar()) {
 			avatarPursue();
@@ -26,7 +26,13 @@ public abstract class Quest {
 	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
 	protected void success(Stressor.Causable relief) {success(); Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));}
 	protected void success(Stressor.Causable... reliefs) {failure(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
-	protected void finish() {Me.MB.finishQ();}
+	protected void finish() {
+		if (!this.getClass().isAssignableFrom(Me.MB.QuestStack.peek().getClass())) {
+			System.out.println("bullshit "+this+" finish");specialDelete();
+		}
+		else {Me.MB.finishQ();}
+	}
+	protected void specialDelete() {Me.MB.QuestStack.remove(this);}
 	protected void failure(Stressor.Causable blamee) {finish(); Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));} // must finish first in case stressor adds new quest
 	protected void failure(Stressor.Causable... blamees) {failure(blamees[AGPmain.rand.nextInt(blamees.length)]);}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}

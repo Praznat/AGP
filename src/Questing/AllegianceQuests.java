@@ -95,7 +95,7 @@ public class AllegianceQuests {
 					if (d > max) {max = d; bestClan = c;}
 				}
 				if (max > 0) {
-					Me.join(bestClan);
+					Me.join(bestClan); // TODO boss should be able to reject (cuz minions cost money) ... in that case just offer service?
 					success(bestClan);
 					Me.addReport(GobLog.findSomeone(bestClan, "new master"));
 				}
