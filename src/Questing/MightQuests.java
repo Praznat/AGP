@@ -54,14 +54,20 @@ public class MightQuests {
 		@Override
 		public void pursue() {
 			if (!checkArmyStatus()) {return;}
-			super.pursue();
 			if (army.isEmpty()) {throw new IllegalStateException("damni ttt this check supposed to happen in super.pursue() already!");}
+			final Quest tmpyTemp = upQuest();
+			final Clan tempyMcWempy = ((AttackClanQuest) tmpyTemp).getTarget(); // upquest should always be attackclan
+			Set<FormArmy> tmp = enemyArmy(tempyMcWempy);
 			if (isReadyToFight(army)) {
+				System.out.println("ready to fight at size = " + army.size() + " vs " + (tmp == null ? 1 : tmp.size()));
+				((AttackClanQuest) upQuest()).beReady();
 				success();
 				return;
 			}
+			super.pursue();
 			if (army.size() <= lastArmySize) timesLeft--;
 			if (timesLeft <= 0) { // GIVE UP ( this stuff should be in the upper quest as it will be different between attack and defense
+				System.out.println("giving up at army size = " + army.size() + " vs " + (tmp == null ? 1 : tmp.size()));
 				giveUp();
 				return;
 			}
@@ -75,21 +81,30 @@ public class MightQuests {
 			Me.addReport(GobLog.backedDown()); // could be run away?
 			upQ.lose();
 		}
+		private Set<FormArmy> enemyArmy(Clan enemy) {
+			Set<FormArmy> enemyArmy = null;
+			final Quest targetTopQuest = enemy.MB.QuestStack.peek();
+			if (targetTopQuest != null && FormArmy.class.isAssignableFrom(targetTopQuest.getClass())) {enemyArmy = ((FormArmy) targetTopQuest).getArmy();}
+			return enemyArmy;
+		}
 		private boolean isReadyToFight(Set<FormArmy> myArmy) {
 			final Quest myTopQuest = upQuest();
-			if (AttackClanQuest.class.isAssignableFrom(myTopQuest.getClass())) {
-				final Clan target = ((AttackClanQuest) myTopQuest).getTarget();
-				Set<FormArmy> enemyArmy = null;
-				final Quest targetTopQuest = target.MB.QuestStack.peek();
-				if (targetTopQuest != null && FormArmy.class.isAssignableFrom(targetTopQuest.getClass())) {enemyArmy = ((FormArmy) targetTopQuest).getArmy();}
-				return isReadyToFight(enemyArmy, myArmy, Me);
-			}
-			return 1 / 0 < 8;
+			final Clan target = ((AttackClanQuest) myTopQuest).getTarget(); // upquest should always be attackclan
+			return isReadyToFight(enemyArmy(target), target, myArmy, Me, timesLeft);
 		}
-		/** basically look at number of troops adjusted by confidence/paranoia ranging from x1/2 to x2 */
-		private static boolean isReadyToFight(Set<FormArmy> enemyArmy, Set<FormArmy> myArmy, Clan me) {
-			return myArmy.size() * (me.FB.getBeh(M_.CONFIDENCE) + 15) >
-					(enemyArmy != null ? enemyArmy.size() : 1) * (me.FB.getBeh(M_.PARANOIA) + 15); //TODO overly simple
+		/** 
+		 * TODO there should be many different ways of deciding this
+		 * default is: compare current advantage to potential advantage and wait if current is less than potential
+		 * and still have time left, only attacking if above confidence threshold
+		 * */
+		private static boolean isReadyToFight(Set<FormArmy> enemyArmy, Clan enemy, Set<FormArmy> myArmy, Clan me, int timeLeft) {
+			double currentAdvantage = (myArmy.size() +1) / ((enemyArmy != null ? enemyArmy.size() : 1) +1); // the +1s shouldnt be necessary
+			double ultimatePotentialAdvantage = (double)me.getMinionTotal() / enemy.getMinionTotal();
+			double confidenceFactor = (me.FB.getBeh(M_.CONFIDENCE) + 15) / (me.FB.getBeh(M_.PARANOIA) + 15); //TODO overly simple
+			if (timeLeft <= 1) { // cant wait anymore
+				return currentAdvantage * confidenceFactor >= 1;
+			}
+			return currentAdvantage >= ultimatePotentialAdvantage && currentAdvantage * confidenceFactor >= 1;
 		}
 		public Set<FormArmy> getArmy() {return army;}
 		@Override
@@ -272,13 +287,13 @@ public class MightQuests {
 	
 	/** single attack, not drawn-out war */
 	public static class AttackClanQuest extends TargetQuest implements InvolvesArmy {
-		enum Status {FORMING, VICTORIOUS, DEFEATED};
-		private Status status;
+		enum Status {FORMING, VICTORIOUS, DEFEATED, READY};
+		private Status status = Status.FORMING;
 		private Set<FormArmy> army;
 		public AttackClanQuest(Clan P, Clan target) {super(P, target);}
 		@Override
 		public void pursue() {
-			if (army == null) {status = Status.FORMING;   Me.MB.newQ(new FormOwnArmy(Me));}
+			if (status == Status.FORMING) {Me.MB.newQ(new FormOwnArmy(Me));}
 			//TODO include some code for moving to target shire
 			else {
 				if (army.isEmpty()) {onDisbandedArmy(Me, status); return;}
@@ -315,6 +330,7 @@ public class MightQuests {
 			status = Status.DEFEATED;
 			disband();
 		}
+		public void beReady() {status = Status.READY;}
 		
 	}
 	
