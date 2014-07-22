@@ -2,8 +2,8 @@ package War;
 
 import java.util.Set;
 
-import Questing.Quest;
-import Questing.MightQuests.FormArmy;
+import Questing.*;
+import Questing.WarQuests.FormArmy;
 import Sentiens.Clan;
 
 public class WarLogic {

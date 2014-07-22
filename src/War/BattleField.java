@@ -4,12 +4,12 @@ import java.awt.Rectangle;
 import java.util.*;
 
 import Defs.P_;
-import Descriptions.GobLog;
+import Descriptions.*;
 import Descriptions.GobLog.Reportable;
-import Questing.MightQuests.FormArmy;
-import Questing.MightQuests.InvolvesArmy;
 import Questing.*;
-import Sentiens.*;
+import Questing.WarQuests.FormArmy;
+import Questing.WarQuests.InvolvesArmy;
+import Sentiens.Clan;
 import Shirage.Shire;
 import War.CombatDefs.BattleStats;
 
@@ -21,8 +21,8 @@ public class BattleField {
 	private Army offenseArmy = new Army();
 
 	public static void setupNewBattleField(Clan attacker, Clan defender, Shire location) {
-		createArmyFrom(defender, INSTANCE.defenseArmy);
-		createArmyFrom(attacker, INSTANCE.offenseArmy);
+		createArmyFrom(defender, INSTANCE.defenseArmy, location);
+		createArmyFrom(attacker, INSTANCE.offenseArmy, location);
 		determineFormation(defender, INSTANCE.defenseArmy);
 		determineFormation(attacker, INSTANCE.offenseArmy);
 		
@@ -35,21 +35,21 @@ public class BattleField {
 		attacker.addReport(resultLog); defender.addReport(resultLog);
 				
 	}
-	private static void createArmyFrom(Clan clan, Army army) {
+	private static void createArmyFrom(Clan clan, Army army, Shire location) {
 		final QStack qs = clan.MB.QuestStack;
-		Set<FormArmy> clanArmy = null;
-		if (!qs.isEmpty()) {
-			final Quest topQuest = qs.peek();
-			if (InvolvesArmy.class.isAssignableFrom(topQuest.getClass())) {clanArmy = ((InvolvesArmy)topQuest).getArmy();}
+		Set<Clan> clanArmy = new HashSet<Clan>();
+		for (Quest q : qs) {
+			if (InvolvesArmy.class.isAssignableFrom(q.getClass())) {
+				for (FormArmy fa : ((InvolvesArmy)q).getArmy()) {clanArmy.add(fa.getDoer());}
+			}
 		}
-		if (clanArmy == null) {clanArmy = new HashSet<FormArmy>();}
 		createArmyFrom(clanArmy, army);
 	}
-	private static Army createArmyFrom(Set<FormArmy> fas, Army army) {
+	private static Army createArmyFrom(Set<Clan> clans, Army army) {
 		army.clear();
-		for (FormArmy fa : fas) {
+		for (Clan c : clans) {
 			Warrior w = new Warrior();
-			w.setRefClan(fa.getDoer());
+			w.setRefClan(c);
 			army.add(w);
 		}
 		return army;

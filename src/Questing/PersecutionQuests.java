@@ -4,7 +4,7 @@ import Descriptions.GobLog;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.RelationCondition;
 import Questing.Quest.TransactionQuest;
-import Sentiens.*;
+import Sentiens.Clan;
 
 public class PersecutionQuests {
 
@@ -42,8 +42,8 @@ public class PersecutionQuests {
 		} // relieves previous anger from target
 
 		protected void failCase() {
-			Me.MB.newQ(new MightQuests.AttackClanQuest(Me, target));
-			target.MB.newQ(new MightQuests.AttackClanQuest(target, Me));
+			Me.MB.newQ(new WarQuests.WarQuest(Me, target));
+			target.MB.newQ(new WarQuests.WarQuest(target, Me));
 		}
 
 		protected void report(boolean success) {

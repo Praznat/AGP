@@ -237,9 +237,9 @@ public class GobLog {
 		};
 	}
 	
-	public static Reportable backedDown() {
+	public static Reportable backedDown(final Clan me, final Clan target) {
 		return new Reportable() {
-			public String out() {return "Backed down from fight";}
+			public String out() {return me.getFirstName() + " yielded to " + target.getFirstName();}
 		};
 	}
 	public static Reportable recruitForWar(final Clan recruiter, final Clan recruit) {

@@ -2,6 +2,8 @@ WORKPLAN
 
 Stuff to do:
 
+map display different stuff (trade routes, orders, etc)
+
 allegiance: Order legacy, Order treasury(wealth), Order domain(might), Order library(knowledge)
 *Order must be at least certain size OR control at least one shire before it can have its own legacy, library, etc
 *until then, those things refer to order leader's legacy, home shire's library, etc
@@ -42,7 +44,7 @@ copulation (mostly done, ministry not split out properly)
 allegiance (mostly done)
 	self - ok
 	ministry - confirm
-expertise
+talent
 	self - ok
 	ministry - confirm
 influence
@@ -75,3 +77,23 @@ top 3 values in shire/order
 top 3 memes in shire/order
 top predictor meme for given value
 top discrete stat for given value (job, prayer)
+
+
+
+
+Game of Thrones Examples
+
+wealth - littlefinger
+copulation - king robert
+allegiance - brienne
+talent - jamie
+influence - margaery
+beauty - renly
+righteousness - ned stark, daenarys
+knowledge - tyrion
+might - khal drogo
+harmony - vaerys
+legacy - tywin, cersei
+spirituality - melisandre
+
+

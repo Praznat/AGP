@@ -1,27 +1,17 @@
 package Questing;
 
-import java.util.*;
-
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.M_;
-import Descriptions.GobLog;
 import Game.Contract;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
-import Questing.Quest.TargetQuest;
 import Questing.Quest.TransactionQuest;
 import Sentiens.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Values.Value;
-import War.BattleField;
 
 public class MightQuests {
-	
-	public static interface InvolvesArmy {
-		public Set<FormArmy> getArmy();
-		public void setArmy(Set<FormArmy> army);
-	}
 	
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefendPatron.class) {public Quest createFor(Clan c, Clan p) {return new DefendPatron(c, p);}};}
 	
@@ -40,134 +30,7 @@ public class MightQuests {
 		
 	}
 	
-	public static class FormOwnArmy extends FormArmy {
-		protected Set<FormArmy> army;
-		private int lastArmySize = 0;
-		private int timesLeft;
-		public FormOwnArmy(Clan P) {
-			super(P, null);
-			if (army == null) army = new HashSet<FormArmy>();
-			army.add(this);
-			((InvolvesArmy) Me.MB.QuestStack.peek()).setArmy(army);
-			timesLeft = Me.FB.getBeh(M_.PATIENCE) / 4 + 2;
-		}
-		@Override
-		public void pursue() {
-			if (!checkArmyStatus()) {return;}
-			if (army.isEmpty()) {throw new IllegalStateException("damni ttt this check supposed to happen in super.pursue() already!");}
-			final Quest tmpyTemp = upQuest();
-			final Clan tempyMcWempy = ((AttackClanQuest) tmpyTemp).getTarget(); // upquest should always be attackclan
-			Set<FormArmy> tmp = enemyArmy(tempyMcWempy);
-			if (isReadyToFight(army)) {
-				System.out.println("ready to fight at size = " + army.size() + " vs " + (tmp == null ? 1 : tmp.size()));
-				((AttackClanQuest) upQuest()).beReady();
-				success();
-				return;
-			}
-			super.pursue();
-			if (army.size() <= lastArmySize) timesLeft--;
-			if (timesLeft <= 0) { // GIVE UP ( this stuff should be in the upper quest as it will be different between attack and defense
-				System.out.println("giving up at army size = " + army.size() + " vs " + (tmp == null ? 1 : tmp.size()));
-				giveUp();
-				return;
-			}
-			lastArmySize = army.size();
-		}
-		private void giveUp() { // TODO should be run away, regroup, sue for peace?
-			AttackClanQuest upQ = ((AttackClanQuest) upQuest());
-			AttackClanQuest targetClanQ = (AttackClanQuest)upQ.getTarget().MB.QuestStack.getOfType(AttackClanQuest.class);
-			if (targetClanQ != null) targetClanQ.win();
 
-			Me.addReport(GobLog.backedDown()); // could be run away?
-			upQ.lose();
-		}
-		private Set<FormArmy> enemyArmy(Clan enemy) {
-			Set<FormArmy> enemyArmy = null;
-			final Quest targetTopQuest = enemy.MB.QuestStack.peek();
-			if (targetTopQuest != null && FormArmy.class.isAssignableFrom(targetTopQuest.getClass())) {enemyArmy = ((FormArmy) targetTopQuest).getArmy();}
-			return enemyArmy;
-		}
-		private boolean isReadyToFight(Set<FormArmy> myArmy) {
-			final Quest myTopQuest = upQuest();
-			final Clan target = ((AttackClanQuest) myTopQuest).getTarget(); // upquest should always be attackclan
-			return isReadyToFight(enemyArmy(target), target, myArmy, Me, timesLeft);
-		}
-		/** 
-		 * TODO there should be many different ways of deciding this
-		 * default is: compare current advantage to potential advantage and wait if current is less than potential
-		 * and still have time left, only attacking if above confidence threshold
-		 * */
-		private static boolean isReadyToFight(Set<FormArmy> enemyArmy, Clan enemy, Set<FormArmy> myArmy, Clan me, int timeLeft) {
-			double currentAdvantage = (myArmy.size() +1) / ((enemyArmy != null ? enemyArmy.size() : 1) +1); // the +1s shouldnt be necessary
-			double ultimatePotentialAdvantage = (double)me.getMinionTotal() / enemy.getMinionTotal();
-			double confidenceFactor = (me.FB.getBeh(M_.CONFIDENCE) + 15) / (me.FB.getBeh(M_.PARANOIA) + 15); //TODO overly simple
-			if (timeLeft <= 1) { // cant wait anymore
-				return currentAdvantage * confidenceFactor >= 1;
-			}
-			return currentAdvantage >= ultimatePotentialAdvantage && currentAdvantage * confidenceFactor >= 1;
-		}
-		public Set<FormArmy> getArmy() {return army;}
-		@Override
-		public String description() {
-			return army!=null? "Form " + army.size() + "p army for self" : "Form army for self";
-		}
-	}
-	public static class FormArmy extends Quest implements InvolvesArmy {
-		protected FormArmy root;
-		private boolean doneRecruiting = false;
-		public FormArmy(Clan P, FormArmy root) {
-			super(P);
-			this.root = root;
-			if (root != null) {
-				Clan recruiter = root.getDoer();
-				Me.addReport(GobLog.recruitForWar(recruiter, Me));
-				if (Me != root.getDoer()) {recruiter.addReport(GobLog.recruitForWar(recruiter, Me));}
-			}
-		}
-		protected void recruit() {
-			if (Me.myOrder() != null) {
-				Set<Clan> followers = Me.myOrder().getFollowers(Me, false, false);
-				for (Clan f : followers) {
-					final Quest topQuest = f.MB.QuestStack.peek();
-					if (topQuest instanceof FormArmy) {continue;}
-					// DOESNT COST TURN IF CANDIDATE'S QUEST IS ALREADY DEFENDPATRON (upside of standing army = instant formation of first tier)
-					if (topQuest instanceof DefendPatron) {f.MB.newQ(new FormArmy(f, this));}
-//			Contract.getInstance().enter(e, p) ?
-					else {f.MB.newQ(new FormArmy(f, this)); return;}
-				}
-			}
-			doneRecruiting = true;
-		}
-		protected boolean checkArmyStatus() {
-			Set<FormArmy> army = getArmy();
-			boolean isActive = army != null && !army.isEmpty();
-			if (!isActive) finish();
-			return isActive;
-		}
-		@Override
-		public void pursue() {
-			if (!checkArmyStatus()) {return;}
-			if (root != null) { // root == null means this is FormOwnArmy
-				Set<FormArmy> army = root.getArmy();
-				if (army != null) {
-					Clan recruiter = root.getDoer();
-					if (Me.currentShire() == recruiter.currentShire()) {army.add(this);}
-					else {Me.moveTowards(recruiter.currentShire());}
-				}
-			}
-			
-			if (!doneRecruiting) {recruit();} // just chill until disband?
-		}
-		@Override
-		public Set<FormArmy> getArmy() {return root != null ? root.getArmy() : null;}
-		@Override
-		public void setArmy(Set<FormArmy> army) {} // this really shouldnt even be here
-		@Override
-		public String description() {
-			Set<FormArmy> army = getArmy(); return army==null? "Form null army??" : "Form " + army.size() + "p army for " + root.getDoer().getFirstName();
-		}
-		
-	}
 
 	private static void chooseThreat(Clan subject, Clan object) {
 		if (Commandments.INSTANCE.Xenophobia.getFor(subject).isSinful() || (subject.myOrder() != null && subject.myOrder() == object.myOrder())) {
@@ -270,8 +133,8 @@ public class MightQuests {
 
 		@Override
 		protected void failCase() {
-			replaceAndDoNewQuest(Me, new AttackClanQuest(Me, target));
-			target.MB.newQ(new AttackClanQuest(target, Me));
+			replaceAndDoNewQuest(Me, new WarQuests.WarQuest(Me, target));
+			target.MB.newQ(new WarQuests.WarQuest(target, Me));
 		}
 
 		@Override
@@ -284,58 +147,9 @@ public class MightQuests {
 		public String description() {return "Make challenge" + (target!=null?" to "+target.getNomen():"");}
 	
 	}
+
+
 	
-	/** single attack, not drawn-out war */
-	public static class AttackClanQuest extends TargetQuest implements InvolvesArmy {
-		enum Status {FORMING, VICTORIOUS, DEFEATED, READY};
-		private Status status = Status.FORMING;
-		private Set<FormArmy> army;
-		public AttackClanQuest(Clan P, Clan target) {super(P, target);}
-		@Override
-		public void pursue() {
-			if (status == Status.FORMING) {Me.MB.newQ(new FormOwnArmy(Me));}
-			//TODO include some code for moving to target shire
-			else {
-				if (army.isEmpty()) {onDisbandedArmy(Me, status); return;}
-				BattleField.setupNewBattleField(Me, target, target.myShire());
-				Quest enemyQ = target.MB.QuestStack.getOfType(AttackClanQuest.class);
-				if (BattleField.wasVictorious(Me)) {win();   if (enemyQ != null) {((AttackClanQuest)enemyQ).lose();}}
-				else {lose();   if (enemyQ != null) {((AttackClanQuest)enemyQ).win();}}
-				return;
-			}
-		}
-		@Override
-		public String description() {
-			return "Attack " + target.getNomen() + (army!=null?" (army:"+army.size()+")":"");
-		}
-		@Override
-		public Set<FormArmy> getArmy() {return army;}
-		@Override
-		public void setArmy(Set<FormArmy> army) {this.army = army;}
-		
-		private void disband() {
-			if (army == null) {return;} // maybe opponent gave up before you could even form army
-			for (FormArmy fa : army) {
-				fa.specialDelete();//disband everybody
-			}
-			Me.addReport(GobLog.disbanded());
-			army.clear();
-		}
-		
-		public void win() {
-			status = Status.VICTORIOUS;
-			disband();
-		}
-		public void lose() {
-			status = Status.DEFEATED;
-			disband();
-		}
-		public void beReady() {status = Status.READY;}
-		
-	}
-	
-	private static void onDisbandedArmy(Clan clan, AttackClanQuest.Status status) {
-		clan.MB.finishQ();
-	}
+
 	
 }

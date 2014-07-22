@@ -4,10 +4,10 @@ import java.util.*;
 
 import Defs.*;
 import Questing.*;
-import Questing.MightQuests.AttackClanQuest;
-import Questing.MightQuests.FormArmy;
-import Questing.MightQuests.InvolvesArmy;
-import Sentiens.*;
+import Questing.WarQuests.FormArmy;
+import Questing.WarQuests.InvolvesArmy;
+import Questing.WarQuests.WarQuest;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class TestCombat extends Testing {
@@ -29,8 +29,9 @@ public class TestCombat extends Testing {
 	private static Collection<Clan> everyone = new ArrayList<Clan>();
 	
 	public static void doAllCombatTests() {
-		testAttack(0);
-		testAttack(1);
+		testAttackSudden();
+		testAttackWait(0);
+		testAttackWait(1);
 		testStandingArmy(0);
 		
 		restoreFilteredCensuses();
@@ -68,6 +69,7 @@ public class TestCombat extends Testing {
 		c.FB.setBeh(M_.CONFIDENCE, 7);
 		c.FB.setBeh(M_.PARANOIA, 7);
 		c.FB.setPrs(P_.COMBAT, 10);
+		c.FB.setPrs(P_.BATTLEP, 10);
 	}
 	
 	private static boolean containsOf(Collection<FormArmy> army, Clan clan) {
@@ -75,9 +77,9 @@ public class TestCombat extends Testing {
 		return false;
 	}
 
-	private static void testAttack(int postSituation) {
+	private static void testAttackSudden() {
 		resetFighters();
-		caocao.MB.newQ(new MightQuests.AttackClanQuest(caocao, liubei));
+		caocao.MB.newQ(new WarQuests.WarQuest(caocao, liubei));
 //		pursueUntilDone(caocao);
 		caocao.pursue(); //AttackClanQuest
 		caocao.pursue(); //FormOwnArmyQuest
@@ -85,7 +87,22 @@ public class TestCombat extends Testing {
 		affirm(a.size() == 1 && containsOf(a, caocao)); // just leader for now
 		dianwei.pursue();
 		xiahoudun.pursue();
-		affirm(a.size() == 2 && containsOf(a, caocao)); // only got one minion cuz not standing army
+		affirm(a.size() == 1 && containsOf(a, caocao)); // only got one minion cuz not standing army
+	}
+	private static void testAttackWait(int postSituation) {
+		resetFighters();
+		lubu.join(caocao);
+		caocao.MB.newQ(new WarQuests.WarQuest(caocao, liubei));
+//		pursueUntilDone(caocao);
+		caocao.pursue(); //AttackClanQuest
+		caocao.pursue(); //FormOwnArmyQuest
+		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
+		affirm(a.size() == 1 && containsOf(a, caocao)); // just leader for now
+		dianwei.pursue();
+		xiahoudun.pursue();
+		lubu.pursue();
+		zhangliao.pursue();
+		affirm(a.size() >= 2 && containsOf(a, caocao)); // only got one minion cuz not standing army (or two if lubu was activated cuz he has zhangliao)
 
 		switch (postSituation) {
 		case 0: testAttackerGivesUp(); break;
@@ -96,6 +113,7 @@ public class TestCombat extends Testing {
 
 	private static void testStandingArmy(int postSituation) { //uses DefendPatron
 		resetFighters();
+		caocao.FB.setBeh(M_.CONFIDENCE, 6); // otherwise will do sudden attack
 		formup(caocao, liubei, dianwei, xiahoudun);
 		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
 		affirm(containsOf(a, dianwei) && containsOf(a, xiahoudun));
@@ -116,7 +134,7 @@ public class TestCombat extends Testing {
 		// test winner disbands:
 		liubei.pursue();
 		affirm(liubei.MB.QuestStack.getOfType(FormArmy.class) == null);
-		affirm(liubei.MB.QuestStack.getOfType(AttackClanQuest.class) == null);
+		affirm(liubei.MB.QuestStack.getOfType(WarQuest.class) == null);
 	}
 	
 	private static void testAttackerWinsFight() {
@@ -128,7 +146,7 @@ public class TestCombat extends Testing {
 	}
 	
 	private static void formup(Clan leader, Clan enemy, Clan... followers) {
-		leader.MB.newQ(new MightQuests.AttackClanQuest(leader, enemy));
+		leader.MB.newQ(new WarQuests.WarQuest(leader, enemy));
 		for (Clan f : followers) f.MB.newQ(new MightQuests.DefendPatron(f, leader));
 		leader.pursue(); //AttackClanQuest
 		leader.pursue(); //FormOwnArmyQuest

@@ -50,9 +50,8 @@ public class RomanceQuests {
 		public FindMate(Clan P) {super(P);}
 		@Override
 		public boolean meetsReq(Clan POV, Clan target) {
-			double comp = POV.FB.randomValueInPriority().compare(POV, target, POV);
-			boolean success = POV.getGender() != target.getGender() &&
-					comp + Values.MAXVAL * POV.useBeh(M_.PROMISCUITY) / 15 > 0;
+			if (POV.getGender() == target.getGender()) return false;
+			boolean success = POV.FB.randomValueInPriority().compare(POV, target, POV) > 0; // promiscuity?
 			if (success) {((BreedQuest) upQuest()).resetFails();} //previous fails were for finding target
 			Me.addReport(GobLog.findSomeone((success ? target : null), "mate"));
 			return success;

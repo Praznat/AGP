@@ -10,9 +10,9 @@ import Descriptions.GobLog.Reportable;
 import Game.*;
 import Government.Order;
 import Markets.*;
-import Questing.MightQuests.FormArmy;
 import Questing.PropertyQuests.LaborQuest;
 import Questing.*;
+import Questing.WarQuests.FormArmy;
 import Sentiens.Law.Commandments;
 import Shirage.Shire;
 
