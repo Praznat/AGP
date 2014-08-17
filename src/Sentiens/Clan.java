@@ -10,13 +10,14 @@ import Descriptions.GobLog.Reportable;
 import Game.*;
 import Government.Order;
 import Markets.*;
-import Questing.PropertyQuests.LaborQuest;
-import Questing.*;
-import Questing.WarQuests.FormArmy;
+import Questing.Quest;
+import Questing.Might.FormArmyQuest;
+import Questing.Wealth.LaborQuest;
 import Sentiens.Law.Commandments;
+import Sentiens.Stress.*;
 import Shirage.Shire;
 
-public class Clan implements Defs, Stressor.Causable {
+public class Clan implements Defs, Blameable {
 	public static int DMC = 3; //daily millet consumption
 	public static final int MIN_DMC_RESERVE = 15;
 	protected static final int MUTATION_PCT = 2;
@@ -39,7 +40,7 @@ public class Clan implements Defs, Stressor.Causable {
 	private int knowledgeAttribution;
 	
 	protected int ID;
-	protected Shire homeShire, currentShire;
+	protected Shire homeShire, currentShire, governedShire;
 	protected Job job, aspiration, backupJob;
 	protected int[] assets;
 	protected int[] inventory; //OBSOLETE
@@ -106,6 +107,9 @@ public class Clan implements Defs, Stressor.Causable {
 				Quest quest = Quest.QtoQuest(this, q);
 				MB.QuestStack.add(quest);
 			}
+			Quest questToPursue = MB.QuestStack.peek();
+			// BUG CHECK:
+			if (questToPursue.getDoer() != this) throw new IllegalStateException(this + " has " + questToPursue.getDoer() + " 's quest");
 			MB.QuestStack.peek().pursueQuest();
 		}
 		setActive(true);
@@ -123,6 +127,12 @@ public class Clan implements Defs, Stressor.Causable {
 	public void moveTowards(Shire target) {
 		// TODO set current shire one step closer to target
 		setCurrentShire(target);
+	}
+	public Shire getGovernedShire() {
+		return governedShire;
+	}
+	public void setGovernedShire(Shire governedShire) {
+		this.governedShire = governedShire;
 	}
 	/** market in current shire not home shire */
 	public MktAbstract myMkt(int g) {return currentShire().getMarket(g);}
@@ -166,7 +176,7 @@ public class Clan implements Defs, Stressor.Causable {
 			Quest currQ = !MB.QuestStack.isEmpty() ? MB.QuestStack.peek() : null;
 			if (currQ != null) {
 				if (currQ instanceof LaborQuest) return; //currentlyHustling
-				if (currQ instanceof FormArmy) { // should be just having patron? belonging to order?
+				if (currQ instanceof FormArmyQuest) { // should be just having patron? belonging to order?
 					Order o = myOrder();
 					if (o != null) { // army of one...
 						 if (o.requestFeed(this)) return;
@@ -263,11 +273,17 @@ public class Clan implements Defs, Stressor.Causable {
 	public int getMinionPoints() {return minionB + subminionB;}
 	public int getPointsBN() {return pointsBN;}
 	public Order myOrder() {return order;}
+	public Order myOrder(boolean createIfNull) {
+		if (order == null) {order = Order.createBy(this);}
+		return order;
+	}
 	public void setOrder(Order o) {order = o;}
 	public void joinOrder(Order newOrder) {
 		if (newOrder == null) {Calc.p(""+1/0); return;}
 		if (order == null) {newOrder.addMember(this);}
 		else {order.moveTo(this, newOrder);}
+		Shire govS = getGovernedShire();
+		if (govS != null) {order.acquireShire(govS, this);}
 	}
 	public boolean join(Clan newBoss) {
 		if (this.isSomeBossOf(newBoss)) {return false;}  //forget it if im already above him
@@ -331,7 +347,7 @@ public class Clan implements Defs, Stressor.Causable {
 		case 3: job = Job.MINER; break;
 		case 4: job = Job.MASON; break;
 		case 5: job = Job.CARPENTER; break;
-		case 6: job = Job.BUILDER; break;
+		case 6: job = Job.SMITHY; break;
 		default: job = Job.FARMER; break;
 		}
 		

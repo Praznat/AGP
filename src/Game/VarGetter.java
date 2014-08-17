@@ -2,35 +2,36 @@ package Game;
 
 import Defs.*;
 import Descriptions.Naming;
+import Ideology.Values;
 import Markets.MktO;
 import Sentiens.*;
 import Shirage.Shire;
 
 public class VarGetter implements Defs {
 	//types
-	private static final int SHIREVARS = 0;
-	private static final int MARKETVARS = 1;
+	public static final int SHIREVARS = 0;
+	public static final int MARKETVARS = 1;
 	public static final int CLANBASIC = 2;
-	private static final int CLANDISCS = 3;
-	private static final int CLANRANKSANCS = 4;
-	private static final int CLANSANCPCTS = 5;
-	private static final int CLANPRESTS = 6;
-	private static final int CLANBEHS = 7;
+	public static final int CLANDISCS = 3;
+	public static final int CLANRANKSANCS = 4;
+	public static final int CLANSANCPCTS = 5;
+	public static final int CLANPRESTS = 6;
+	public static final int CLANBEHS = 7;
 
 	//shire vars
-	private static final int LONGITUDE = 0;
-	private static final int LATITUDE = 1;
-	private static final int ALTITUDE = 2;
-	private static final int FERTILITY = 3;
+	public static final int LONGITUDE = 0;
+	public static final int LATITUDE = 1;
+	public static final int ALTITUDE = 2;
+	public static final int FERTILITY = 3;
 	//market vars
-	private static final int GOODNAME = 0;
-	private static final int BID = 1;
-	private static final int ASK = 2;
-	private static final int BIDSZ = 3;
-	private static final int ASKSZ = 4;
-	private static final int LAST = 5;
-	private static final int STAVG = 6;
-	private static final int LTAVG = 7;
+	public static final int GOODNAME = 0;
+	public static final int BID = 1;
+	public static final int ASK = 2;
+	public static final int BIDSZ = 3;
+	public static final int ASKSZ = 4;
+	public static final int LAST = 5;
+	public static final int STAVG = 6;
+	public static final int LTAVG = 7;
 	//clan vars
 	public static final int CLANNAME = 0;
 	public static final int CLANJOB = 1;
@@ -80,8 +81,8 @@ public class VarGetter implements Defs {
 		all[k++] = new VarGetter("Buyers", MARKETVARS, BIDSZ);
 		all[k++] = new VarGetter("Sellers", MARKETVARS, ASKSZ);
 		all[k++] = new VarGetter("Last", MARKETVARS, LAST);
-		all[k++] = new VarGetter("Short Avg", MARKETVARS, STAVG);
-		all[k++] = new VarGetter("Long Avg", MARKETVARS, LTAVG);
+		all[k++] = new VarGetter("STA", MARKETVARS, STAVG);
+		all[k++] = new VarGetter("LTA", MARKETVARS, LTAVG);
 		return all;
 	}
 	public String getVGName() {return varName;}

@@ -2,9 +2,9 @@ package Questing;
 
 import Defs.M_;
 import Descriptions.GobLog;
+import Ideology.Value;
 import Questing.Quest.TargetQuest;
 import Sentiens.*;
-import Sentiens.Values.Value;
 
 public class MiscQuests {
 	

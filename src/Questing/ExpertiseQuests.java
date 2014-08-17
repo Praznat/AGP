@@ -5,6 +5,7 @@ import Avatar.SubjectiveType;
 import Defs.*;
 import Descriptions.GobLog;
 import Game.AGPmain;
+import Ideology.Values;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Sentiens.*;

@@ -2,10 +2,12 @@
 <head><title>Autonomous Goblin Paradise</title><link rel="icon" type="image/png" html="/portrait.png"/></head>
 
 <body>
-<img src="portrait.png" style="height:8em;width:8em"/>
-
-<p>AutonomousGoblinParadise v.0.01
-<br>by Alex Braylan
+<!-- <img src="portrait.png" style="height:8em;width:8em"/> -->
+<div id=content>
+<div style="display:inline-block; padding:1em">AutonomousGoblinParadise v.0.01
+<br>by Alex Braylan<br><br>
+<div id=faceDiv style="background-color:rgba(250,250,250,1)"></div>
+</div>
 
 <p><table style="border: solid 1px black; padding:1em">
 <tr><td>Download: <a href="AutonomousGoblinParadise.jar">AutonomousGoblinParadise.jar</a></td>
@@ -35,6 +37,722 @@
 <ul><li>Everything else</ul>
 
 <p>Known bugs: too many to list.
-
+</div>
 </body>
+
+<script>
+	console.log("aww shit");
+	
+	var CANVAS;
+	var PARTS = {};
+	
+	var sharpN = 20,
+		Npointiness = 1,
+		female = false;
+	
+	var i = 0;
+	
+	
+	
+	
+	window.Ideology = function() {
+		this.vals = [];
+		this.oldVals = [];
+		this.targetVals = [];
+		this.maxSteps = 6;
+		this.pauseSteps = 0;
+		this.step = this.maxSteps;
+	}
+	Ideology.prototype.setP = function(p) {
+		if (this.vals.length >= p) this.vals.length = p + 1;
+		this.vals[p] = Math.floor(Math.random() * 16);
+	}
+	Ideology.prototype.getP = function(p) {
+		return this.vals[p];
+	}
+	Ideology.prototype.randomize = function(v) {
+		if (!v) v = this.vals;
+		for (var i = 0; i < this.vals.length; i++) v[i] = Math.floor(Math.random() * 16);
+	}
+	Ideology.prototype.morph = function() {
+		if (this.step++ < 0) return false;
+		if (this.step >= this.maxSteps) {
+			console.log("MORPH");
+			this.step = -this.pauseSteps;
+			this.randomize(this.targetVals);
+			for (var i = 0; i < this.vals.length; i++) this.oldVals[i] = this.vals[i];
+		}
+		this.vals = between(this.oldVals, this.targetVals, Math.max(0, this.step), this.maxSteps);
+		return true;
+	}
+	
+	window.FRelation = function(ideology, p, min, max) {
+		this.ideo = ideology;
+		this.p = p;
+		this.min = min;
+		this.max = max;
+		this.ideo.setP(this.p);
+	}
+	FRelation.prototype.val = function() {
+		return fix(this.ideo.getP(this.p), this.min, this.max);
+	}
+	
+	
+	
+	var I = new Ideology(),
+		NOSERX = new FRelation(I, i++, 3, 20),
+		NOSERY = new FRelation(I, i++, -5, 10),
+		NOSELX = new FRelation(I, i++, 3, 20),
+		NOSELY = new FRelation(I, i++, -5, 20),
+		NOSELW = new FRelation(I, i++, 5, 25),
+		NOSEMW = new FRelation(I, i++, -7, 8),
+		NOSERW = new FRelation(I, i++, -7, 8),
+		MOUTHBX = new FRelation(I, i++, 0, 20),
+		MOUTHBY = new FRelation(I, i++, 4, 20),
+		MOUTHP = new FRelation(I, i++, 0, 15),
+		MOUTHC = new FRelation(I, i++, -30, 50),
+		MOUTHLH = new FRelation(I, i++, 2, 10),
+		MOUTHLW = new FRelation(I, i++, 10, 60),
+		MOUTHJH = new FRelation(I, i++, 0, 10),
+		MOUTHJW = new FRelation(I, i++, 10, 40),
+		EYERP = new FRelation(I, i++, 0, 50),
+		EYELP = new FRelation(I, i++, 0, 50),
+		EYERW = new FRelation(I, i++, 10, 30),
+		EYELW = new FRelation(I, i++, 10, 30),
+		EYEHGT = new FRelation(I, i++, 0, 10),
+		EYESPRD = new FRelation(I, i++, 0, 10),
+		EARH = new FRelation(I, i++, 0, 50),
+		EARW = new FRelation(I, i++, 10, 50),
+		EART = new FRelation(I, i++, 0, 15),
+		EARD = new FRelation(I, i++, 20, 80),
+		SKINR = new FRelation(I, i++, 0, 129),
+		SKING = new FRelation(I, i++, 50, 249),
+		SKINB = new FRelation(I, i++, 50, 249),
+		HAIRL = new FRelation(I, i++, 0, 30),
+		HAIRC = new FRelation(I, i++, 0, 89),
+		HAIRW = new FRelation(I, i++, 0, 10),
+		HAIRR = new FRelation(I, i++, 0, 255),
+		HAIRG = new FRelation(I, i++, 0, 255),
+		HAIRB = new FRelation(I, i++, 0, 255),
+		HAIRX = new FRelation(I, i++, 20, 99),
+		HAIRS = new FRelation(I, i++, 0, 9),
+		EARMINT = 0.2,
+		EARMINWID = 20,
+		NOSEMINWID = 8,
+		NOSEMAXSLANT = 7,
+		MAXMOUTHOPEN = 12,
+		ringlen = 14,
+		ringwid = 6;
+	
+	function fix(inp, lo, hi) {
+		return Math.round((inp * (hi - lo) / 15) + lo);
+	}
+	function distance(pt1, pt2) {
+		return Math.sqrt(Math.pow(pt2[0] - pt1[0], 2) + Math.pow(pt2[1] - pt1[1], 2));
+	}
+	function between(v1, v2, N, D) {
+		var result = [];
+		for (var i = 0; i < v1.length; i++) {
+			result.push(Math.round(v1[i]+(v2[i]-v1[i])*N/D));
+			//if(i ==0)console.log(result);
+		}
+		return result;
+	}
+	function offsetArray(V, off) {
+		var out = [];
+		for (var i = 0; i < V.length; i++) {out[i] = V[i] + off;}
+		return out;
+	}
+	function drawLine(ctx, x0, y0, x1, y1) {
+		ctx.beginPath();
+		ctx.moveTo(x0, y0);
+		ctx.lineTo(x1, y1);
+		ctx.stroke();
+		ctx.closePath();
+	}
+	function drawShapes(ctx, f, shapes, close, color) {
+		var oldC = ctx.fillStyle;
+		if (color) ctx.fillStyle = color;
+		ctx.beginPath();
+		for (var s = 0; s < shapes.length; s++) {
+			var shape = shapes[s], xs = shape.XY[0], ys = shape.XY[1];
+			ctx.moveTo(xs[0], ys[0]);
+			for (var i = 0; i < xs.length; i++) {
+				ctx.lineTo(xs[i], ys[i]);
+			}
+		}
+		if (close) {
+			var shape = shapes[0];
+			ctx.lineTo(shape.XY[0][0], shape.XY[1][0]);
+		}
+		ctx[f]();
+		ctx.closePath();
+		if (color) ctx.fillStyle = oldC;
+	}
+	function drawShape(ctx, f, xs, ys, color) {
+		var oldC = ctx.fillStyle;
+		if (color) ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.moveTo(xs[0], ys[0]);
+		for (var i = 0; i < xs.length; i++) ctx.lineTo(xs[i], ys[i]);
+		ctx[f]();
+		ctx.closePath();
+		if (color) ctx.fillStyle = oldC;
+	}
+	function fillOval(ctx, x, y, width, height, color) {
+		var oldC = ctx.fillStyle;
+		if (color) ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(x + width/2, y + height/2, 1, 0, 2*Math.PI, true);
+		ctx.scale(width, height);
+		ctx.fill();
+		ctx.closePath();
+		ctx.scale(1/width, 1/height);
+		if (color) ctx.fillStyle = oldC;
+	}
+	Math.toRadians = function(value) {
+		return value * Math.PI / 180;
+	}
+	
+	window.Color = function(red255, green255, blue255, alpha1) {
+		if (typeof green255 === 'undefined') {
+			if (red255.charAt(0) == '#') this.fromHex(red255);
+			else if (red255.charAt(0) == 'r') this.fromRGB(red255);
+			else throw "Sorry we don't support named colors yet: " + red255;
+		} else {
+			this.r = red255;
+			this.g = green255;
+			this.b = blue255;
+			this.a = alpha1;
+			if (typeof this.a === 'undefined') this.a = 1;
+		}
+	}
+	
+	function createBezier(a1, a2, F, N) {
+		var points = [a1.getXY(), [], [], a2.getXY()],
+			dist = distance(points[0], points[3]),
+			mp1 = [points[0][0] - (points[3][1]-points[0][1]), points[0][1] + (points[3][0]-points[0][0])],
+			mp2 = [points[3][0] - (points[3][1]-points[0][1]), points[3][1] + (points[3][0]-points[0][0])],
+			sidedist1 = distance(points[3], mp1),
+			sidedist2 = distance(points[0], mp2),
+			dist1 = Math.min(dist, sidedist1) * F,
+			dist2 = Math.min(dist, sidedist2) * F;
+		points[1][0] = points[0][0] + Math.round(dist1 * a1.cosine());
+		points[1][1] = points[0][1] + Math.round(dist1 * a1.sine());
+		points[2][0] = points[3][0] + Math.round(dist2 * a2.cosine());
+		points[2][1] = points[3][1] + Math.round(dist2 * a2.sine());
+		var result = new GBezier(points, N);
+		result.map();
+		return result;
+	}
+	window.GBezier = function(list, n) {
+		this.points = list;
+		this.intervals = n;
+		this.map();
+	}
+	GBezier.prototype.map = function() {
+		/* double[][][] V = new double[points.length-1][intervals+1][2]; */
+		var V = [], n = this.intervals, pts = this.points;
+		for (var c = 0; c < pts.length - 1; c++) {
+			var v = [];
+			for (var i = 0; i < n + 1; i++) {
+				v.push([(1 - i/n)*pts[c][0] + (i/n)*pts[c+1][0],
+				           (1 - i/n)*pts[c][1] + (i/n)*pts[c+1][1]]);
+			}
+			V[c] = v;
+		}
+		while (V.length > 1) {
+			/* double[][][] VV = new double[V.length - 1][intervals+1][2]; */
+			var VV = [];
+			for (var c = 0; c < V.length - 1; c++) {
+				var vv = [];
+				for (var i = 0; i < n + 1; i++) {
+					vv.push([(1 - i/n)*V[c][i][0] + (i/n)*V[c+1][i][0],
+								(1 - i/n)*V[c][i][1] + (i/n)*V[c+1][i][1]]);
+				}
+				VV[c] = vv;
+			}
+			V = VV;
+		}
+		/* XY = new int[2][V[0].length]; */
+		this.XY = [[],[]];
+		for(var i = 0; i < n + 1; i++) {
+			this.XY[0][i] = Math.round(V[0][i][0]);
+			this.XY[1][i] = Math.round(V[0][i][1]);
+		}
+	}
+	GBezier.prototype.startPoint = function() {return this.points[0];}
+	GBezier.prototype.endPoint = function() {return this.points[this.points.length-1];}
+	GBezier.prototype.getPoint = function(p) {return this.points[p];}
+	GBezier.prototype.getPoint = function(p) {return this.points[p];}
+	GBezier.prototype.setPointX = function(x, i) {
+		this.points[i][0] = x; this.map();
+	}
+	GBezier.prototype.setPointY = function(y, i) {
+		this.points[i][1] = y; this.map();
+	}
+	GBezier.prototype.startArrow = function() {
+		var p0 = this.points[0], p1 = this.points[1];
+		return new Arrow(p0, p0[0] - p1[0], p0[1] - p1[1]);
+	}
+	GBezier.prototype.endArrow = function() {
+		var p0 = this.points[this.points.length - 1], p1 = this.points[this.points.length - 2];
+		return new Arrow(p0, p0[0] - p1[0], p0[1] - p1[1]);
+	}
+	window.GArc = function(x, y, width, height, startA, endA, N) {
+		this.XY = [[],[]];
+		
+		if (startA > endA) {startA -= 360;}
+		var sA = Math.toRadians(startA);
+		var eA = Math.toRadians(endA);
+		var sx = Math.round(Math.cos(sA) * width / 2);
+		var sy = -Math.round(Math.sin(sA) * height / 2);
+		
+		var i = sA, k = 0, oldk = k;
+		while ((i%360) < eA) {
+			oldk = k;
+			this.XY[0][k] = x-sx + Math.round(Math.cos(i) * width / 2);
+			this.XY[1][k] = y-sy - Math.round(Math.sin(i) * height / 2);
+			i += (eA-sA)/N;   k = Math.floor(N*(i-sA)/(eA-sA));
+			if (k>oldk+1) {this.XY[0][oldk+1] = this.XY[0][oldk];   this.XY[1][oldk+1] = this.XY[1][oldk];}
+		}
+		this.XY[0][N] = x-sx + Math.round(Math.cos(eA) * width / 2);
+		this.XY[1][N] = y-sy - Math.round(Math.sin(eA) * height / 2);
+	}
+	GArc.prototype.getStart = function() {return [this.XY[0][0], this.XY[1][0]];}
+	GArc.prototype.getEnd = function() {return [this.XY[0][this.XY[0].length-1], this.XY[1][this.XY[1].length-1]];}
+
+	window.Arrow = function(XY, dX, dY) {this.xy = XY; this.dx = dX; this.dy = dY;}
+	Arrow.prototype.getXY = function() {return this.xy;}
+	Arrow.prototype.hypoteneuse = function() {return Math.sqrt(this.dx*this.dx + this.dy*this.dy);}
+	Arrow.prototype.slope = function() {return this.dy / this.dx;}
+	Arrow.prototype.asine = function() {return Math.sin(Math.atan(this.slope()));}
+	Arrow.prototype.acosine = function() {return Math.cos(Math.atan(this.slope()));}
+	Arrow.prototype.sine = function() {return this.dy / this.hypoteneuse();}
+	Arrow.prototype.cosine = function() {return this.dx / this.hypoteneuse();}
+	
+	
+	
+	
+	
+	
+	
+	window.Nariz = function(base) {
+		this.XY = []
+		this.K = {};
+		this.baseXY = [base[0], base[1]];
+		this.setup();
+		this.refix();
+	}
+	Nariz.prototype.setup = function() {
+		this.baseXY = PARTS["EYES"].baseXY;
+		tops = [];
+		tops.push([this.baseXY[0], this.baseXY[1]]);
+		tops.push([tops[0][0] - NOSERX.val(), tops[0][1] + NOSERY.val()]);
+		tops.push([tops[1][0] - NOSELX.val(), tops[1][1] + NOSELY.val()]);
+		
+		bottoms = [];
+		bottoms.push([tops[2][0], tops[2][1] + NOSELW.val()]);
+		bottoms.push([tops[1][0], bottoms[0][1] + NOSEMW.val()]);
+		bottoms.push([tops[0][0], bottoms[1][1] + NOSERW.val()]);
+		
+		this.K["NUPPER"] = new GBezier(tops, sharpN);
+		this.K["NLOWER"] = new GBezier(bottoms, sharpN);
+		this.nasoness = [10, Math.min(8, Math.abs(bottoms[2][1] - tops[0][1])/2)];
+		this.tops = tops;
+		this.bottoms = bottoms;
+	}
+	Nariz.prototype.refix = function() {
+		for (var i = 0; i < 3; i++) {
+			this.bottoms[i][0] = Math.min(this.bottoms[i][0], i == 2 ? this.tops[0][0] : this.bottoms[i+1][0]);
+			this.K["NLOWER"].setPointY(Math.max(this.K["NLOWER"].getPoint(2-i)[1], NOSEMINWID + this.K["NUPPER"].getPoint(i)[1]), 2-i);
+		}
+		//K[NLOWER].setPointY(Math.max(2*minwid + K[NUPPER].startPoint()[1], K[NLOWER].endPoint()[1]), K[NLOWER].numPoints()-1);
+		
+		this.nasoness[1] = Math.min(8, Math.abs(this.K["NLOWER"].endPoint()[1] - this.K["NUPPER"].startPoint()[1])/2);
+		var LR = this.K["NLOWER"].endPoint();
+		this.K["TRIL"] = new GArc(LR[0], LR[1], this.nasoness[0], this.nasoness[1], -180, 90, sharpN);
+		this.K["POINT"] = createBezier(this.K["NUPPER"].endArrow(), this.K["NLOWER"].startArrow(), Npointiness, sharpN);
+	}
+	Nariz.prototype.paintPart = function(ctx) {
+		this.setup();
+		this.refix();
+//		g.setColor(scol);
+		var u = this.K["NUPPER"].startPoint(),
+			b = this.K["TRIL"].getEnd(),
+			t = this.K["POINT"],
+			t0 = t.startPoint(),
+			t1 = t.endPoint(),
+			se = this.K["NLOWER"].endPoint(),
+			j = [CANVAS.width/3, CANVAS.height/2],//partez[BESO].getLeftEdge(),
+			inner = [[u[0], t0[0], t1[0], se[0]], [u[1], t0[1], t1[1], se[1]]],
+			T = [[u[0], u[0], b[0], j[0], b[0]], [u[1], b[1], j[1], b[1], b[1]]];
+//		drawShape(ctx, "stroke", T[0], T[1], 'rgba(255,0,0,1)');
+
+		drawShapes(ctx, "stroke", [this.K["NUPPER"],this.K["POINT"],this.K["NLOWER"],this.K["TRIL"]], false);
+		drawShapes(ctx, "fill", [this.K["NUPPER"],this.K["POINT"],this.K["NLOWER"],this.K["TRIL"]], true);
+		
+		drawShape(ctx, "fill", inner[0], inner[1], ctx.fillStyle);
+		
+//		g.setColor(dcol);
+//		paintNotches(g, K[NUPPER]);
+//		g.setColor(new Color(0xff000000));
+		var LR = this.K["NLOWER"].endPoint();
+		fillOval(ctx, LR[0]+this.nasoness[0]/6, LR[1]-this.nasoness[1]/10, this.nasoness[0]*2/3, this.nasoness[1]/2, 'rgba(0,0,0,1)');
+	}
+	Nariz.prototype.getNostrilSide = function() {
+		var LR = this.K["NLOWER"].endPoint();
+		return [LR[0] + this.nasoness[0], LR[1] + this.nasoness[1] / 2];
+	}
+	Nariz.prototype.getNoseBottom = function() {
+		return this.K["NLOWER"].endPoint();
+	}
+	
+	
+	
+
+	window.Boca = function(base) {
+		this.XY = []
+		this.K = {};
+		this.baseXY = [base[0], base[1]];
+		this.setup();
+		this.refix();
+	}
+	Boca.prototype.setup = function() {
+		var nose = PARTS["NOSE"];
+		if (nose) {
+			var nb = nose.getNoseBottom();
+			this.baseXY = [nb[0], nb[1]];
+		}
+		this.pointiness = MOUTHP.val() / 15;
+		this.openness = Math.floor(Math.random()*MAXMOUTHOPEN);
+		this.height = MOUTHLH.val();
+		this.width = (female ? MOUTHLW.val() * 2/3 : MOUTHLW.val());
+		this.jawwidth = this.width + (female ? MOUTHJW.val() * 2/3 : MOUTHJW.val());
+		this.cavity = (female ? 0 : MOUTHC.val());
+		this.jawheight = this.height + this.pointiness*this.height + MOUTHJH.val() + this.cavity/2;
+		this.LbaseXY = [this.baseXY[0] - this.width/10 - MOUTHBX.val(), this.baseXY[1] + this.height + MOUTHBY.val()];
+		this.refix();
+	}
+	Boca.prototype.refix = function() {
+		this.openness = Math.max(0, Math.min(this.openness, 12));
+		this.pointiness = Math.max(0, Math.min(this.pointiness, 1));
+		this.cavity = Math.min(Math.max(this.cavity, -30), 50);
+		this.height = Math.min(Math.max(this.height, 2), 10);
+		//this.height = Math.min(Math.max(this.height, (int)(resize*2)), (int) (resize*10));
+		this.width = Math.min(Math.max(this.width, 3*this.height/2), 60);
+		this.jawheight = Math.max(10, Math.max(this.jawheight, this.height + this.pointiness*this.height + this.cavity/4));
+		this.LbaseXY[0] = Math.max(Math.min(this.baseXY[0] - this.width/10, this.LbaseXY[0]), this.baseXY[0] - this.width);
+		this.LbaseXY[1] = Math.min(this.baseXY[1] + this.height + 20, Math.max(this.baseXY[1] + this.height + 4, this.LbaseXY[1]));
+		//this.LbaseXY[1] = Math.min(this.baseXY[1] + this.height + 20, Math.max(this.baseXY[1] + this.height + (int)(resize*4), this.LbaseXY[1]));
+		var baseXY = this.baseXY, LbaseXY = this.LbaseXY, width = this.width, height = this.height, pointiness = this.pointiness,
+			openness = this.openness, jawwidth = this.jawwidth, jawheight = this.jawheight, cavity = this.cavity;
+		
+		var BN = [[],[],[]];
+		BN[0][0] = baseXY[0];   BN[0][1] = baseXY[1];
+		BN[1][0] = baseXY[0] + (LbaseXY[0]- baseXY[0])*3/5;;   BN[1][1] = baseXY[1] + (LbaseXY[1]- baseXY[1])*3/5;
+		BN[2][0] = LbaseXY[0];   BN[2][1] = LbaseXY[1];
+		this.K["BRIDGE"] = new GBezier(BN, sharpN);
+		var UN = [[],[],[],[],[],[],[]];
+		UN[0][0] = LbaseXY[0];   UN[0][1] = LbaseXY[1];
+		UN[1][0] = LbaseXY[0] + width*5/12;   UN[1][1] = LbaseXY[1] - 2*height;
+		UN[2][0] = LbaseXY[0] + width*11/24;   UN[2][1] = LbaseXY[1] + height*3/2;
+		UN[3][0] = LbaseXY[0] + width/2;   UN[3][1] = LbaseXY[1] - height*7/2;
+		UN[4][0] = LbaseXY[0] + width*13/24;   UN[4][1] = LbaseXY[1] + height*3/2;
+		UN[5][0] = LbaseXY[0] + width*7/12;   UN[5][1] = LbaseXY[1] - 2*height;
+		UN[6][0] = LbaseXY[0] + width;   UN[6][1] = LbaseXY[1];
+		this.K["UPPER"] = new GBezier(UN, sharpN);
+		var MN = [[],[],[],[],[]];
+		MN[0][0] = LbaseXY[0];   MN[0][1] = LbaseXY[1];
+		MN[1][0] = LbaseXY[0] + width*5/12;   MN[1][1] = LbaseXY[1] - height/2;
+		MN[2][0] = LbaseXY[0] + width/2;   MN[2][1] = LbaseXY[1] + height/2;
+		MN[3][0] = LbaseXY[0] + width*7/12;   MN[3][1] = LbaseXY[1] - height/2;
+		MN[4][0] = LbaseXY[0] + width;   MN[4][1] = LbaseXY[1];
+		this.K["MIDDLE"] = new GBezier(MN, sharpN);
+		var LNR = [[],[],[],[]];
+		LNR[3][0] = LbaseXY[0];   LNR[3][1] = LbaseXY[1] + openness;
+		LNR[2][0] = LbaseXY[0] + width/6;   LNR[2][1] = LbaseXY[1] + height*3/4 + openness;
+		LNR[1][0] = LbaseXY[0] + width*2/6;   LNR[1][1] = LbaseXY[1] + height*3/4 + openness;
+		LNR[0][0] = LbaseXY[0] + width*3/6;   LNR[0][1] = LbaseXY[1] + height*2/3 + openness;
+		this.K["LOWERR"] = new GBezier(LNR, sharpN);
+		var LNL = [[],[],[],[]];
+		LNL[3][0] = LbaseXY[0] + width*3/6;   LNL[3][1] = LbaseXY[1] + height*2/3 + openness;
+		LNL[2][0] = LbaseXY[0] + width*4/6;   LNL[2][1] = LbaseXY[1] + height*3/4 + openness;
+		LNL[1][0] = LbaseXY[0] + width*5/6;   LNL[1][1] = LbaseXY[1] + height*3/4 + openness;
+		LNL[0][0] = LbaseXY[0] + width;   LNL[0][1] = LbaseXY[1] + openness;
+		this.K["LOWERL"] = new GBezier(LNL, sharpN);
+		var JN = [[],[],[],[],[]];
+		var pnt = Math.round(pointiness * width/2);
+		JN[0][0] = LbaseXY[0];   JN[0][1] = LbaseXY[1] + openness;
+		JN[1][0] = LbaseXY[0] + pnt;   JN[1][1] = LbaseXY[1] + jawheight + cavity/2 + openness;
+		JN[2][0] = LbaseXY[0] + width/2;   JN[2][1] = LbaseXY[1] + jawheight - cavity + openness;
+		JN[3][0] = LbaseXY[0] + width - pnt;   JN[3][1] = LbaseXY[1] + jawheight + cavity/2 + openness;
+		JN[4][0] = LbaseXY[0] + jawwidth;   JN[4][1] = LbaseXY[1];
+		this.K["JAW"] = new GBezier(JN, sharpN);
+		var BLN = [[],[],[],[],[]];
+		BLN[4][0] = LbaseXY[0];   BLN[4][1] = LbaseXY[1] + openness;
+		BLN[3][0] = LbaseXY[0] + pnt;   BLN[3][1] = LbaseXY[1] + jawheight*2/3 + cavity/3 + openness;
+		BLN[2][0] = LbaseXY[0] + width/2;   BLN[2][1] = LbaseXY[1] + jawheight - cavity + openness;
+		BLN[1][0] = LbaseXY[0] + width - pnt;   BLN[1][1] = LbaseXY[1] + jawheight*2/3 + cavity/3 + openness;
+		BLN[0][0] = LbaseXY[0] + jawwidth;   BLN[0][1] = LbaseXY[1] + openness;
+		this.BL = new GBezier("BLN", sharpN); // beard line?
+		var WN = [[],[],[],[],[]];
+		var ns = PARTS["NOSE"].getNostrilSide();
+		WN[4][0] = ns[0];   WN[4][1] = ns[1];
+		WN[3][0] = LbaseXY[0] + width;   WN[3][1] = ns[1];
+		WN[2][0] = LbaseXY[0] + width;   WN[2][1] = LbaseXY[1];
+		WN[1][0] = LbaseXY[0] + (width+jawwidth)/2;   WN[1][1] = (baseXY[1] + LbaseXY[1])/2;
+		WN[0][0] = LbaseXY[0] + width;   WN[0][1] = LbaseXY[1] + jawheight/2 + openness;
+		this.K["WRINKLE"] = new GBezier(WN, sharpN);
+	}
+	Boca.prototype.paintPart = function(ctx) {
+		this.setup();
+		this.refix();
+
+		drawShapes(ctx, "stroke", [this.K["BRIDGE"],this.K["JAW"]]);
+		var ll = this.K["LOWERL"], lr = this.K["LOWERR"];
+		drawShape(ctx, "fill", [ll.startPoint()[0], ll.endPoint()[0], lr.endPoint()[0]],
+				[ll.startPoint()[1], ll.endPoint()[1], lr.endPoint()[1]]);
+		drawShapes(ctx, "fill", [ll,lr], true);
+		drawShapes(ctx, "fill", [this.K["UPPER"],this.K["MIDDLE"]], true);
+		drawShapes(ctx, "stroke", [ll,lr], true);
+		drawShapes(ctx, "stroke", [this.K["UPPER"],this.K["MIDDLE"]], true);
+		var wrinkle = this.K["WRINKLE"];
+		drawShape(ctx, "stroke", wrinkle.XY[0], wrinkle.XY[1]);
+		
+		var LbaseXY = this.LbaseXY, width = this.width, openness = this.openness;
+		var NT = 6; //TEETH
+		var oldFillStyle = ctx.fillStyle;
+		for (var i = 0; i < NT; i++) {
+			if (!female) {
+				//g.setColor(Color.gray);
+				ctx.fillRect(LbaseXY[0] + i*width/NT, LbaseXY[1], width/NT, openness);
+			}
+			var rotC = female?'rgba(255,255,255,1)':'rgba(255,255,225,1)';
+			ctx.fillStyle = rotC;
+			ctx.fillRect(LbaseXY[0] + i*width/NT, LbaseXY[1]+1, width/NT-(female?0:1), openness-(female?1:2));
+			ctx.fillStyle = 'rgba(0,0,0,1)';
+			ctx.rect(LbaseXY[0] + i*width/NT, LbaseXY[1], width/NT, openness);
+			var h = openness/2 + (female ? 0 : i%2 - 1);
+			drawLine(ctx, LbaseXY[0] + i*width/NT, LbaseXY[1] + h, LbaseXY[0] + (i+1)*width/NT, LbaseXY[1] + h);
+		}
+		ctx.fillStyle = 'rgba(0,0,0,1)';
+		drawLine(ctx, LbaseXY[0], LbaseXY[1], LbaseXY[0], LbaseXY[1] + openness);
+		ctx.fillStyle = oldFillStyle;
+	}
+	Boca.prototype.getJawArrow = function() {
+		return this.K["JAW"].endArrow();
+	}
+	
+	window.Ojo = function(base) {
+		this.XY = []
+		this.K = {};
+		this.baseXY = [base[0], base[1]];
+		this.setup();
+		this.refix();
+	}
+	Ojo.prototype.setup = function() {
+		this.baseXY = [CANVAS.width / 3, CANVAS.height * .4];
+		this.rpoint = 50 - EYERP.val();
+		this.lpoint = 50 - EYELP.val();
+		this.rwid = EYERW.val();
+		this.lwid = EYELW.val();
+		if(this.rwid > this.lwid) {var tmp = this.lwid; this.lwid = this.rwid; this.rwid = tmp;}
+		this.lidheight = EYEHGT.val();
+		this.spread = EYESPRD.val();
+	}
+	Ojo.prototype.refix = function() {
+		this.rwid = Math.min(Math.max(this.rwid, EYERW.min), EYERW.max);
+		this.lwid = Math.min(Math.max(this.lwid, EYELW.min), EYELW.max);
+		this.rpoint = Math.min(Math.max(this.rpoint, 50 - EYERP.max), 50 - EYERP.min);
+		this.lpoint = Math.min(Math.max(this.lpoint, 50 - EYELP.max), 50 - EYELP.min);
+		this.rhgt = this.rwid;   this.lhgt = this.lwid;
+		this.lidheight = Math.min(Math.max(EYEHGT.min, this.lidheight), EYEHGT.max);
+		this.spread = Math.min(Math.max(EYESPRD.min, this.spread), EYESPRD.max);
+		
+		var baseXY = this.baseXY, rwid = this.rwid, rhgt = this.rhgt, rpoint = this.rpoint,
+			lwid = this.lwid, lhgt = this.lhgt, lpoint = this.lpoint,
+			spread = this.spread, lidheight = this.lidheight;
+		
+		var rctop = this.K["RCIRCTOP"] = new GArc(baseXY[0], baseXY[1], rwid, rhgt, rpoint, 180-rpoint, sharpN);
+		var epr = rctop.getEnd();
+		this.K["RCIRCBOTTOM"] = new GArc(epr[0], epr[1], rwid, rhgt, -(180-rpoint), -rpoint, sharpN);
+		
+		var lcbottom = this.K["LCIRCBOTTOM"] = new GArc(baseXY[0] + spread, baseXY[1], lwid, lhgt, -(180-lpoint), -lpoint, sharpN);
+		var epl = lcbottom.getEnd();
+		this.K["LCIRCTOP"] = new GArc(epl[0], epl[1], lwid, lhgt, lpoint, 180-lpoint, sharpN);
+		
+		rpoint = this.rpoint -= 10;   lpoint = this.lpoint -= 10;
+		rwid = this.rwid = Math.round(rhgt / Math.cos(Math.toRadians(rpoint)));
+		lwid = this.lwid = Math.round(lhgt / Math.cos(Math.toRadians(lpoint)));
+		
+		var rlidtop = this.K["RLIDTOP"] = new GArc(baseXY[0], baseXY[1], rwid, rwid+lidheight, rpoint, 180-rpoint, sharpN);
+		var eplt = rlidtop.getEnd();
+		this.K["RLIDBOTTOM"] = new GArc(eplt[0], eplt[1], rwid, rwid+lidheight, -(180-rpoint), -rpoint, sharpN);
+		
+		var llidbottom = this.K["LLIDBOTTOM"] = new GArc(baseXY[0] + spread, baseXY[1], lwid, lwid+lidheight, -(180-lpoint), -lpoint, sharpN);
+		eplb = llidbottom.getEnd();
+		this.K["LLIDTOP"] = new GArc(eplb[0], eplb[1], lwid, lwid+lidheight, lpoint, 180-lpoint, sharpN);
+		
+		var UN = [[],[],[],[],[],[],[],[],[],[],[]];
+		var lh = lidheight/2;
+		//var prc = [-108, -2, 1, 3, 8, -2];
+		//var prc = [-108, 1, 3, 5, 4, -5];
+		var prc = [-108, -1, 1, 5, 4, -18];
+		UN[0][0] = baseXY[0] - rhgt;   UN[0][1] = baseXY[1];
+		UN[1][0] = baseXY[0] - rhgt*3/2;   UN[1][1] = baseXY[1] - rhgt - prc[1]*lh;
+		UN[2][0] = baseXY[0] - rhgt;   UN[2][1] = baseXY[1] - rhgt - prc[2]*lh;
+		UN[3][0] = baseXY[0];   UN[3][1] = baseXY[1] - rhgt - prc[3]*lh;
+		UN[4][0] = baseXY[0];   UN[4][1] = baseXY[1] - rhgt - prc[4]*lh;
+		UN[5][0] = baseXY[0] + spread/2;   UN[5][1] = baseXY[1] + (rhgt + lhgt)/2 - prc[5]*lh;
+		UN[6][0] = baseXY[0] + spread;   UN[6][1] = baseXY[1] - lhgt - prc[4]*lh;
+		UN[7][0] = baseXY[0] + spread;   UN[7][1] = baseXY[1] - lhgt - prc[3]*lh;
+		UN[8][0] = baseXY[0] + spread + lhgt;   UN[8][1] = baseXY[1] - lhgt - prc[2]*lh;
+		UN[9][0] = baseXY[0] + spread + lhgt*3/2;   UN[9][1] = baseXY[1] - lhgt - prc[1]*lh;
+		UN[10][0] = baseXY[0] + spread + lhgt;   UN[10][1] = baseXY[1];
+		this.K["BROW"] = new GBezier(UN, sharpN);
+		
+		this.rwid = rhgt;  this.lwid = lhgt;
+		this.rpoint += 10;   this.lpoint += 10;
+	}
+	Ojo.prototype.paintPart = function(ctx) {
+		this.setup();
+		this.refix();
+		var ojoL1 = [this.K["LCIRCBOTTOM"], this.K["LCIRCTOP"]];
+		var ojoR1 = [this.K["RCIRCBOTTOM"], this.K["RCIRCTOP"]];
+		var ojoL2 = [this.K["LLIDBOTTOM"], this.K["LLIDTOP"]];
+		var ojoR2 = [this.K["RLIDBOTTOM"], this.K["RLIDTOP"]];
+		if (female) {
+			ojoL2 = [this.K["LLIDTOP"]];
+			ojoR2 = [this.K["RLIDTOP"]];
+		}
+		
+		//g.setColor(dcol);
+		if (!female) {
+			//g.setColor(scol);
+			var browX = this.K["BROW"].XY[0], browY = this.K["BROW"].XY[1];
+			drawShape(ctx, "fill", browX, browY);
+			//g.setColor(new Color(0xff000000));
+			drawShape(ctx, "stroke", browX, browY, "rgba(255,0,0,1)");
+			//g.setColor(dcol);
+			drawShape(ctx, "fill", this.K["RLIDBOTTOM"].XY[0], this.K["RLIDBOTTOM"].XY[1]);
+			drawShape(ctx, "fill", this.K["LLIDBOTTOM"].XY[0], this.K["LLIDBOTTOM"].XY[1]);
+			drawShape(ctx, "stroke", this.K["RLIDBOTTOM"].XY[0], this.K["RLIDBOTTOM"].XY[1]);
+			drawShape(ctx, "stroke", this.K["LLIDBOTTOM"].XY[0], this.K["LLIDBOTTOM"].XY[1]);
+		}
+		drawShapes(ctx, "fill", ojoL1, false, "rgba(255,255,255,1)");
+		drawShapes(ctx, "fill", ojoR1, false, "rgba(255,255,255,1)");
+		drawShapes(ctx, "stroke", ojoL1);
+		drawShapes(ctx, "stroke", ojoR1);
+		if (female) {
+			//g.setColor(scol.brighter());
+			drawShapes(ctx, "fill", [this.K["LLIDBOTTOM"]]);
+			drawShapes(ctx, "fill", [this.K["RLIDBOTTOM"]]);
+		}
+		
+		var lct = this.K["LCIRCTOP"], rct = this.K["RCIRCTOP"];
+		var lWidth = lct.getStart()[0] - lct.getEnd()[0];
+		var rWidth = rct.getStart()[0] - rct.getEnd()[0];
+		var rt = [this.baseXY[0] - rWidth / 2, this.baseXY[1] - this.rhgt / 4];
+		var lt = [this.baseXY[0] + this.spread + lWidth / 2, this.baseXY[1] - this.lhgt / 4];
+		var rs = this.rhgt / 2;
+		var ls = this.lhgt / 2;
+		var black = "rgba(0,0,0,1)";
+		fillOval(ctx, rt[0] - rs/2, rt[1], rs, rs, black);
+		fillOval(ctx, lt[0] - ls/2, lt[1], ls, ls, black);
+	}
+	Ojo.prototype.getLeftEdge = function() {
+		return this.K["RCIRCBOTTOM"].getStart();
+	}
+	
+	window.Cabeza = function(base) {
+		this.XY = []
+		this.K = {};
+		this.baseXY = [base[0], base[1]];
+		this.setup();
+		this.refix();
+	}
+	Cabeza.prototype.setup = function() {}
+	Cabeza.prototype.refix = function() {
+		var baseXY = this.baseXY = PARTS["MOUTH"].baseXY;
+		var fEnd = PARTS["EYES"].getLeftEdge();
+		var jEnd = PARTS["MOUTH"].getJawArrow().getXY();
+		var FS = [[],[],[]];
+		var CS = [[],[],[],[]];
+		var HS = [[],[],[],[]];
+		FS[0][0] = baseXY[0];   FS[0][1] = baseXY[1];
+		FS[1][0] = Math.min(baseXY[0]+5, fEnd[0]);   FS[1][1] = (fEnd[1]+baseXY[1])/2;
+		FS[2][0] = fEnd[0];   FS[2][1] = fEnd[1];
+		this.K["FSIDE"] = new GBezier(FS, sharpN);
+		CS[0][0] = fEnd[0];   CS[0][1] = fEnd[1];
+		CS[1][0] = fEnd[0] + (jEnd[1]-fEnd[1])*4/3;   CS[1][1] = fEnd[1] - (jEnd[0]-fEnd[0])*4/3;
+		CS[2][0] = jEnd[0] + (jEnd[1]-fEnd[1])*4/3;   CS[2][1] = jEnd[1] - (jEnd[0]-fEnd[0])*4/3;
+		CS[3][0] = jEnd[0];   CS[3][1] = jEnd[1];
+		this.K["CRANIUM"] = new GBezier(CS, sharpN);
+		if (female) {HS[0][0] = jEnd[0]; HS[0][1] = fEnd[1];}
+		else {HS[0][0] = CS[3][0]*2/3 + CS[0][0]/3;   HS[0][1] = CS[3][1];}
+		HS[1][0] = CS[3][0];   HS[1][1] = jEnd[1] - (jEnd[0]-fEnd[0])*2/3;
+		HS[2][0] = fEnd[0] + (jEnd[1]-fEnd[1])*2/3;   HS[2][1] = fEnd[1] - (jEnd[0]-fEnd[0])*2/3;
+		HS[3][0] = CS[0][0];   HS[3][1] = CS[0][1];
+		this.HL = new GBezier(HS, sharpN);
+	}
+	Cabeza.prototype.paintPart = function(ctx) {
+		this.refix();
+		drawShapes(ctx, "stroke", [this.K["FSIDE"], this.K["CRANIUM"]]);
+	}
+
+	
+	window.GobFace = function(parentElement) {
+		
+	
+	
+		this.parent = parentElement;
+		CANVAS = this.canvas = document.createElement('canvas');
+		this.ctx = this.canvas.getContext('2d');
+		var deviceRatio = window.devicePixelRatio || 1;
+		var storeRatio = (this.ctx.webkitBackingStorePixelRatio ||
+				this.ctx.mozBackingStorePixelRatio ||
+				this.ctx.msBackingStorePixelRatio ||
+				this.ctx.oBackingStorePixelRatio ||
+				this.ctx.backingStorePixelRatio || 1);
+		this.pixelMult = deviceRatio / storeRatio;
+		
+
+		PARTS["EYES"] = new Ojo([80, 200]);
+		PARTS["NOSE"] = new Nariz([80, 200]);
+		PARTS["MOUTH"] = new Boca([80, 220]);
+		PARTS["HEAD"] = new Cabeza([140, 220]);
+		
+		
+		parentElement.appendChild(this.canvas);
+	}
+	GobFace.prototype.redraw = function() {
+		var q = this.canvas, c = this.ctx;
+		var w = q.width = this.parent.offsetWidth * this.pixelMult;
+		var h = q.height = this.parent.offsetHeight * this.pixelMult;
+		q.style.width = this.parent.offsetWidth + 'px';
+		q.style.height = this.parent.offsetHeight + 'px';
+		
+		c.fillStyle = 'rgba(240,240,240,1)';
+		if (!this.drawnOnce) {
+			PARTS["EYES"].paintPart(c);
+			PARTS["NOSE"].paintPart(c);
+		}
+		PARTS["MOUTH"].paintPart(c);
+		PARTS["HEAD"].paintPart(c);
+		PARTS["EYES"].paintPart(c);
+		PARTS["NOSE"].paintPart(c);
+		
+		this.drawnOnce = true;
+		
+	}
+	
+	
+
+	var face = new GobFace(document.getElementById("faceDiv"));
+	
+	setInterval(function() {if (I.morph()) { face.redraw(); } }, 100);
+	
+</script>
+
 </html>

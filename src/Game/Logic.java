@@ -1,8 +1,8 @@
 package Game;
 
 import Defs.Defs;
-import Questing.PropertyQuests.LaborQuest;
 import Questing.*;
+import Questing.Wealth.LaborQuest;
 import Sentiens.Clan;
 
 public abstract class Logic {

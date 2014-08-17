@@ -29,11 +29,13 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 	private int[][] PlotOrder;
 	private BufferedImage offscreen, highlightOffscreen;
 	public Shire highlightedShire;
+	public String highlightedStat = "";
 
 	private static String pdes = "";
 	private int maxW, maxH, tmpX = 0, tmpY = 0;
 	
 	public final boolean SIMPLEDRAW = false;
+	private double maxHighlight = 0;
 	
 	public MapDisplay() {
 		ExPlot = new XPlot(0);
@@ -71,6 +73,12 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
     		}
 		}
 	}
+	public void grayEverything() {
+		Plot.grayscaleColors();
+		for (Plot p : plots) {p.setGradients();}
+		paintBGCanvas();
+		repaint();
+	}
 	
 	public void paint(Graphics gx) {
 		Graphics2D g = highlightOffscreen.createGraphics();
@@ -83,6 +91,11 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 		if (AGPmain.mainGUI.SM != null) {
 			if (AGPmain.mainGUI.SM.getShire() == null) return;
 			AGPmain.mainGUI.SM.getShire().getLinkedPlot().drawShireHighlighted(g, Color.white);
+		}
+		if (!highlightedStat.isEmpty()) {
+			for (Shire s : AGPmain.TheRealm.getShires()) {
+				s.getLinkedPlot().drawShireSpotHighlight(g, maxHighlight);
+			}
 		}
 
 		gx.drawImage(offscreen.getSubimage(tmpX,tmpY,getWidth(),getHeight()),  0,0,getWidth(),getHeight(),this);
@@ -255,6 +268,16 @@ public class MapDisplay extends JPanel implements MouseListener, MouseMotionList
 
 	public int getTmpX() {return 0;} //return tmpX;}
 	public int getTmpY() {return 0;} //return tmpY;}
+	
+	public void setHighlightStat(String stat) {
+		highlightedStat = stat;
+		maxHighlight = 0;
+		for (Shire s : AGPmain.TheRealm.getShires()) {
+			double d = s.getGraphingInfo(highlightedStat).getValue();
+			maxHighlight = Math.max(maxHighlight, d);
+			s.getLinkedPlot().saveShireStat(d);
+		}
+	}
 	
     public void mousePressed(MouseEvent e) {
     	tmpX = Math.min(Math.max(tmpX + e.getX() - hsX(), 0), maxW - getWidth());

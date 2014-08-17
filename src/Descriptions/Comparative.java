@@ -1,7 +1,6 @@
 package Descriptions;
 
-import Sentiens.*;
-import Sentiens.Values.Value;
+import Ideology.*;
 
 public class Comparative {
 

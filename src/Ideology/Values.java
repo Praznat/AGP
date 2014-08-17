@@ -1,4 +1,4 @@
-package Sentiens;
+package Ideology;
 
 
 
@@ -6,114 +6,34 @@ import java.util.*;
 
 import AMath.ArrayUtils;
 import Defs.*;
-import Game.*;
-import Game.Do.ClanAlone;
+import Game.Job;
 import Questing.ExpertiseQuests;
+import Sentiens.*;
 import Sentiens.Law.PersonalCommandment;
 
-public class Values implements Defs {
+public class Values {
 	
-	private static int ord = 0;
-
-	public static interface Assessable {
-		public double evaluate(Clan evaluator, Clan proposer, int content);
-	}
-	public static interface Value extends Stressor.Causable {
-		/** returns difference in prestige in this Value between A & B in eyes of POV */
-		public double compare(Clan POV, Clan A, Clan B);
-		public String description(Clan POV);
-		public Q_ pursuit();
-		public ClanAlone doPursuit(Clan clan);
-		public Ministry getMinistry();
-		public P_[] getRelevantSkills();
-//		public double contentBuyable(Clan assessor, int millet);
-		public int ordinal();
-	}
-
-	private static class ToDoValue implements Value {
-		private int ordinal;
-		public ToDoValue() {ordinal = ord++;System.out.println("DONT..");}
-		@Override
-		public double compare(Clan POV, Clan A, Clan B) {return 0;}
-		@Override
-		public String description(Clan POV) {return "Value yet undefined";}
-		@Override
-		public Q_ pursuit() {return Q_.NOTHING;}
-		@Override
-		public Ministry getMinistry() {return null;}
-		@Override
-		public P_[] getRelevantSkills() {return new P_[] {};}
-		@Override
-		public int ordinal() {return ordinal;}
-		@Override
-		public ClanAlone doPursuit(Clan clan) {return Do.NOTHING;}
-	}
-	private static abstract class AbstractValue implements Value {
-		protected final String desc;
-		protected final Q_ quest;
-		protected final Ministry ministry;
-		protected final P_[] relSkills;
-		private int ordinal;
-		private ClanAlone doPursuit;
-		public AbstractValue(String d, Q_ q, Ministry j, P_[] rs) {
-			desc = d;
-			quest = q;
-			ordinal = ord++;
-			doPursuit = Do.addQuest(quest);
-			ministry = j;
-			relSkills = rs;
-		}
-		@Override
-		public String description(Clan POV) {return desc;}
-		@Override
-		public String toString() {return description(null);}
-		@Override
-		public Q_ pursuit() {return (quest != null ? quest : Q_.NOTHING);}
-		@Override
-		public Ministry getMinistry() {return ministry;}
-		@Override
-		public P_[] getRelevantSkills() {return relSkills;}
-		@Override
-		public int ordinal() {return ordinal;}
-		@Override
-		public ClanAlone doPursuit(Clan clan) {return doPursuit;}
-	}
-
-	public static abstract class ValuatableValue extends AbstractValue implements Assessable {
-		public ValuatableValue(String d, Q_ q, Ministry j, P_[] rs) {super(d, q, j, rs);}
-		@Override
-		public double compare(Clan POV, Clan A, Clan B) {
-			return compare(value(POV, A), value(POV, B));
-		}
-		public double compare(double A, double B) {return logComp(A, B);}
-		protected double evaluateContent(Clan evaluator, Clan proposer, int content, double curval) {return content + curval;}
-		/** returns comparison between current value and proposed value, times weight of value to clan */
-		@Override
-		public final double evaluate(Clan evaluator, Clan proposer, int content) {
-			double curVal = value(evaluator, evaluator);
-			return evaluator.FB.weightOfValue(this) * compare(evaluateContent(evaluator, proposer, content, curVal), curVal);
-		}
-		protected abstract int value(Clan POV, Clan clan);
-	}
+	static int ord = 0;
 
 	public static final Value MIGHT = new ValuatableValue("Might", Q_.PICKFIGHT, Job.GENERAL,
 			new P_[] {P_.COMBAT, P_.MARKSMANSHIP, P_.STRENGTH}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			return clan.FB.getPrs(P_.BATTLEP);
-		}    // TODO this should be about empirical fight record
+		}
 	};
 
 	public static final Value WEALTH = new ValuatableValue("Wealth", Q_.BUILDWEALTH, Job.TREASURER,
 			new P_[] {P_.CARPENTRY, P_.SMITHING, P_.MASONRY, P_.ARTISTRY, P_.LOBOTOMY}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			return (int) Math.min(clan.getNetAssetValue(POV), Integer.MAX_VALUE/2);
 		}
 	};
+	
 	public static final Value INFLUENCE = new ValuatableValue("Influence", Q_.BUILDPOPULARITY, Job.VIZIER, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			//minus my minions if hes my boss.. so i can judge myself against my bosses
 			return clan.getMinionTotal() - (clan.isSomeBossOf(POV) ? POV.getMinionTotal() : 0);
 		} // * P_.RSPCT ??
@@ -125,7 +45,7 @@ public class Values implements Defs {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
-		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
+		public int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			int sins = 0;
 			PersonalCommandment[] myCommandments = POV.FB.commandments;
 			PersonalCommandment[] hisCommandments = clan.FB.commandments;
@@ -147,7 +67,7 @@ public class Values implements Defs {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
-		protected int value(Clan POV, Clan clan) { // how far from same Order boss are you
+		public int value(Clan POV, Clan clan) { // how far from same Order boss are you
 			return -(clan.myOrder() == POV.myOrder() ? clan.distanceFromTopBoss() : Integer.MAX_VALUE/2);
 		}
 		@Override
@@ -158,7 +78,7 @@ public class Values implements Defs {
 	
 	public static final Value LEGACY = new ValuatableValue("Legacy", Q_.LEGACYQUEST, Job.HISTORIAN, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			return clan.LB.getLegacyFor(POV.FB.randomValueInPriority());
 		}
 	};
@@ -166,7 +86,7 @@ public class Values implements Defs {
 	public static final Value BEAUTY = new ValuatableValue("Beauty", Q_.SPLENDORQUEST, Job.ARCHITECT,
 			new P_[] {P_.MASONRY, P_.ARTISTRY}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			int result = clan.FB.getFac(F_.NOSELX) + clan.FB.getFac(F_.NOSERX);
 			result += clan.FB.getFac(F_.EYELW);
 			result -= 2 * Math.abs(7 - clan.FB.getFac(F_.MOUTHJW));
@@ -179,15 +99,15 @@ public class Values implements Defs {
 	};
 	public static final Value COPULATION = new ValuatableValue("Copulation", Q_.BREED, Job.COURTESAN, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
-			return clan.numSpawns;
+		public int value(Clan POV, Clan clan) {
+			return clan.getNumOffspring();
 		}
 	};
 	public static final Value HARMONY = new ValuatableValue("Harmony", Q_.BREED, Job.APOTHECARY, new P_[] {}) {
 		@Override
 		public double compare(double A, double B) {return logCompNeg(A, B);}
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			return (int) Math.round(clan.AB.getStressLevel() * 100);
 		}
 	};
@@ -195,21 +115,21 @@ public class Values implements Defs {
 	
 	public static final Value EXPERTISE = new ValuatableValue("Expertise", Q_.TRAIN, Job.TUTOR, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {
+		public int value(Clan POV, Clan clan) {
 			double sum = 0;   for (P_ s : ExpertiseQuests.ALLSKILLS) {sum += clan.FB.getPrs(s);}
 			return (int) Math.round(sum / ExpertiseQuests.ALLSKILLS.length);
 		}
 	};
 	public static final Value KNOWLEDGE = new ValuatableValue("Knowledge", Q_.KNOWLEDGEQUEST, Job.PHILOSOPHER, new P_[] {P_.ARITHMETIC}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
+		public int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			//TODO
 			return clan.getKnowledgeAttribution();
 		}
 	};
 	public static final Value SPIRITUALITY = new ValuatableValue("Spirituality", Q_.FAITHQUEST, Job.SORCEROR, new P_[] {}) {
 		@Override
-		protected int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
+		public int value(Clan POV, Clan clan) {   //maybe add human sacrifice?
 			return clan.getHoliness();
 		}
 	};

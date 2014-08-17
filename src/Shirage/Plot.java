@@ -20,14 +20,30 @@ public class Plot extends AbstractPlot {
 	protected static final double rbm = 0.25;
 	protected static final double waterthresh = 0.3;
 	protected static final int adjFert = 2;
-	protected static final int RC = 100;
-	protected static final int GC = 65;
-	protected static final int BC = 40;
-	protected static Color dCol = new Color(RC, GC, BC);
-	protected static Color fCol = new Color(80, 20, 170);
-	protected static Color wCol = new Color(40, 40, 190);
-	protected static Color oCol1 = new Color(20,70,95);
-	protected static Color oCol2 = new Color(50,70,95);
+	protected static Color dColORIGINAL = new Color(100, 65, 40);
+	protected static Color fColORIGINAL = new Color(80, 20, 170);
+	protected static Color wColORIGINAL = new Color(40, 40, 190);
+	protected static Color oCol1ORIGINAL = new Color(20,70,95);
+	protected static Color oCol2ORIGINAL = new Color(50,70,95);
+	protected static Color dCol = dColORIGINAL;
+	protected static Color fCol = fColORIGINAL;
+	protected static Color wCol = wColORIGINAL;
+	protected static Color oCol1 = oCol1ORIGINAL;
+	protected static Color oCol2 = oCol2ORIGINAL;
+	protected static void resetColors() {
+		dCol = dColORIGINAL;
+		fCol = fColORIGINAL;
+		wCol = wColORIGINAL;
+		oCol1 = oCol1ORIGINAL;
+		oCol2 = oCol2ORIGINAL;
+	}
+	public static void grayscaleColors() {
+		dCol = Calc.toGrayscale(dColORIGINAL);
+		fCol = Calc.toGrayscale(fColORIGINAL);
+		wCol = Calc.toGrayscale(wColORIGINAL);
+		oCol1 = Calc.toGrayscale(oCol1ORIGINAL);
+		oCol2 = Calc.toGrayscale(oCol2ORIGINAL);
+	}
 	protected static MapDisplay Map() {return AGPmain.mainGUI.MD;}
 	
 	protected Shire linkedShire;
@@ -74,7 +90,7 @@ public class Plot extends AbstractPlot {
 		GPF = new GradientPaint(0, y*H - offY, Color.gray, 0, y*H + H*3/2 - offY, fCol);
 		GPFo = new GradientPaint(GPF.getPoint1(), Color.black, GPF.getPoint2(), GPF.getColor2());
 	}
-	
+	/** for use with plots not shires */
 	public void refreshHood() {
 		HOOD[0] = getNW();
 		HOOD[1] = getNE();
@@ -83,6 +99,7 @@ public class Plot extends AbstractPlot {
 		HOOD[4] = getW();
 		HOOD[5] = getE();
 	}
+	/** for use with shires */
 	public void refreshHood2() {
 		HOOD[0] = getNW2();
 		HOOD[1] = getNE2();
@@ -295,6 +312,21 @@ public class Plot extends AbstractPlot {
 		drawHighlighted(g, color);
 		g.drawString(linkedShire.getID()+" "+linkedShire.getName(), x(), y() - H());
 	}
+	private double savedHighlight = 0;
+	public void saveShireStat(double d) {
+		savedHighlight = d;
+	}
+	public void drawShireSpotHighlight(Graphics g, double maxD) {
+		if (savedHighlight > maxD || savedHighlight < 0) {
+			System.out.println("fucked up color at " + this.getLinkedShire());
+			System.out.println("saved highlight = " + savedHighlight);
+			maxD = savedHighlight;
+		}
+		Color c = new Color(0f, 0f, 1f, (float)(savedHighlight / maxD));
+		g.setColor(c);
+		int w = W();
+		g.fillOval(x()+1+w/2, y()+1-H()/2, w, w);
+	}
 	private void drawHighlighted(Graphics g, Color color) {
 		g.setColor(color);
 		g.drawRect(x()+1, y()+1, W()-2, H()-2);
@@ -303,5 +335,10 @@ public class Plot extends AbstractPlot {
 		linkedShire = shire;
 	}
 	public Shire getLinkedShire() {return linkedShire;}
+	
+	@Override
+	public String toString() {
+		return "Plot of " + linkedShire;
+	}
 }
 

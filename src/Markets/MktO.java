@@ -27,7 +27,6 @@ public class MktO extends MktAbstract {
 	
 	protected int LTAvg, STAvg, LastPX, MaxPX, MinPX, offerlen, bidlen, bb;
 	protected Entry[] Bids, Offers;
-	private int numTransactions;
 	
 	public MktO() {}
 	public MktO(int ggg, Shire h) {
@@ -82,7 +81,7 @@ public class MktO extends MktAbstract {
 		STAvg = (int) Math.round(0.5 * p + 0.5 * STAvg);
 		MaxPX = (p > MaxPX ? p : MaxPX);
 		MinPX = (p < MinPX ? p : MinPX);
-		todayvol++;
+		periodVol++;
 	}
 
 	public int buyablePX(Clan buyer) {
@@ -142,7 +141,6 @@ public class MktO extends MktAbstract {
 		} else {sellFair(seller);}
 	}
 	protected void selfTransaction(Clan clan, int plc, int bidorask) {
-		numTransactions++;
 		if (bidorask == Entry.BIDDIR) {removeBid(plc);}
 		else if (bidorask == Entry.OFFERDIR) {removeOffer(plc);}
 		addReport(clan.getNomen() + " takes own " + (bidorask == Entry.BIDDIR ? "bid" : "offer") + " of " + Naming.goodName(g) + " from market");
@@ -162,7 +160,6 @@ public class MktO extends MktAbstract {
 		sendToInventory(buyer); //, price);
 		updateAvgs(price);
 //		Log.info(buyer.getNomen() + " buys " + Naming.goodName(this.g) + " from " + seller.getNomen() + " for " + price);
-		numTransactions++;
 		return true;
 	}
 	protected void sendToInventory(Clan buyer) { //, int px) {
@@ -417,8 +414,7 @@ public class MktO extends MktAbstract {
 		removeBids(i);   removeOffers(i);
 
 		//finish day stuff
-		numTransactions = 0;
-		if (numTransactions > TOO_MANY_TRANSACTIONS_THRESH) {
+		if (periodVol > TOO_MANY_TRANSACTIONS_THRESH) {
 			System.out.println("TOO MANY MARKET REPORTS... INF LOOP?   " + report);
 		}
 	}

@@ -3,9 +3,9 @@ package Game;
 import AMath.Calc;
 import Defs.*;
 import Descriptions.GobLog;
-import Questing.*;
-import Questing.PropertyQuests.LaborQuest;
-import Sentiens.*;
+import Questing.ExpertiseQuests;
+import Questing.Wealth.LaborQuest;
+import Sentiens.Clan;
 
 public class Labor implements Act, Defs {
 

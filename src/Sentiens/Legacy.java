@@ -2,8 +2,7 @@ package Sentiens;
 
 import java.util.*;
 
-import Sentiens.Values.ValuatableValue;
-import Sentiens.Values.Value;
+import Ideology.*;
 
 public class Legacy {
 	private final Map<Value, Integer> valueBins = new HashMap<Value, Integer>();

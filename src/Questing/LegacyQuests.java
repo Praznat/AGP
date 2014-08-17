@@ -3,11 +3,10 @@ package Questing;
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.P_;
+import Ideology.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
-import Sentiens.*;
-import Sentiens.Values.ValuatableValue;
-import Sentiens.Values.Value;
+import Sentiens.Clan;
 
 public class LegacyQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(LegacyQuest.class) {public Quest createFor(Clan c, Clan p) {return new LegacyQuest(c, p);}};}

@@ -1,14 +1,16 @@
 package Shirage;
 import java.util.*;
 
-import AMath.Calc;
-import Defs.Defs;
+import AMath.*;
+import AMath.Calc.DoubleWrapper;
+import Defs.*;
 import Descriptions.Naming;
 import Game.*;
 import Markets.*;
-import Sentiens.*;
+import Sentiens.Clan;
+import Sentiens.Stress.Blameable;
 
-public class Shire extends AbstractShire implements Stressor.Causable {
+public class Shire extends AbstractShire implements Blameable {
 	
 	public static byte varMin = 1;
 	public static byte varMax = 127;
@@ -66,11 +68,11 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 
 	private MktAbstract[] markets;
 	private Library library = new Library();
+	private Map<String, DoubleWrapper> graphingInfo = new HashMap<String, DoubleWrapper>();
 	
 	public Shire(int x, int y) {
 		super(x, y);
 		markets = generateMkts();
-		
 
 		initializeVars();
 	}
@@ -185,6 +187,7 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	
 	public static String getName(int x, int y) {return Naming.randShireName(getID(x, y));}
 	public String getName() {return Naming.randShireName(getID());}
+	public MktAbstract getMarket(G_ g) {return markets[g.ordinal()];}
 	public MktAbstract getMarket(int g) {return markets[g];}
 	public Library getLibrary() {return library;}
 	public int getResource(int r) {
@@ -223,22 +226,34 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 	public byte getGrowthB() {return growthB;}
 	public byte getGrowthD() {return growthD;}
 	public byte getGrowthT() {return growthT;}
-	
-	public Shire getSomeNeighbor() {
-		Shire newShire = this;
-		for (int i = 0 ; i < 10; i++) {
-			final int r = AGPmain.rand.nextInt(6);
-			switch(r) {
-			case 0: newShire = linkedPlot.getW2().getLinkedShire();
-			case 1: newShire =  linkedPlot.getNW2().getLinkedShire();
-			case 2: newShire = linkedPlot.getNE2().getLinkedShire();
-			case 3: newShire = linkedPlot.getE2().getLinkedShire();
-			case 4: newShire = linkedPlot.getSE2().getLinkedShire();
-			case 5: newShire = linkedPlot.getSW2().getLinkedShire();
-			}
-			if (newShire != null) return newShire;
+
+	public Shire getSomeNeighbor() {return getSomeNeighbor(null);}
+	private static List<Shire> takenShires = new ArrayList<Shire>();
+	public Shire getSomeNeighbor(Shire notIncluding) {
+		linkedPlot.refreshHood2();
+		Plot[] plots = linkedPlot.myHood();
+		takenShires.clear();
+		for (Plot p : plots) {Shire s = p.getLinkedShire(); if (s != this && s != notIncluding && s != null) {takenShires.add(s);}}
+		Shire result = takenShires.get(AGPmain.rand.nextInt(takenShires.size()));
+		if (takenShires.isEmpty() || result == null) {
+			throw new IllegalStateException("this is a problemo");
 		}
-		return this; // give up
+		return result;
+	}
+	public Shire[] getNeighborRoute(boolean includeSelf, int totalNum) {
+		linkedPlot.refreshHood2();
+		Shire[] result = new Shire[totalNum];
+		int i = 0;
+		if (includeSelf) {result[i++] = this;}
+		Shire lastShire = this;
+		Shire lastLastShire = this;
+		while (i < totalNum) {
+			Shire newShire = lastShire.getSomeNeighbor(lastLastShire);
+			result[i++] = newShire;
+			lastLastShire = lastShire;
+			lastShire = newShire;
+		}
+		return result;
 	}
 	public Shire[] getNeighbors(boolean includeSelf) {
 		linkedPlot.refreshHood2();
@@ -253,7 +268,43 @@ public class Shire extends AbstractShire implements Stressor.Causable {
 
 	public Clan getGovernor() {return governor;}
 
-	public void setGovernor(Clan clan) {this.governor = clan;}
+	/** should only really set this from Order acquireShire method*/
+	public void setGovernor(Clan clan) {
+		if (governor != null) governor.setGovernedShire(null); // take away from current governor
+		if (clan == null) {governor = null; return;}
+		
+		// give to new governor
+		Shire prevOwned = clan.getGovernedShire();
+		if (prevOwned != null) {
+			throw new IllegalStateException("dont just give like this to new governors who already have shires");
+		}
+		governor = clan;
+		governor.setGovernedShire(this);
+	}
+	
+	public long getNetAssetValue(Clan POV, boolean skipMillet) {
+		int sum = 0;   for (int g = 1; g < Defs.numAssets; g++) {
+			if (g == Defs.millet && skipMillet) continue;
+			int px = g != Defs.millet ? (POV != null ? POV.myMkt(g).sellablePX(POV) : this.getMarket(g).bestBid()) : 1;
+			if (px != MktO.NOASK && px != MktO.NOBID) {
+				int quantity = g != Defs.millet ? this.getMarket(g).getAskSz() : getMilletWealthOfPop();
+				sum += quantity * px;
+			}
+		}	return sum;
+	}
+	
+	public int getMilletWealthOfPop() {
+		int result = 0;
+		for (Clan c : getCensus()) result += c.getMillet();
+		return result;
+	}
+	
+	public DoubleWrapper getGraphingInfo(String k) {
+		final String key = k.toUpperCase();
+		DoubleWrapper dw = graphingInfo.get(key);
+		if (dw == null) graphingInfo.put(key, dw = new DoubleWrapper());
+		return dw;
+	}
 	
 	@Override
 	public String toString() {return getName() + " @ " + getID();}

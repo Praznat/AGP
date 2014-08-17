@@ -3,7 +3,7 @@ package AMath;
 import Defs.*;
 import Descriptions.GobLog.Reportable;
 import Game.*;
-import Questing.PropertyQuests;
+import Questing.Wealth.TradingQuest;
 import Sentiens.Clan;
 import Shirage.Shire;
 
@@ -43,7 +43,7 @@ public class TestTrading extends Testing {
 	
 	private static void testNoMarkets() {
 		resetTrading();
-		a.MB.newQ(new PropertyQuests.TradingQuest(a));
+		a.MB.newQ(new TradingQuest(a));
 		pursueUntilDone(a);
 		for (int g = 0; g < Defs.numGoods; g++) affirm(s1.getMarket(g).smaVol() == 0);
 		for (int g = 0; g < Defs.numGoods; g++) affirm(s2.getMarket(g).smaVol() == 0);
@@ -53,7 +53,7 @@ public class TestTrading extends Testing {
 	private static void testSimple(final Shire s1, final Shire s2) {
 		int startMillet = a.getMillet();
 		s2.getMarket(18).buyFair(b); // b places bid at s2
-		a.MB.newQ(new PropertyQuests.TradingQuest(a));
+		a.MB.newQ(new TradingQuest(a));
 //		pursueUntilDone(a); // a does trading run
 		doPursueUntil(a, false, new Calc.BooleanCheck() { // a does trading run until placing new bid at s1
 			@Override
@@ -65,6 +65,6 @@ public class TestTrading extends Testing {
 		affirm(s1.getMarket(18).sellablePX(b) < s2.getMarket(18).sellablePX(b)); //s1 bid smaller than s2 bid
 		s1.getMarket(18).hitBid(b);
 		affirm(s2.getMarket(18).getAskSz() > 0 && s2.getMarket(18).sellablePX(b) <= s2.getMarket(18).buyablePX(b));
-		for (Reportable r : a.getGoblog().getBook()) System.out.println(r.out());
+		for (Reportable r : a.getGoblog().getBook()) System.out.println(r);
 	}
 }

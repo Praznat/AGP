@@ -3,14 +3,14 @@ package Avatar;
 import java.awt.event.*;
 import java.util.*;
 
-import javax.swing.*;
+import javax.swing.JButton;
 
 import AMath.Calc;
 import GUI.*;
 import Game.AGPmain;
+import Ideology.*;
 import Questing.Quest;
-import Sentiens.*;
-import Sentiens.Values.Value;
+import Sentiens.Clan;
 
 @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 public class AvatarConsole extends APanel implements ActionListener {

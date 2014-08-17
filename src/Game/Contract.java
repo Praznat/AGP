@@ -7,10 +7,10 @@ import Avatar.SubjectiveType;
 import Defs.P_;
 import Descriptions.*;
 import Descriptions.GobLog.Reportable;
-import Questing.MightQuests;
+import Ideology.*;
+import Questing.Might.MightQuests;
 import Sentiens.*;
-import Sentiens.Values.Assessable;
-import Sentiens.Values.Value;
+import Sentiens.Stress.Stressor;
 
 /**
  * Contract Singleton must be evaluated and decided on immediately
@@ -63,8 +63,8 @@ public class Contract {   // AND/OR combination of Terms??
 	
 	private void avatarChooseAcceptable(boolean aiWouldAccept) {
 		String prompt = "";
-		for (DealTerm dt : demands) {prompt += dt.loggy().out() + ";";}
-		for (DealTerm dt : offers) {prompt += dt.loggy().out() + ";";}
+		for (DealTerm dt : demands) {prompt += dt.loggy() + ";";}
+		for (DealTerm dt : offers) {prompt += dt.loggy() + ";";}
 		final Boolean[] choices = aiWouldAccept ? new Boolean[] {Boolean.TRUE, Boolean.FALSE} : new Boolean[] {Boolean.FALSE, Boolean.TRUE};
 		AGPmain.mainGUI.AC.showChoices(prompt, evaluator, choices, SubjectiveType.NO_ORDER, new Calc.Listener() {
 			@Override
@@ -120,6 +120,22 @@ public class Contract {   // AND/OR combination of Terms??
 		@Override
 		protected boolean doit() {evaluator.join(proposer); return true;}
 		protected Reportable loggy() {return GobLog.dealTermAllegiance(proposer, evaluator);}
+	}
+	/** should never demand from someone without a suitor */
+	public void demandSuitor() {demands.add(new DemandSuitorTerm());}
+	protected class DemandSuitorTerm extends DealTerm {
+		@Override
+		protected double evaluate() {
+			Clan suitor = evaluator.getSuitor();
+			if (suitor == null) return 0;
+			final double love = evaluator.FB.randomValueInPriority().compare(evaluator, suitor, evaluator);
+			return love;
+		}
+		@Override
+		protected boolean doit() {
+			Clan suitor = evaluator.getSuitor(); evaluator.setSuitor(null); if (suitor != null) {suitor.setSuitor(null);} return true;
+		}
+		protected Reportable loggy() {return GobLog.dealTermSuitor(proposer, evaluator);}
 	}
 	//TODO offer allegiance (valuate by INFLUENCE)
 	public void demandRepentance() {demands.add(new DemandRepentanceTerm());}

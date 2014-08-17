@@ -2,8 +2,9 @@ package AMath;
 
 import Defs.*;
 import Game.Job;
-import Questing.KnowledgeQuests;
-import Sentiens.*;
+import Ideology.Values;
+import Questing.Knowledge.KnowledgeQuests;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class TestKnowledge extends Testing {

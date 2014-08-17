@@ -1,13 +1,13 @@
 package AMath;
 
 import Defs.*;
-import Descriptions.GobLog;
+import Descriptions.*;
 import Descriptions.GobLog.Reportable;
 import Game.*;
 import Markets.*;
-import Questing.PropertyQuests.LaborQuest;
 import Questing.*;
-import Sentiens.*;
+import Questing.Wealth.LaborQuest;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class TestMarkets extends Testing {
@@ -22,16 +22,16 @@ public class TestMarkets extends Testing {
 		guy.addReport(GobLog.transaction(1, 9, true, other));
 		other.addReport(GobLog.transaction(1, 9, false, guy));
 		for (Reportable R : guy.getLog()) {
-			System.out.println(R.out());
+			System.out.println(R);
 		}
 		for (Reportable R : other.getLog()) {
-			System.out.println(R.out());
+			System.out.println(R);
 		}
 		for (Reportable R : guy.getLog()) {
-			System.out.println(R.out());
+			System.out.println(R);
 		}
 		for (Reportable R : other.getLog()) {
-			System.out.println(R.out());
+			System.out.println(R);
 		}
 		//FAAIL!!!!! on date()
 	}

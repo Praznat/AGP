@@ -1,14 +1,14 @@
-package Sentiens;
+package Sentiens.Stress;
 
 import Defs.*;
 import Game.Job;
-import Questing.*;
-import Questing.KnowledgeQuests.KnowledgeBlock;
-import Sentiens.Values.Value;
+import Ideology.Value;
+import Questing.ImmigrationQuests;
+import Questing.Knowledge.KnowledgeBlock;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class Stressor {
-	public static interface Causable {}
 	public static final int FEAR = 0;  //potential threat, detected by "patrolling" (ppl with high paranoia do more often)
 	public static final int ANNOYANCE = 1;  //inability to succeed in quests
 	public static final int INSULT = 2;  //something happens to lower your self worth
@@ -17,12 +17,12 @@ public class Stressor {
 	public static final int EXTREME_TRAUMA = 5;  //probably causes insanity
 	public static final int PROMISE_BROKEN = 6;  //probably causes insanity
 	public static final int COMPETITION_LOSS = 7;
-	private final int type;
-	private Object target;
+	protected final int type;
+	protected Object blamee;
 	
 	public Stressor() {type = -1;}
-	public Stressor(int t, Causable c) {type = t; target = c;}
-	public Object getTarget() {return target;}
+	public Stressor(int t, Blameable c) {type = t; blamee = c;}
+	public Object getTarget() {return blamee;}
 	public int getLevel(Clan doer) {
 		// dont use useBeh please... it will be called several times in enoughIsEnough method
 		switch (type) {
@@ -39,19 +39,19 @@ public class Stressor {
 	}
 	public boolean respond(Clan responder) {  //TODO
 		boolean success = true;
-		if (target instanceof Clan) {
+		if (blamee instanceof Clan) {
 			if (type == HATRED) {}
 			if (type == PROMISE_BROKEN) {}
 			else {}
 		}
-		else if (target instanceof Shire) {
+		else if (blamee instanceof Shire) {
 			Shire newShire = responder.myShire().getSomeNeighbor();
 			if (responder.myShire() != newShire) {responder.MB.newQ(new ImmigrationQuests.EmigrateQuest(responder, newShire));}
 		}
-		else if (target instanceof Value) {
+		else if (blamee instanceof Value) {
 
 		}
-		else if (target instanceof Job) {
+		else if (blamee instanceof Job) {
 			// TODO find new job
 			final KnowledgeBlock kb = responder.getRelevantLibrary().findKnowledge(K_.JOBS);
 			if (kb != null) kb.useKnowledge(responder);
@@ -60,10 +60,10 @@ public class Stressor {
 	}
 	
 	public boolean sameAndLessThan(Clan doer, Stressor other) {
-		return (other.getTarget() == target && getLevel(doer) <= other.getLevel(doer));
+		return (other.getTarget() == blamee && getLevel(doer) <= other.getLevel(doer));
 	}
 	
 	@Override
-	public String toString() {return "type " + type + " @ " + target.toString();}
+	public String toString() {return "type " + type + " @ " + blamee.toString();}
 
 }

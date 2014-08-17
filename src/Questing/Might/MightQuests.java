@@ -1,19 +1,47 @@
-package Questing;
+package Questing.Might;
 
 import AMath.Calc;
 import Avatar.SubjectiveType;
 import Defs.M_;
 import Game.Contract;
+import Government.Order;
+import Ideology.*;
+import Questing.*;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Questing.Quest.TransactionQuest;
 import Sentiens.*;
 import Sentiens.Law.Commandments;
-import Sentiens.Values.Value;
+import Sentiens.Stress.StressorFactory;
 
 public class MightQuests {
 	
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(DefendPatron.class) {public Quest createFor(Clan c, Clan p) {return new DefendPatron(c, p);}};}
+	
+	
+
+	public static class BasicMightQuest extends Quest {
+		public BasicMightQuest(Clan P) {
+			super(P);
+		}
+		@Override
+		public void pursue() {
+			// TODO ...or take Shire, etc
+			Order myOrder = Me.myOrder();
+			if (myOrder != null && Me == myOrder.getRuler()) {
+				replaceAndDoNewQuest(Me, new ExpandOrderQuest(Me));
+			} else {
+				replaceAndDoNewQuest(Me, new ChallengeMightQuest(Me));
+			}
+		}
+
+		@Override
+		public String description() {
+			return "Become mighty";
+		}
+		
+	}
+	
 	
 	// this should be the default patron quest WHEN NOT in same shire as Patron...
 	// otherwise maybe Governor so become General
@@ -65,11 +93,11 @@ public class MightQuests {
 		return confidence / (confidence + fear);
 	}
 	
-	public static class ChallengeMight extends TransactionQuest {
+	public static class ChallengeMightQuest extends TransactionQuest {
 		private final Value val;
 
-		public ChallengeMight(Clan P) {super(P); val = P.FB.randomValueInPriority();}
-		public ChallengeMight(Clan P, Value v) {super(P); val = v;}
+		public ChallengeMightQuest(Clan P) {super(P); val = P.FB.randomValueInPriority();}
+		public ChallengeMightQuest(Clan P, Value v) {super(P); val = v;}
 
 		@Override
 		protected FindTargetAbstract findWhat() {
@@ -77,6 +105,10 @@ public class MightQuests {
 				@Override
 				public boolean meetsReq(Clan POV, Clan target) {
 					return target != Me && desiresFight(Me, target, false);
+				}
+				@Override
+				protected void onFailure() {
+					failure(StressorFactory.createShireStressor(Me.myShire(), Me.FB.randomValueInPriority()));
 				}
 				@Override
 				protected int triesPerTurn() {return 1;} //expensive calc
@@ -87,13 +119,12 @@ public class MightQuests {
 				final int millet = Math.min(Me.getMillet(), target.getMillet()); //TODO figure it out
 				contract().demandTribute(millet);
 			}
-			else if (v == Values.INFLUENCE || v == Values.ALLEGIANCE) {
+			else if (v == Values.INFLUENCE || v == Values.ALLEGIANCE || v == Values.MIGHT) {
 				contract().demandAllegiance();
 			}
 			else if (v == Values.RIGHTEOUSNESS) {contract().demandRepentance();}
-			// TODO beauty should be give up mate if mate is desired
-			else if (v == Values.MIGHT) {
-				// TODO just fight
+			else if ((v == Values.COPULATION || v == Values.BEAUTY) && target.getSuitor() != null) {
+				contract().demandSuitor();
 			}
 			else {contract().demandService(v);}
 		}
@@ -133,8 +164,7 @@ public class MightQuests {
 
 		@Override
 		protected void failCase() {
-			replaceAndDoNewQuest(Me, new WarQuests.WarQuest(Me, target));
-			target.MB.newQ(new WarQuests.WarQuest(target, Me));
+			replaceAndDoNewQuest(Me, WarQuest.start(Me, target));
 		}
 
 		@Override

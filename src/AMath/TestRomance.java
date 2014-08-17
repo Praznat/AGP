@@ -1,8 +1,9 @@
 package AMath;
 
-import Defs.*;
+import Defs.M_;
+import Ideology.Values;
 import Questing.*;
-import Sentiens.*;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class TestRomance extends Testing {

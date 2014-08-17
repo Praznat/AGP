@@ -10,7 +10,7 @@ import Game.*;
 import Government.Order;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
-import Sentiens.*;
+import Sentiens.Clan;
 
 public class AllegianceQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(AllegianceQuest.class) {public Quest createFor(Clan c, Clan p) {return new AllegianceQuest(c, p);}};}

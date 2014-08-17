@@ -7,8 +7,7 @@ import Defs.P_;
 import Descriptions.*;
 import Descriptions.GobLog.Reportable;
 import Questing.*;
-import Questing.WarQuests.FormArmy;
-import Questing.WarQuests.InvolvesArmy;
+import Questing.Might.*;
 import Sentiens.Clan;
 import Shirage.Shire;
 import War.CombatDefs.BattleStats;
@@ -19,8 +18,10 @@ public class BattleField {
 	private final HashMap<Clan, BattleResult> results = new HashMap<Clan, BattleResult>();
 	private Army defenseArmy = new Army();
 	private Army offenseArmy = new Army();
+	private Shire location;
 
 	public static void setupNewBattleField(Clan attacker, Clan defender, Shire location) {
+		INSTANCE.location = location;
 		createArmyFrom(defender, INSTANCE.defenseArmy, location);
 		createArmyFrom(attacker, INSTANCE.offenseArmy, location);
 		determineFormation(defender, INSTANCE.defenseArmy);
@@ -40,7 +41,7 @@ public class BattleField {
 		Set<Clan> clanArmy = new HashSet<Clan>();
 		for (Quest q : qs) {
 			if (InvolvesArmy.class.isAssignableFrom(q.getClass())) {
-				for (FormArmy fa : ((InvolvesArmy)q).getArmy()) {clanArmy.add(fa.getDoer());}
+				for (FormArmyQuest fa : ((InvolvesArmy)q).getArmy()) {clanArmy.add(fa.getDoer());}
 			}
 		}
 		createArmyFrom(clanArmy, army);
@@ -56,20 +57,22 @@ public class BattleField {
 	}
 	
 	private void go() {
+		if (offenseArmy.isEmpty() || defenseArmy.isEmpty()) {
+			throw new IllegalStateException("shouldnt be doing this with empty armies..");
+		}
 		BattleStats attackStats = new BattleStats();
 		BattleStats defenseStats = new BattleStats();
 		for (Warrior w : offenseArmy) {attackStats.computeFriendly(w);}
 		for (Warrior w : defenseArmy) {defenseStats.computeFriendly(w);}
 		boolean attackerWin = BattleStats.attackerWinsExchange(attackStats, defenseStats);
 		results.clear();
-		BattleResult result;
 		for (Warrior w : offenseArmy) {
-			result = new BattleResult();
+			BattleResult result = new BattleResult();
 			result.endStatus = attackerWin ? EndStatus.VICTORIOUS : EndStatus.RETREATED;
 			results.put(w.getRefClan(), result);
 		}
 		for (Warrior w : defenseArmy) {
-			result = new BattleResult();
+			BattleResult result = new BattleResult();
 			result.endStatus = attackerWin ? EndStatus.CAPTURED : EndStatus.VICTORIOUS;
 			results.put(w.getRefClan(), result);
 		}
@@ -88,11 +91,18 @@ public class BattleField {
 		return INSTANCE.results.get(me).endStatus == EndStatus.VICTORIOUS;
 	}
 	
+	public EndStatus getEndStatus(Clan c) {
+		return results.get(c).endStatus;
+	}
+	
 	public Rectangle getField() {return field;}
 	
-	private static enum EndStatus {DEAD, WOUNDED, RETREATED, CAPTURED, VICTORIOUS}
+	public static enum EndStatus {DEAD, RETREATED, CAPTURED, VICTORIOUS}
 	private class BattleResult {
 		int kills, wins, flights;
 		EndStatus endStatus;
+	}
+	public static Shire getShire() {
+		return INSTANCE.location;
 	}
 }

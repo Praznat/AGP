@@ -3,9 +3,9 @@ package Game;
 import java.util.*;
 
 import AMath.*;
+import Ideology.Value;
 import Sentiens.*;
-import Sentiens.Values.Value;
-import Shirage.*;
+import Shirage.Shire;
 
 public class Realm {
 	protected int shiresX;

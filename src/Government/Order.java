@@ -4,10 +4,12 @@ import java.util.*;
 
 import Defs.Defs;
 import Descriptions.GobName;
+import Questing.Quest.TargetQuest;
 import Sentiens.Clan;
+import Sentiens.Stress.*;
 import Shirage.Shire;
 
-public class Order {
+public class Order implements Blameable {
 	
 
 	private Clan ruler;
@@ -43,7 +45,7 @@ public class Order {
 		newOrder.addMembers(movers);
 		this.members.removeAll(movers);
 	}
-	
+	/** current ruler of order */
 	public Clan getRuler() {return ruler;}
 	public int size() {return members.size();}
 	public int numShiresControlled() {return 0;} // TODO
@@ -86,6 +88,9 @@ public class Order {
 	}
 	private void tax(Clan c) { // should be some affects on Clan's measured Allegiance contribution as well as Stressors
 		double taxRate = 0.15;
+		if (this != c.myOrder()) {
+			c.AB.add(new Stressor(Stressor.ANNOYANCE, this));
+		}
 	}
 	private void raiseFunds() { // should be various ways to do this
 		// TODO probably should be done through Quest stuff?
@@ -111,12 +116,46 @@ public class Order {
 		return preferableOver(null, pov);
 	}
 	public boolean preferableOver(Order other, Clan pov) {
-		return false;
+		return false; //TODO ???
 	}
+	
+	public Order[] getRivalOrders() {
+		Ledger.orders.clear();
+		for (Clan c : TargetQuest.getReasonableCandidates(ruler)) {Order o = c.myOrder(); if (o != null) {Ledger.orders.add(c.myOrder());}}
+		return Ledger.orders.toArray(new Order[0]);
+	}
+	public Order[] getNeighboringOrders() {
+		Ledger.orders.clear();
+		for (Shire s : ruler.myShire().getNeighbors(false)) {
+			Clan gov = s.getGovernor();
+			if (gov != null) {Ledger.orders.add(gov.myOrder());}
+		}
+		return (Order[])Ledger.orders.toArray();
+	}
+	
+	public void acquireShire(Shire targetShire, Clan taker) {
+		// TODO clans should each only be able to govern one (or numSpawn) shires
+		// order needs to decide how to allocate governors
+		targetShire.setGovernor(null);
+		if (ruler.getGovernedShire() == null) { targetShire.setGovernor(ruler); return; }
+		
+		if (taker != null) {
+			if (taker.getGovernedShire() == null) { targetShire.setGovernor(taker); }
+			else for (Clan minion : getFollowers(taker, false, false)) {
+					if (minion.getGovernedShire() == null) { targetShire.setGovernor(minion); return; }
+			}
+		}
+		for (Clan minion : getFollowers(ruler, false, false)) {
+			if (minion.getGovernedShire() == null) { targetShire.setGovernor(minion); return; }
+		}
+		// UNGOVERNED SHIRE! (could exist..)
+	}
+
 	
 	
 	private static class Ledger {
 		private static Set<Clan> pop = new HashSet<Clan>();
+		private static Set<Order> orders = new HashSet<Order>();
 
 		public static Set<Clan> getFollowers(Clan leader, boolean includeMe, boolean includeSubs) {
 			pop.clear();
@@ -133,7 +172,7 @@ public class Order {
 			int N = leader.getMinionTotal() + (includeMe ? 1 : 0);
 			for (Clan m : leader.myOrder().getMembers()) {
 				if (N <= 0) {break;}
-				if (m.myShire() == place && ((leader == m && includeMe) ||
+				if ((place == null || m.myShire() == place) && ((leader == m && includeMe) ||
 						(includeSubs ? leader.isSomeBossOf(m) : leader.isDirectBossOf(m)))) {N--; pop.add(m);}
 			}
 			return pop;

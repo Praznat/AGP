@@ -3,13 +3,15 @@ package Markets;
 import java.util.logging.Logger;
 
 import Defs.Defs;
-import Game.*;
+import Game.AGPmain;
 import Sentiens.Clan;
 import Shirage.Shire;
 
 public abstract class MktAbstract implements Defs {
 	
-	protected int g, smavol, todayvol;
+	protected static final int VOL_DISPLAY_PERIOD = 30; // report 30-day volume cuz 1 day is too small
+	
+	protected int g, smaVol, periodVol;
 	protected Shire home;
 	
 	public int getGood() {return g;}
@@ -20,7 +22,7 @@ public abstract class MktAbstract implements Defs {
 	public abstract int getAskSz();
 	public abstract int bestOffer();
 	public abstract int bestBid();
-	public int smaVol() {return smavol;}
+	public int smaVol() {return smaVol;}
 	public abstract int sellablePX(Clan c);  //used in Logic
 	public abstract int buyablePX(Clan c);  //used in Logic
 	public abstract void buyFair(Clan buyer);
@@ -37,16 +39,17 @@ public abstract class MktAbstract implements Defs {
 	
 	public void newDay() {
 		clearMarket();
-		smavol = (smavol + todayvol) / 2;
-		todayvol = 0;
+		if (AGPmain.TheRealm.getDay() % VOL_DISPLAY_PERIOD == 0) {
+//			smaVol = (int)Math.round((double)(smaVol + periodVol) / 2);
+			smaVol = periodVol;
+			periodVol = 0;
+		}
 	}
 	
 	protected final Logger Log = Logger.getLogger(this.getClass().getName());
 
 	public abstract void loseAsset(Clan me);
 	public abstract void gainAsset(Clan me);
-
-
 	
 	
 }

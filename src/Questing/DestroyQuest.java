@@ -6,6 +6,7 @@ import Questing.PersecutionQuests.PersecuteAbstract;
 import Questing.Quest.TargetQuest;
 import Questing.Quest.Unquenchable;
 import Sentiens.*;
+import Sentiens.Stress.Stressor;
 
 public class DestroyQuest extends TargetQuest implements Unquenchable {
 	private RelationCondition victoryCondition;

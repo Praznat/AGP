@@ -2,6 +2,7 @@ package AMath;
 
 import java.awt.Color;
 import java.awt.event.*;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -136,7 +137,7 @@ public class Calc {
 		return Math.sqrt(Math.pow(pt2[0] - pt1[0], 2) + Math.pow(pt2[1] - pt1[1], 2));
 	}
 	public static boolean skillcalc (int s, int d) {
-		if (Calc.pFraction(s, d + s) == 1) {return true;}
+		if (Calc.pFraction(s, d + s)) {return true;}
 		else {return false;}
 	}
 	public static int skillpct (int s, int d) {
@@ -160,9 +161,9 @@ public class Calc {
 		if (AGPmain.rand.nextInt(denom) < num) {return (byte) 1;}
 		else {return (byte) 0;}
 	}
-	public static int pFraction (int num, int denom) {
-		if (AGPmain.rand.nextInt(denom) < num) {return 1;}
-		else {return 0;}
+	public static boolean pFraction (int num, int denom) {
+		if (AGPmain.rand.nextInt(denom) < num) {return true;}
+		else {return false;}
 	}
 	public static boolean discover (int denom) {
 		if (denom >= 0) {
@@ -170,12 +171,6 @@ public class Calc {
 			else {return false;}
 		}
 		else {return false;}
-	}
-	public static byte pDivide (byte num, byte denom) {
-		return (byte) ((num / denom) + pFraction((byte)(num%denom), denom));
-	}
-	public static int pDivide (int num, int denom) {
-		return ((num / denom) + pFraction((num%denom), denom));
 	}
 	public static byte squeezeByte(byte in, byte min, byte max) {
 		double x = (in + 128) * (max - min);
@@ -426,7 +421,11 @@ public class Calc {
 		System.arraycopy(in, 0, out, 0, in.length);
 		return out;
 	}
-
+	
+	public static Color toGrayscale(Color in) {
+		float c = (in.getRed() + in.getGreen() + in.getBlue()) / 3 / 255 / 2 + 0.5f;
+		return new Color(c, c, c, 0.25f);
+	}
 	
 	public static final boolean equal(Object a, Object b) {
 		return a == null ? (b == null) : a.equals(b);
@@ -482,6 +481,19 @@ public class Calc {
 		final L l;
 		public ThreeObjects(K k, J j, L l) {super(k, j); this.l = l;}
 		public L get3rd() {return l;}
+	}
+	
+	public static class DoubleWrapper {
+		private double value = 0;
+		public void setValue(double d) {value = d;}
+		public double getValue() {return value;}
+		public void alterValue(double d) {value += d;}
+	}
+	
+	public static <K, V> V putGet(Map<K,V> map, K key, V replacementIfEmpty) {
+		V preexisting = map.get(key);
+		if (preexisting == null) {map.put(key, preexisting = replacementIfEmpty);}
+		return preexisting;
 	}
 	
 }

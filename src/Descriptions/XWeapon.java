@@ -21,7 +21,7 @@ public class XWeapon {
 		int rarety = 0;
 		final int denom = 11;
 		for (int i = 0; i < 5; i++) {
-			rarety += (AGPmain.rand.nextInt(skill) > denom ? 1 : 0);
+			rarety += (AGPmain.rand.nextInt(skill + 1) > denom ? 1 : 0);
 			//if (AGPmain.rand.nextInt(skill) > denom) {rarety++;} else {break;}
 		}
 		if (rarety < 2) {return NULL;} //failed to make famous weapon

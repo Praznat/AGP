@@ -2,6 +2,7 @@ package Questing;
 
 import java.util.Stack;
 
+import Descriptions.GobLog;
 import Questing.Quest.QuestRetrievalQuest;
 import Questing.Quest.Unquenchable;
 import Sentiens.Clan;
@@ -48,6 +49,7 @@ public class QStack extends Stack<Quest> {
 			clan = q.getDoer();
 			oldQuests[i++] = q.getClass();
 		}
+		clan.addReport(GobLog.questExplosion());
 		System.out.println(clan.getNomen() + " the " + clan.getJob() + " QUEST EXPLOSION!!! " + this);
 		this.clear();
 		return super.push(new QuestRetrievalQuest(clan, oldQuests));

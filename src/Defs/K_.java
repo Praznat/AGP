@@ -1,9 +1,13 @@
 package Defs;
 
-public enum K_ {
+import Questing.Knowledge.KnowledgeType;
+
+public enum K_ implements KnowledgeType {
 	JOBS,
 	TRADEMEMS,
 	POPVALS,
-	WARMEMS,
+	STRATEGYMEMS,
+	TACTICSMEMS,
+	WEAPONMEMS,
 	NADA
 }

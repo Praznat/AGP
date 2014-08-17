@@ -2,9 +2,8 @@ package Game;
 
 import Defs.K_;
 import Government.Order;
-import Questing.KnowledgeQuests.KnowledgeBlock;
-import Sentiens.*;
-import Sentiens.Values.Value;
+import Questing.Knowledge.*;
+import Sentiens.Stress.Stressor;
 
 @SuppressWarnings("rawtypes")
 public class Library {
@@ -18,7 +17,7 @@ public class Library {
 	
 	public int getCapacity() {return capacity * (owningOrder != null ? owningOrder.numShiresControlled() : 1);}
 	
-	public KnowledgeBlock findKnowledge(K_ k) {
+	public KnowledgeBlock findKnowledge(KnowledgeType k) {
 		for (KnowledgeBlock kb : knowledge) {
 			if (kb == null) return null;
 			if (kb.isApplicableFor(k)) {return kb;}
@@ -36,6 +35,7 @@ public class Library {
 		return true;// earliest wins or preexisting.getNumObservationsUsed() > kb.getNumObservationsUsed(); ?
 	}
 
+	/** puts knowledge at front of library */
 	public void actuallyPutKnowledge(KnowledgeBlock kb) {
 		final int effectiveCapacity = getCapacity();
 		for (int i = effectiveCapacity-1; i > 0; i--) {
@@ -44,6 +44,11 @@ public class Library {
 		knowledge[0] = kb;
 	}
 	public KnowledgeBlock getKnowledge(int i) {return knowledge[i];}
+	
+	public int getAmountOfKnowledge() {
+		int i = 0; for (; i < capacity; i++) if (knowledge[i] == null) return i;
+		return i;
+	}
 	
 	@Override
 	public String toString() {

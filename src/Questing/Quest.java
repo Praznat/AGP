@@ -6,10 +6,12 @@ import Defs.*;
 import Descriptions.GobLog;
 import Game.*;
 import Questing.AllegianceQuests.AllegianceQuest;
-import Questing.PropertyQuests.BuildWealthQuest;
 import Questing.RomanceQuests.BreedQuest;
-import Sentiens.*;
-import Sentiens.Stressor.Causable;
+import Questing.Knowledge.KnowledgeQuests;
+import Questing.Might.MightQuests;
+import Questing.Wealth.BuildWealthQuest;
+import Sentiens.Clan;
+import Sentiens.Stress.*;
 
 public abstract class Quest {
 	protected Clan Me;
@@ -23,18 +25,19 @@ public abstract class Quest {
 	public abstract void pursue();
 	public void avatarPursue() {pursue();}  //default leaves it to AI
 
-	protected void success() {Me.MB.finishQ();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
-	protected void success(Stressor.Causable relief) {success(); Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));}
-	protected void success(Stressor.Causable... reliefs) {failure(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
+	protected void success() {finish();   if (Me.MB.QuestStack.empty()) {Me.AB.catharsis(1);}}
+	protected void success(Blameable relief) {success(); Me.AB.relieveFrom(new Stressor(Stressor.ANNOYANCE, relief));}
+	protected void success(Blameable... reliefs) {success(reliefs[AGPmain.rand.nextInt(reliefs.length)]);}
 	protected void finish() {
 		if (!this.getClass().isAssignableFrom(Me.MB.QuestStack.peek().getClass())) {
 			System.out.println("bullshit "+this+" finish");specialDelete();
 		}
 		else {Me.MB.finishQ();}
 	}
-	protected void specialDelete() {Me.MB.QuestStack.remove(this);}
-	protected void failure(Stressor.Causable blamee) {finish(); Me.AB.add(new Stressor(Stressor.ANNOYANCE, blamee));} // must finish first in case stressor adds new quest
-	protected void failure(Stressor.Causable... blamees) {failure(blamees[AGPmain.rand.nextInt(blamees.length)]);}
+	public void specialDelete() {Me.MB.QuestStack.remove(this);}
+	protected void failure(Blameable blamee) {failure(new Stressor(Stressor.ANNOYANCE, blamee));} // must finish first in case stressor adds new quest
+	protected void failure(Blameable... blamees) {failure(blamees[AGPmain.rand.nextInt(blamees.length)]);}
+	protected void failure(Stressor stressor) {finish(); Me.AB.add(stressor);}
 	protected Quest upQuest() {return Me.MB.QuestStack.peekUp();}
 	public String shortName() {return description();}
 	public abstract String description();
@@ -55,6 +58,37 @@ public abstract class Quest {
 		@Override
 		public String description() {return "Default Quest";}
 	}
+	
+	public static abstract class RootQuest extends Quest {
+		protected BranchQuest branch;
+		public RootQuest(Clan P) { super(P); }
+		public BranchQuest getBranch() {return branch;}
+		@Override
+		public void pursue() {
+			setup();
+			if (branch != null) branch.pursue(); // onNullBranch might set it to not null
+			cleanup(); // pursue might set
+		}
+		@Override
+		public String description() {
+			return (branch != null ? branch.description() : desc());
+		}
+		protected void setup() {};
+		protected void cleanup() {};
+		protected abstract String desc();
+	}
+	public static abstract class BranchQuest extends Quest {
+		protected final RootQuest root;
+		public BranchQuest(Clan P, RootQuest root) {
+			super(P);
+			this.root = root;
+		}
+		@Override
+		protected void finish() {
+			root.branch = null;
+		}
+	}
+	
 	public static interface PatronedQuestInterface {
 		public Clan getPatron();
 	}
@@ -72,12 +106,12 @@ public abstract class Quest {
 		@Override
 		public String toString() {return super.toString() + (patron != Me ? " for " + patron.getNomen() : "");}
 	}
-	public static abstract class TargetQuest extends Quest {
+	public static abstract class TargetQuest extends Quest { //TODO make into interface or something
 		protected Clan target;
 		public TargetQuest(Clan P) {super(P);}
 		public TargetQuest(Clan P, Clan T) {super(P); target = T;}
 		public void setTarget(Clan t) {target = t;}
-		protected Clan getTarget() {return target;}
+		public Clan getTarget() {return target;}
 		public static Clan[] getReasonableCandidates(Clan pov) {
 			if (pov == pov.myShire().getGovernor()) {
 				// TODO return neighbor governors...
@@ -90,9 +124,9 @@ public abstract class Quest {
 	}
 	public static abstract class FindTargetAbstract extends Quest implements RelationCondition {
 		protected final Clan[] candidates;
-		protected final Causable blameSource;
+		protected final Blameable blameSource;
 		public FindTargetAbstract(Clan P) {this(P, TargetQuest.getReasonableCandidates(P), P.myShire());}
-		public FindTargetAbstract(Clan P, Clan[] candidates, Causable c) {
+		public FindTargetAbstract(Clan P, Clan[] candidates, Blameable c) {
 			super(P);
 			this.candidates = candidates;
 			this.blameSource = c;
@@ -111,8 +145,9 @@ public abstract class Quest {
 					success(Me.myShire()); return;
 				}
 			}
-			failure(Me.myShire());
+			onFailure();
 		}
+		protected abstract void onFailure();
 		@Override
 		public void avatarPursue() {
 			avatarConsole().showChoices("Choose target", Me, Me.myShire().getCensus().toArray(),
@@ -148,7 +183,11 @@ public abstract class Quest {
 		}
 		private boolean pursue1() {
 			if (timesLeft == 0) {failure(Me.myShire()); return false;}  //no one found
-			if (target == null) {Me.MB.newQ(findWhat()); timesLeft--; return false;}
+			if (target == null) {
+				Me.MB.newQ(findWhat());
+				timesLeft--;
+				return false;
+			}
 			Contract.getNewContract(target, Me); return true;
 		}
 		private void pursue2() {
@@ -198,7 +237,7 @@ public abstract class Quest {
 		case KNOWLEDGEQUEST: quest = new KnowledgeQuests.KnowledgeQuest(clan, clan); break;
 		case BUILDPOPULARITY: quest = new InfluenceQuests.InfluenceQuest(clan, clan); break;
 		case TRAIN: quest = new ExpertiseQuests.LearnQuest(clan); break;
-		case PICKFIGHT: quest = new MightQuests.ChallengeMight(clan); break;
+		case PICKFIGHT: quest = new MightQuests.BasicMightQuest(clan); break;
 		default: quest = new DefaultQuest(clan); break;
 		}
 		return quest;

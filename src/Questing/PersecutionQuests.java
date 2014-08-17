@@ -4,6 +4,7 @@ import Descriptions.GobLog;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.RelationCondition;
 import Questing.Quest.TransactionQuest;
+import Questing.Might.WarQuest;
 import Sentiens.Clan;
 
 public class PersecutionQuests {
@@ -42,8 +43,7 @@ public class PersecutionQuests {
 		} // relieves previous anger from target
 
 		protected void failCase() {
-			Me.MB.newQ(new WarQuests.WarQuest(Me, target));
-			target.MB.newQ(new WarQuests.WarQuest(target, Me));
+			Me.MB.newQ(WarQuest.start(Me, target));
 		}
 
 		protected void report(boolean success) {
@@ -108,6 +108,10 @@ public class PersecutionQuests {
 					"heretic"));
 			return success;
 		}
+		@Override
+		protected void onFailure() {
+			finish();
+		}
 
 		@Override
 		public String description() {
@@ -131,6 +135,11 @@ public class PersecutionQuests {
 		@Override
 		public String description() {
 			return "Find Infidel";
+		}
+
+		@Override
+		protected void onFailure() {
+			finish();
 		}
 	}
 }

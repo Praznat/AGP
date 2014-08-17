@@ -6,9 +6,8 @@ import Defs.*;
 import Descriptions.XWeapon;
 import Game.*;
 import Government.Order;
-import Questing.PropertyQuests.LaborQuest;
-import Sentiens.*;
-import Sentiens.Values.Value;
+import Ideology.Value;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 /**

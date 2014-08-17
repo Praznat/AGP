@@ -1,8 +1,9 @@
-package Sentiens;
+package Sentiens.Stress;
 
 import java.util.*;
 
 import Defs.M_;
+import Sentiens.Clan;
 
 public class Amygdala {
 
@@ -12,7 +13,7 @@ public class Amygdala {
 		parent = P;
 		stressors = new ArrayList<Stressor>();
 	}
-	public void add(Stressor S) {
+	public void add(Stressor S) { // TODO what if add two of exactly same Stressor?
 		if(getStressLevel() > 1) {
 			enoughIsEnough(S);
 		}
@@ -30,6 +31,14 @@ public class Amygdala {
 		}   else {
 			stressors.add(lastStress); // if false too often this will get huge and cause stack overflow
 		}
+	}
+	public Stressor largestStressor() {
+		int biggest = 0; Stressor result = null;
+		for (Stressor stressor : stressors) {
+			int level = stressor.getLevel(parent);
+			if (level > biggest) {biggest = level; result = stressor;}
+		}
+		return result;
 	}
 	public void relieveFrom(Stressor stress) {
 		Stressor[] removeStressors = new Stressor[stressors.size()];  int removeN = 0;
@@ -49,7 +58,7 @@ public class Amygdala {
 		}
 		for (removeN--; removeN >= 0; removeN--) {stressors.remove(removeStressors[removeN]);}
 	}
-	public boolean containsStressor(Stressor.Causable sc) {
+	public boolean containsStressor(Blameable sc) {
 		for (Stressor s : stressors) if (s.getTarget() == sc) return true;
 		return false;
 	}

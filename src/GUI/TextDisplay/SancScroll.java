@@ -3,8 +3,8 @@ package GUI.TextDisplay;
 import java.awt.Graphics;
 
 import GUI.PopupAbstract;
+import Ideology.Value;
 import Sentiens.*;
-import Sentiens.Values.Value;
 
 
 public class SancScroll extends Papyrus {	

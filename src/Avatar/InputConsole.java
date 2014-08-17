@@ -9,12 +9,16 @@ import Sentiens.Clan;
 import Shirage.Shire;
 
 
+@SuppressWarnings("serial")
 public class InputConsole extends JTextField {
 
 	private static final String CMD_FIND_CLAN = "find clan ";
 	private static final String CMD_FIND_SHIRE = "find shire ";
 	private static final String CMD_SHOW_RESOURCE = "show resource ";
-	private static final String CMD_DEBUG_MARKETS = "debug markets ";
+	private static final String CMD_DEBUG_MARKETS = "debug market ";
+	private static final String CMD_HIGHLIGHT_GOOD = "highlight good ";
+	private static final String CMD_HIGHLIGHT_ASSETS = "highlight wealth ";
+	private static final String CMD_HIGHLIGHT = "highlight ";
 	
 	private final KeyListener keyListener = new KeyListener() {
 		@Override
@@ -59,7 +63,28 @@ public class InputConsole extends JTextField {
 				}})) ||
 				(doForCommand(command, CMD_SHOW_RESOURCE, new InputThing() {public void doit(String input) {
 				// TODO highlight resource
-		}}));
+				}})) ||
+				(doForCommand(command, CMD_HIGHLIGHT_GOOD, new InputThing() {public void doit(String input) {
+					input = input.toUpperCase();
+					ShireStatsCalcer.calcMarket(input);
+					AGPmain.mainGUI.MD.setHighlightStat(ShireStatsCalcer.LAST_PX);
+					AGPmain.mainGUI.MD.grayEverything();
+				}})) ||
+				(doForCommand(command, CMD_HIGHLIGHT_ASSETS, new InputThing() {public void doit(String input) {
+					input = input.toUpperCase();
+					ShireStatsCalcer.calcWealth(input);
+					AGPmain.mainGUI.MD.setHighlightStat(ShireStatsCalcer.NUM_ASSETS);
+					AGPmain.mainGUI.MD.grayEverything();
+				}})) ||
+				(doForCommand(command, CMD_HIGHLIGHT, new InputThing() {public void doit(String input) {
+					input = input.toUpperCase();
+					
+					if (ShireStatsCalcer.PRODUCTIVITY.equals(input)) {ShireStatsCalcer.calcProductivity();}
+					if (ShireStatsCalcer.POPULATION.equals(input)) {ShireStatsCalcer.calcPopulation();}
+					
+					AGPmain.mainGUI.MD.setHighlightStat(input);
+					AGPmain.mainGUI.MD.grayEverything();
+				}}));
 			
 		if (didSomething) return;
 		

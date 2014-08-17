@@ -2,9 +2,9 @@ package Descriptions;
 
 import AMath.Calc;
 import Defs.*;
-import Game.*;
+import Game.Job;
+import Ideology.*;
 import Sentiens.*;
-import Sentiens.Values.Value;
 
 public class GobName {
 	

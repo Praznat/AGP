@@ -3,10 +3,8 @@ package AMath;
 import java.util.*;
 
 import Defs.*;
-import Questing.*;
-import Questing.WarQuests.FormArmy;
-import Questing.WarQuests.InvolvesArmy;
-import Questing.WarQuests.WarQuest;
+import Questing.Quest;
+import Questing.Might.*;
 import Sentiens.Clan;
 import Shirage.Shire;
 
@@ -72,18 +70,18 @@ public class TestCombat extends Testing {
 		c.FB.setPrs(P_.BATTLEP, 10);
 	}
 	
-	private static boolean containsOf(Collection<FormArmy> army, Clan clan) {
-		for (FormArmy fa : army) if (fa.getDoer() == clan) return true;
+	private static boolean containsOf(Collection<FormArmyQuest> army, Clan clan) {
+		for (FormArmyQuest fa : army) if (fa.getDoer() == clan) return true;
 		return false;
 	}
 
 	private static void testAttackSudden() {
 		resetFighters();
-		caocao.MB.newQ(new WarQuests.WarQuest(caocao, liubei));
+		caocao.MB.newQ(WarQuest.start(caocao, liubei));
 //		pursueUntilDone(caocao);
 		caocao.pursue(); //AttackClanQuest
 		caocao.pursue(); //FormOwnArmyQuest
-		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
+		Set<FormArmyQuest> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
 		affirm(a.size() == 1 && containsOf(a, caocao)); // just leader for now
 		dianwei.pursue();
 		xiahoudun.pursue();
@@ -92,11 +90,11 @@ public class TestCombat extends Testing {
 	private static void testAttackWait(int postSituation) {
 		resetFighters();
 		lubu.join(caocao);
-		caocao.MB.newQ(new WarQuests.WarQuest(caocao, liubei));
+		caocao.MB.newQ(WarQuest.start(caocao, liubei));
 //		pursueUntilDone(caocao);
 		caocao.pursue(); //AttackClanQuest
 		caocao.pursue(); //FormOwnArmyQuest
-		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
+		Set<FormArmyQuest> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
 		affirm(a.size() == 1 && containsOf(a, caocao)); // just leader for now
 		dianwei.pursue();
 		xiahoudun.pursue();
@@ -115,7 +113,7 @@ public class TestCombat extends Testing {
 		resetFighters();
 		caocao.FB.setBeh(M_.CONFIDENCE, 6); // otherwise will do sudden attack
 		formup(caocao, liubei, dianwei, xiahoudun);
-		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
+		Set<FormArmyQuest> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
 		affirm(containsOf(a, dianwei) && containsOf(a, xiahoudun));
 		
 		switch (postSituation) {
@@ -129,11 +127,11 @@ public class TestCombat extends Testing {
 		pursueUntilDone(caocao);
 		dianwei.pursue();
 		xiahoudun.pursue();
-		affirm(dianwei.MB.QuestStack.getOfType(FormArmy.class) == null);
-		affirm(xiahoudun.MB.QuestStack.getOfType(FormArmy.class) == null);
+		affirm(dianwei.MB.QuestStack.getOfType(FormArmyQuest.class) == null);
+		affirm(xiahoudun.MB.QuestStack.getOfType(FormArmyQuest.class) == null);
 		// test winner disbands:
 		liubei.pursue();
-		affirm(liubei.MB.QuestStack.getOfType(FormArmy.class) == null);
+		affirm(liubei.MB.QuestStack.getOfType(FormArmyQuest.class) == null);
 		affirm(liubei.MB.QuestStack.getOfType(WarQuest.class) == null);
 	}
 	
@@ -146,7 +144,7 @@ public class TestCombat extends Testing {
 	}
 	
 	private static void formup(Clan leader, Clan enemy, Clan... followers) {
-		leader.MB.newQ(new WarQuests.WarQuest(leader, enemy));
+		leader.MB.newQ(WarQuest.start(leader, enemy));
 		for (Clan f : followers) f.MB.newQ(new MightQuests.DefendPatron(f, leader));
 		leader.pursue(); //AttackClanQuest
 		leader.pursue(); //FormOwnArmyQuest
@@ -155,7 +153,7 @@ public class TestCombat extends Testing {
 	
 	private static void testHungryWarrior() {
 		Clan.DMC = 3;
-		Set<FormArmy> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
+		Set<FormArmyQuest> a = ((InvolvesArmy)caocao.MB.QuestStack.peek()).getArmy();
 		affirm(containsOf(a, xiahoudun));
 		xiahoudun.pursue();
 		xiahoudun.pursue();
@@ -169,4 +167,6 @@ public class TestCombat extends Testing {
 		affirm(m1 > m2);
 	}
 
+	//TODO test for multiple enemies
+	
 }

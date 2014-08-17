@@ -3,7 +3,7 @@ package GUI;
 import java.awt.event.MouseEvent;
 
 import Defs.GlobalParameters;
-import Game.AGPmain;
+import Game.*;
 import Shirage.Shire;
 
 public class PopupShire extends PopupAbstract {
@@ -26,7 +26,9 @@ public class PopupShire extends PopupAbstract {
 		INFO[HISTORY] = "HISTORY";
 		
 		selectedVGs[POPULATION] = new int[] {0,GlobalParameters.SHOW_CREED?5:1,4,6,2};
-		selectedVGs[MARKETS] = new int[] {0,1,2,5,6,7,3,4};
+		selectedVGs[MARKETS] = new int[] {VarGetter.GOODNAME,VarGetter.BID,VarGetter.ASK,
+				VarGetter.LAST,VarGetter.STAVG,VarGetter.LTAVG,
+				VarGetter.BIDSZ,VarGetter.ASKSZ};
 		
 		for(int i = 0; i < infoboxes.length; i++) {
 			infoboxes[i] = new TableSlidePanel(this, i);

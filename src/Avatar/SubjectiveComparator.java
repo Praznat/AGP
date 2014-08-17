@@ -3,9 +3,9 @@ package Avatar;
 import java.util.Comparator;
 
 import Game.Act;
+import Ideology.Value;
 import Questing.Quest.GradedQuest;
-import Sentiens.*;
-import Sentiens.Values.Value;
+import Sentiens.Clan;
 
 
 @SuppressWarnings("rawtypes")

@@ -1,12 +1,12 @@
 package Sentiens;
 
-import AMath.*;
+import AMath.ArrayUtils;
 import Defs.*;
 import Descriptions.Naming;
-import Game.*;
+import Game.AGPmain;
+import Ideology.*;
 import Sentiens.Law.Commandments;
 import Sentiens.Law.PersonalCommandment;
-import Sentiens.Values.Value;
 
 public class Ideology implements Defs {
 

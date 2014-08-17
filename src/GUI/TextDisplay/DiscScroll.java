@@ -7,6 +7,7 @@ import Defs.*;
 import Descriptions.*;
 import GUI.PopupAbstract;
 import Sentiens.Clan;
+import Shirage.Shire;
 
 public class DiscScroll extends Papyrus {
 	
@@ -22,6 +23,8 @@ public class DiscScroll extends Papyrus {
 		g.drawString(" the " + clan.getJob().getDesc(clan), 2, 15+15*r++);
 		addToClickStrings(clan.myShire(), 20, 15+15*r, g);
 		g.drawString(" of ", 2, 15+15*r++);
+		Shire govShire = clan.getGovernedShire();
+		if (govShire != null) {g.drawString(" governor of " + govShire.getName(), 2, 15+15*r++);}
 		if(clan.getBoss() != clan) {
 			g.drawString(" follower of " + clan.getBoss().getNomen(), 2, 15+15*r++);
 		}

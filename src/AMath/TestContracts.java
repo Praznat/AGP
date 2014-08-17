@@ -2,9 +2,10 @@ package AMath;
 
 import Defs.P_;
 import Game.Contract;
-import Questing.*;
+import Ideology.Values;
 import Questing.Quest.TargetQuest;
-import Sentiens.*;
+import Questing.Might.MightQuests;
+import Sentiens.Clan;
 import Shirage.Shire;
 
 public class TestContracts extends Testing {
@@ -88,7 +89,7 @@ public class TestContracts extends Testing {
 		resetContracts();
 		makePuritan(a, Values.WEALTH, Values.RIGHTEOUSNESS);
 		makePuritan(b, Values.WEALTH, Values.RIGHTEOUSNESS);
-		a.MB.newQ(new MightQuests.ChallengeMight(a, Values.WEALTH));
+		a.MB.newQ(new MightQuests.ChallengeMightQuest(a, Values.WEALTH));
 		((TargetQuest)a.MB.QuestStack.peek()).setTarget(b);
 		a.pursue();
 		final double demandVal = Contract.getInstance().getPreCalcedDemandValue();

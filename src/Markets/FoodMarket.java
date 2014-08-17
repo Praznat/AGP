@@ -2,13 +2,12 @@ package Markets;
 
 import Defs.Defs;
 import Descriptions.Naming;
-import Game.*;
 import Sentiens.Clan;
 import Shirage.Shire;
 
 public class FoodMarket extends MktAbstract {
-	public static final int MILLETVAL = 100;
-	public static final int MEATVAL = 300;  //may not use
+	public static final int MILLETVAL = 300;
+	public static final int MEATVAL = 1000;  //may not use
 	private int val;
 
 	public FoodMarket(int ggg, Shire h) {

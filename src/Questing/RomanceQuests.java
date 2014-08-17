@@ -2,14 +2,15 @@ package Questing;
 
 import Defs.*;
 import Descriptions.GobLog;
+import Ideology.*;
 import Questing.Quest.FindTargetAbstract;
 import Questing.Quest.PatronedQuest;
 import Questing.Quest.PatronedQuestFactory;
 import Questing.Quest.RelationCondition;
 import Questing.Quest.TargetQuest;
-import Sentiens.*;
-import Sentiens.Stressor.Causable;
-import Sentiens.Values.Value;
+import Questing.Might.MightQuests;
+import Sentiens.Clan;
+import Sentiens.Stress.*;
 
 public class RomanceQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(BreedWithPatronQuest.class) {public Quest createFor(Clan c, Clan p) {return new BreedWithPatronQuest(c, p);}};}
@@ -60,6 +61,10 @@ public class RomanceQuests {
 		public String shortName() {return "Find Mate";}
 		@Override
 		public String description() {return "Find suitable mate";}
+		@Override
+		protected void onFailure() {
+			failure(StressorFactory.createShireStressor(Me.myShire(), Values.COPULATION));
+		}
 	}
 
 
@@ -85,7 +90,7 @@ public class RomanceQuests {
 			if (diff > 0) {success(target);}
 			else {
 				if (shouldConfrontRival(rival)) { // if i think im better than rival, then just attack him
-					replaceAndDoNewQuest(Me, new MightQuests.ChallengeMight(Me, Values.COPULATION));return;
+					replaceAndDoNewQuest(Me, new MightQuests.ChallengeMightQuest(Me, Values.COPULATION));return;
 				}
 				else if (shouldPreachToTarget(rival)) { // if both me and rival think rival is better than me, try to preach
 //					replaceAndDoNewQuest(Me, new PreachQuest(Me, Values.BEAUTY));return;
@@ -106,9 +111,9 @@ public class RomanceQuests {
 			return rival.FB.compareRespect(Me) > 0; //used to determine whether to continue to court or whether to work or preach etc
 		}
 		@Override
-		public void success(Causable blamee) {((BreedQuest) upQuest()).courtSucceeded(); super.success(blamee);}
+		public void success(Blameable blamee) {((BreedQuest) upQuest()).courtSucceeded(); super.success(blamee);}
 		@Override
-		public void failure(Causable blamee) {((BreedQuest) upQuest()).courtFailed(); super.failure(blamee);}
+		public void failure(Blameable blamee) {((BreedQuest) upQuest()).courtFailed(); super.failure(blamee);}
 		@Override
 		public String shortName() {Clan rival = target.getSuitor(); return (rival==Me || rival==null ? "Court" : "Compete");}
 		@Override

@@ -3,14 +3,17 @@ package Questing;
 import java.util.*;
 
 import AMath.Calc;
-import Avatar.*;
+import Avatar.SubjectiveType;
 import Defs.M_;
 import Descriptions.GobLog;
 import Game.*;
 import Government.Order;
-import Questing.Quest.*;
+import Ideology.*;
+import Questing.Quest.PatronedQuest;
+import Questing.Quest.PatronedQuestFactory;
+import Questing.Quest.TransactionQuest;
 import Sentiens.*;
-import Sentiens.Values.Value;
+import Sentiens.Stress.StressorFactory;
 
 public class InfluenceQuests {
 	public static PatronedQuestFactory getMinistryFactory() {return new PatronedQuestFactory(InfluenceQuest.class) {public Quest createFor(Clan c, Clan p) {return new InfluenceQuest(c, p);}};}
@@ -35,6 +38,10 @@ public class InfluenceQuests {
 			return new FindTargetAbstract(Me, TargetQuest.getReasonableCandidates(Me), Me) {
 				@Override
 				public boolean meetsReq(Clan POV, Clan target) {return target.myOrder() != POV.myOrder();}
+				@Override
+				protected void onFailure() {
+					failure(StressorFactory.createShireStressor(Me.myShire(), Values.INFLUENCE));
+				}
 			};
 		}
 		@Override
