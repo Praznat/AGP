@@ -1,3 +1,7 @@
+![alt text](jatmo.png "Screenshot 1")
+![alt text](fneexyel.png "Screenshot 2")
+![alt text](blamaket.png "Screenshot 3")
+
 AUTONOMOUS GOBLIN PARADISE: INTRODUCTION 
 
 I. Basic 
