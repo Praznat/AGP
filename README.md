@@ -131,8 +131,8 @@ Harmony
 Goblins have an emotional Stress system. When Quests fail or when something bad happens, Goblins will attribute Stress to whatever they decide to blame, usually another Goblin, Shire, or Order. Quest success or atonement through action against stressor can relieve Stress. 
 Respect is determined by a judgement by "pov" on the amount of Stress caused or relieved by another Goblin. A Harmony-valuing Goblin will spend time reducing Stress in others. This may involving conspiring with others against a common enemy, atoning for one's own mistreatment of others, or investing in the home Shire. 
 
-![alt text](gloombridge.png "Screenshot 4")
-![alt text](nevercot.png "Screenshot 5")
+![alt text](family1.png "Screenshot 6")
+![alt text](family2.png "Screenshot 7")
 
 **********************
 
@@ -184,5 +184,5 @@ The grey box in the middle can be used to manually interfere with the goblins' a
 •Play/pause: Start time or stop it. Buggy. 
 •View spawn: Brings up hypothetical offspring of avatar and goblin selected in observation panel. Click on offspring in the middle to randomly regenerate. These offspring are not real goblins, just something to play with.
 
-![alt text](family1.png "Screenshot 6")
-![alt text](family2.png "Screenshot 7")
+![alt text](nevercot.png "Screenshot 5")
+![alt text](gloombridge.png "Screenshot 4")
